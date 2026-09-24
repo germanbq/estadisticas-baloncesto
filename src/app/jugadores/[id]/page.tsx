@@ -1,7 +1,7 @@
-import MainStats from "@/src/components/players/MainStats"
-import PlayerProfileCard from "@/src/components/players/PlayerProfileCard"
-import StatsTable from "@/src/components/players/StatsTable"
-import LastGames from "@/src/components/players/LastGames"
+import MainStats from "@/src/components/player/MainStats"
+import PlayerProfileCard from "@/src/components/player/PlayerProfileCard"
+import StatsTable from "@/src/components/player/StatsTable"
+import LastGames from "@/src/components/player/LastGames"
 
 export default function PlayerStatsPage() {
     return (
