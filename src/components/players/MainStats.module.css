@@ -1,3 +1,40 @@
-.cards-grid {
+.statsGrid {
     display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(min(100%, 150px), 1fr));
+}
+
+.percentageGrid {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+}
+
+.statsGrid,
+.percentageGrid {
+    gap: 0.5rem;
+}
+
+.title {
+    color: #F2B4A5;
+}
+
+.dataContainers {
+    background-color:  #252A33;
+    border-radius: 10px;
+    padding-bottom: 0.5rem;;
+}
+
+.dataNames {
+    color: #F2B4A5;
+    align-items: left;
+    padding: 0.5rem;
+    display: flex;
+    flex-direction: row;
+    justify-content: space-between;
+}
+
+.value {
+    font-size: 3rem;
+    font-weight: bold;
+    display: flex;
+    justify-content: center;
 }
