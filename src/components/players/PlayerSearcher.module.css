@@ -1,0 +1,57 @@
+.inputContainer  {
+    position: relative;
+    color: #F2B4A5;
+    display: flex;
+    margin-inline: auto;
+    width: 60%;
+}
+
+.input {
+    background-color: #2a2d33;
+    border-radius: 10px;
+    box-sizing: border-box;
+    width: 100%;
+    padding: 0.5rem 6rem;
+    text-align: left;
+}
+
+.inputIcon {
+    position: absolute;
+    left: 12px;
+    top: 50%;
+    transform: translateY(-50%);
+    pointer-events: none;
+}
+
+.filters {
+    display: grid;
+    grid-template-columns: minmax(0,50%) minmax(0,50%);
+}
+
+.confFilters,
+.posFilters {
+    display: flex;
+    justify-content: center;
+    gap: 1rem;
+    align-items: center;
+}
+
+.button {
+    color: #F2B4A5;
+    border-radius: 10px;
+    background-color: #252A33;
+    padding: 0.5rem;
+    cursor: pointer;
+}
+
+.confLabel {
+    color: #F2B4A5;
+}
+.button:not(.active):hover {
+  background-color: #303641;
+}
+
+.active {
+    background-color: #FF5A00;
+    color: white;
+}
