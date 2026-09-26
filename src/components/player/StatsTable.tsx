@@ -24,32 +24,32 @@ export default function StatsTable() {
                 </thead>
                 <tbody>
                     <tr>
-                        <th>2025-2026</th>
-                        <th>29.8</th>
-                        <th>7.8</th>
-                        <th>7</th>
-                        <th>0.8</th>
-                        <th>8.4</th>
-                        <th>1.2</th>
-                        <th>0.8</th>
-                        <th>1.0</th>
-                        <th>59.8</th>
-                        <th>42.3</th>
-                        <th>+7</th>
+                        <td>2025-2026</td>
+                        <td>29.8</td>
+                        <td>7.8</td>
+                        <td>7</td>
+                        <td>0.8</td>
+                        <td>8.4</td>
+                        <td>1.2</td>
+                        <td>0.8</td>
+                        <td>1.0</td>
+                        <td>59.8</td>
+                        <td>42.3</td>
+                        <td>+7</td>
                     </tr>
                     <tr>
-                        <th>2024-2025</th>
-                        <th>28.1</th>
-                        <th>8.4</th>
-                        <th>7</th>
-                        <th>1.4</th>
-                        <th>9.1</th>
-                        <th>1.1</th>
-                        <th>1.1</th>
-                        <th>0.9</th>
-                        <th>60.3</th>
-                        <th>40.3</th>
-                        <th>+8.9</th>
+                        <td>2024-2025</td>
+                        <td>28.1</td>
+                        <td>8.4</td>
+                        <td>7</td>
+                        <td>1.4</td>
+                        <td>9.1</td>
+                        <td>1.1</td>
+                        <td>1.1</td>
+                        <td>0.9</td>
+                        <td>60.3</td>
+                        <td>40.3</td>
+                        <td>+8.9</td>
                     </tr>
                 </tbody>
             </table>

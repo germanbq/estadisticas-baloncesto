@@ -3,7 +3,7 @@
 import { CSSProperties, useState } from "react";
 import styles from "./StatsLeaders.module.css";
 import { SlidersHorizontal, Trophy } from "lucide-react";
-import FilterButton  from "./FilterButton"
+import FilterButton  from "../FilterButton"
 import Image from "next/image";
 
 type PlayerCardProps = {

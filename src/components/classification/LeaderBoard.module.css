@@ -1,0 +1,171 @@
+.section {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 1.5rem;
+}
+.seasonSpan {
+    color: #F2B4A5;
+    font-size: 1.2rem;
+    font-weight: 800;    
+}
+
+.buttonsContainer {
+    background-color: #252A33;
+    padding: 0.5rem;
+    border-radius: 10px;
+    width: fit-content;
+    
+    display: flex;
+    gap: 1rem;
+}
+
+.button {
+    padding: 0.3rem;
+    border-radius: 10px;
+    font-size: 1.3rem;
+    font-weight: 600;
+    color: #F2B4A5;
+    cursor: pointer;
+
+    display: flex;
+    flex-direction: row;
+    gap: 0.8rem;
+    
+}
+
+.active {
+    color: #FF5A00;
+    background-color: #303641;
+}
+
+.table {
+    background-color: #252A33;
+    width: 100%;
+}
+
+.labelsContainer {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    place-items: center;
+}
+
+.label {
+    display: flex;
+    align-items: center;
+    gap: 0.8rem;
+    color: #F2B4A5;
+}
+
+.dot {
+    display: inline-block;
+    width: 15px;
+    height: 15px;
+    border-radius: 50%;
+    background-color: currentColor;
+}
+
+.playoffs {
+    color: #4EDEA3;
+}
+
+.playin {
+    color: #00D2FF;
+}
+
+.eliminated {
+    color: #6B7280;
+}
+
+.table {
+    border-collapse: collapse;
+    border-radius: 10px;
+    overflow: hidden;
+}
+
+.table thead {
+    color: #F2B4A5;
+}
+
+.table th,
+.table td {
+    padding: 0.75rem 1rem;
+    border-bottom: 1px solid #2a2d33;
+}
+
+.table td {
+  padding: 0.75rem 1rem;
+  text-align: center;
+  font-weight: 600;
+  color: #f5f5f5;
+  border-bottom: 1px solid #2a2d33;
+}
+
+.table tbody tr:last-child td {
+    border-bottom: none;
+}
+
+.table tbody tr:nth-child(odd) {
+    background-color: #1d2026;
+}
+
+.table tbody tr:nth-child(even) {
+    background-color: #252A33;
+}
+
+.table tbody tr:nth-child(-n + 6) td:first-child .positionBadge {
+    color: #4EDEA3;
+    background-color: #173B32;
+}
+
+.table tbody tr:nth-child(n+7):nth-child(-n + 10) td:first-child .positionBadge {
+    color: #00D2FF;
+    background-color: #123746;
+}
+
+.table tbody tr:nth-child(n + 11) td:first-child .positionBadge {
+    color: #6B7280;
+    background-color: #2B2F38;
+}
+
+.logoAndName{
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    justify-content: flex-start;
+} 
+
+.teamLogo {
+  width: 2.25rem;
+  height: 2.25rem;
+  object-fit: contain;
+  flex-shrink: 0;
+}
+
+.logoAndName span {
+    flex: 1;
+    text-align: center;
+}
+
+.positionBadge {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 30px;
+    height: 30px;
+    border-radius: 50%;
+    font-size: 1.2rem;
+    padding: 20px;
+}
+
+.table td.percentage {
+    color: #00D2FF;
+}
+
+.table td.positive {
+  color: #4EDEA3;
+}
+
+.table td.negative {
+  color: #F28B82;
+}

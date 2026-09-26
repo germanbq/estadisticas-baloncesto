@@ -3,7 +3,7 @@
 import styles from "./PlayerSearcher.module.css";
 import { useState } from "react";
 import { UserSearch } from "lucide-react";
-import FilterButton from "./FilterButton";
+import FilterButton from "../FilterButton";
 
 export default function PlayerSearcher() {
     const [search, setSearch] = useState("");
