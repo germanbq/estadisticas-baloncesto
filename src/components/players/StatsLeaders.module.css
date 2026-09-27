@@ -47,6 +47,10 @@
     cursor: pointer;
 }
 
+button:not(.active):hover {
+    color: white;
+}
+
 .active {
     color: var(--color-orange);
     background-color: var(--color-background-lighter);

@@ -31,7 +31,10 @@
     display: flex;
     flex-direction: row;
     gap: 0.8rem;
-    
+}
+
+.button:not(.active):hover {
+    color: white;
 }
 
 .active {
