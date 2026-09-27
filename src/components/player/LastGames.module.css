@@ -1,5 +1,5 @@
 .article {
-    background-color:  #252A33;
+    background-color:  var(--color-components);
     border-radius: 10px;
     padding: 1rem;
 }   
@@ -13,14 +13,14 @@
 }
 
 .dot {
-  display: inline-block;
-  width: 15px;
-  height: 15px;
-  border-radius: 50%;
+    display: inline-block;
+    width: 15px;
+    height: 15px;
+    border-radius: 50%;
 }
 
 .date {
-    color: #F2B4A5;
+    color: var(--color-text-primary);
 }
 
 .statsContainer {
@@ -44,18 +44,18 @@
 }
 
 .stat:not(:last-child) {
-  border-right: 1px solid #2a2d33;
+    border-right: 1px solid var(--color-border);
 }
 
 .statLabel {
-    color: #F2B4A5;
+    color: var(--color-text-primary);
     font-size: 0.8rem;
     text-transform: uppercase;
     letter-spacing: 0.05em;
 }
 
 .title {
-    color: #F2B4A5;
+    color: var(--color-text-primary);
 }
 
 .value {

@@ -36,20 +36,20 @@
 }
 
 .icon {
-    color: #FF5A00;
+    color: var(--color-orange);
 }
 
 .button {
     padding: 1rem;
-    color: #F2B4A5;
+    color: var(--color-text-primary);
     font-size: 1.5rem;
     border-radius: 10px;
     cursor: pointer;
 }
 
 .active {
-    color: #FF5A00;
-    background-color: #303641;
+    color: var(--color-orange);
+    background-color: var(--color-background-lighter);
 }
 
 .playerCardsContainer {
@@ -79,7 +79,7 @@
 }
 
 .playerCard {
-    background-color: #282B32;
+    background-color: var(--color-components);
     border-radius: 20px;
     padding: 1rem;
     width: fit-content;
@@ -98,7 +98,7 @@
     align-items: center;
 
     border-radius: 20px;
-    background-color: #303641;
+    background-color: var(--color-background-lighter);
     padding: 0.5rem;
     
     font-size: 1.5rem;
@@ -112,7 +112,7 @@
 .pos,
 .metric,
 .team {
-  color: var(--color-acento);
+    color: var(--color-acento);
 }
 
 .teamAndJersey {
@@ -128,11 +128,11 @@
 }
 
 .jersey {
-    color: #F2B4A5;
+    color: var(--color-text-primary);
 }
 
 .metric {
-    background-color: #303641;
+    background-color: var(--color-background-lighter);
     padding: 1rem;
     border-radius: 10px;
     width: 80%;

@@ -14,7 +14,7 @@
 }
 
 .title {
-    color: #F2B4A5;
+    color: var(--color-text-primary);
 }
 
 .dataContainers {
@@ -24,7 +24,7 @@
 }
 
 .dataNames {
-    color: #F2B4A5;
+    color: var(--color-text-primary);
     align-items: left;
     padding: 0.5rem;
     display: flex;

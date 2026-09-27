@@ -1,13 +1,13 @@
 .inputContainer  {
     position: relative;
-    color: #F2B4A5;
+    color: var(--color-text-primary);
     display: flex;
     margin-inline: auto;
     width: 60%;
 }
 
 .input {
-    background-color: #2a2d33;
+    background-color: var(--color-border);
     border-radius: 10px;
     box-sizing: border-box;
     width: 100%;
@@ -37,21 +37,21 @@
 }
 
 .button {
-    color: #F2B4A5;
+    color: var(--color-text-primary);
     border-radius: 10px;
-    background-color: #252A33;
+    background-color: var(--color-components);
     padding: 0.5rem;
     cursor: pointer;
 }
 
 .confLabel {
-    color: #F2B4A5;
+    color: var(--color-text-primary);
 }
 .button:not(.active):hover {
-  background-color: #303641;
+  background-color: var(--color-background-lighter);
 }
 
 .active {
-    background-color: #FF5A00;
+    background-color: var(--color-orange);
     color: white;
 }

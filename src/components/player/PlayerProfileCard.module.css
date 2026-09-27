@@ -3,7 +3,7 @@
     flex-direction: column;
     align-items: center;
     gap: 1rem;
-    background-color: #1D2026;
+    background-color: var(--color-components);
     padding: 1rem 0;
     border-radius: 10px;
 }
@@ -19,14 +19,14 @@
 }
 
 .jerseyNumber {
-    background-color: #FF5A00;
+    background-color: var(--color-orange);
     border-radius: 10px;
     padding: 0 0.5rem;
     color: #000000;
 }
 
 .team {
-    color: #00D2FF;
+    color: var(--colo-blue);
     background-color: #102A38;
     padding: 0 0.5rem;
     border-radius: 10px;
@@ -46,7 +46,7 @@
 
 
 .country {
-    color: #F2B4A5;
+    color: var(--color-text-primary);
 }
 
 .dataContainer {
@@ -56,9 +56,7 @@
 }
 
 .data {
-    background-color:  #252A33;
     padding: 0 0.5rem;
-    border-radius: 10px;
     
     display: flex;
     flex-direction: column;
@@ -67,5 +65,5 @@
 }
 
 .dataName {
-    color: #F2B4A5;
+    color: var(--color-text-primary);
 }
