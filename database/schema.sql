@@ -15,7 +15,7 @@ CREATE TABLE teams (
 
 CREATE TABLE team_season_stats (
     team_id INTEGER REFERENCES teams(id),
-    season TEXT NOT NULL,
+    season_init_year INTEGER NOT NULL,
     victorys INTEGER NOT NULL,
     loses INTEGER NOT NULL,
     win_rate NUMERIC(5,2) NOT NULL,
@@ -42,7 +42,7 @@ CREATE TABLE players (
 
 CREATE TABLE player_season_stats (
     player_id INTEGER REFERENCES players(id),
-    season TEXT NOT NULL,
+    season_init_year INTEGER NOT NULL,
     points NUMERIC(5,2) NOT NULL,
     rebounds NUMERIC(4,2) NOT NULL,
     ofe_rebounds NUMERIC(4,2) NOT NULL,
