@@ -1,0 +1,22 @@
+import { LeaderPlayer, PlayerProfile } from "../entities/playersEntities";
+import { IPlayersRepository, IPlayersQueries } from "../interfaces/playersIntefaces";
+import { IQueryExecutor } from "../shared/sql.types";
+
+export class PlayersRepository implements IPlayersRepository {
+
+    constructor(private readonly queries: IPlayersQueries, private readonly executor: IQueryExecutor) {}
+
+    async leadersList(metric: string, minGames: number, playersLimit: number, season: string): Promise<LeaderPlayer[]> {
+        const query = this.queries.leaders(metric, minGames, playersLimit, season);
+        const result = await this.executor.query<LeaderPlayer>(query.text, query.values);
+
+        return result;
+    }
+
+    async profileStats(id: number): Promise<PlayerProfile | null> {
+        const query = this.queries.profile(id);
+        const result = await this.executor.query<PlayerProfile>(query.text, query.values);
+
+        return result[0] ?? null;
+    }
+}
