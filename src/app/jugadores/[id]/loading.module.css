@@ -1,0 +1,186 @@
+.page {
+  display: flex;
+  flex-direction: column;
+  gap: 24px;
+
+  min-height: 100vh;
+  padding: 14px 16px;
+
+  background-color: #0e1116;
+}
+
+.skeleton {
+  position: relative;
+  overflow: hidden;
+
+  background-color: #343a45;
+  border-radius: 7px;
+}
+
+.skeleton::after {
+  position: absolute;
+  inset: 0;
+
+  content: "";
+
+  background: linear-gradient(
+    90deg,
+    transparent 0%,
+    rgba(255, 255, 255, 0.08) 50%,
+    transparent 100%
+  );
+
+  transform: translateX(-100%);
+  animation: shimmer 1.4s infinite;
+}
+
+@keyframes shimmer {
+  to {
+    transform: translateX(100%);
+  }
+}
+
+
+.profileCard {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+
+  min-height: 340px;
+  padding: 16px;
+
+  background-color: #252a33;
+  border-radius: 10px;
+}
+
+.avatar {
+  width: 120px;
+  height: 140px;
+  border-radius: 12px;
+}
+
+.badges {
+  display: flex;
+  gap: 18px;
+  margin-top: 20px;
+}
+
+.teamBadge {
+  width: 190px;
+  height: 26px;
+  border-radius: 8px;
+}
+
+.numberBadge {
+  width: 80px;
+  height: 24px;
+  border-radius: 10px;
+}
+
+.playerName {
+  width: 265px;
+  height: 40px;
+  margin-top: 20px;
+}
+
+.country {
+  width: 65px;
+  height: 18px;
+  margin-top: 10px;
+}
+
+.playerDetails {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(90px, 1fr));
+  gap: 55px;
+
+  margin-top: 26px;
+}
+
+.detail {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 10px;
+}
+
+.detailLabel {
+  width: 65px;
+  height: 18px;
+}
+
+.detailValue {
+  width: 85px;
+  height: 20px;
+}
+
+
+.statsSection {
+  display: flex;
+  flex-direction: column;
+  gap: 22px;
+}
+
+.sectionTitle {
+  width: 275px;
+  height: 22px;
+}
+
+.statsGrid {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 12px;
+}
+
+.statCard {
+  display: flex;
+  flex-direction: column;
+
+  min-height: 150px;
+  padding: 16px 12px;
+
+  background-color: #252a33;
+  border-radius: 13px;
+}
+
+.statHeader {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.statLabel {
+  width: 48px;
+  height: 18px;
+}
+
+.statIcon {
+  width: 27px;
+  height: 27px;
+  border-radius: 50%;
+}
+
+.statNumber {
+  width: 105px;
+  height: 52px;
+  margin: 33px auto 0;
+  border-radius: 9px;
+}
+
+.percentageCard {
+  grid-column: span 2;
+}
+
+
+.tableSection {
+  background-color: #252a33;
+  height: 200px;
+  border-radius: 10px;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .skeleton::after {
+    animation: none;
+  }
+}

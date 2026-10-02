@@ -15,12 +15,24 @@
     text-align: left;
 }
 
+.input:focus {
+    outline: none;
+}
+
 .inputIcon {
     position: absolute;
-    left: 12px;
+    left: 1rem;
     top: 50%;
     transform: translateY(-50%);
     pointer-events: none;
+}
+
+.inputCross {
+    position: absolute;
+    right: 1.2rem;
+    top: 50%;
+    transform: translateY(-50%);
+    cursor: pointer;
 }
 
 .filters {

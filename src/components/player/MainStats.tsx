@@ -1,11 +1,13 @@
+import { PlayerProfile } from "@/src/backend/entities/playersEntities";
 import styles from "./MainStats.module.css";
 import { CircleDot, ArrowUp, Share2, Hand, Shield, Crosshair, Goal} from "lucide-react";
 
 type DataContainerProps = {
     icon: React.ReactNode;
     label: string;
-    value: string;
+    value: number;
 }
+
 
 function DataContainer({icon, label, value}: DataContainerProps) {
     return (
@@ -19,20 +21,21 @@ function DataContainer({icon, label, value}: DataContainerProps) {
     )
 }
 
-export default function MainStats() {
+export default function MainStats({stats}: {stats: PlayerProfile}) {
     return (
         <>
         <span className={styles.title}>Promedios de temporada 2025-2026</span>
         <section className={styles.statsGrid}>
-            <DataContainer icon={<CircleDot />} label="PTS" value="29.8" />
-            <DataContainer icon={<ArrowUp />} label="REB" value="7.8" />
-            <DataContainer icon={<Share2 />} label="AST" value="8.4" />
-            { true ? <DataContainer icon={<Hand />} label="STL" value="1.2" />
-                : <DataContainer icon={<Shield />} label="BLK" value="0.8" />}
+            <DataContainer icon={<CircleDot />} label="PTS" value={stats.seasons[0].points} />
+            <DataContainer icon={<ArrowUp />} label="REB" value={stats.seasons[0].rebounds} />
+            <DataContainer icon={<Share2 />} label="AST" value={stats.seasons[0].assists} />
+            { stats.seasons[0].steals > stats.seasons[0].blocks 
+                ? <DataContainer icon={<Hand />} label="STL" value={stats.seasons[0].steals} />
+                : <DataContainer icon={<Shield />} label="BLK" value={stats.seasons[0].blocks} />}
         </section>
         <section className={styles.percentageGrid}>
-            <DataContainer icon={<Crosshair />} label="FG%" value="59.8" />
-            <DataContainer icon={<Goal />} label="3P%" value="42.3" />
+            <DataContainer icon={<Crosshair />} label="FG%" value={stats.seasons[0].fgPercentage} />
+            <DataContainer icon={<Goal />} label="3P%" value={stats.seasons[0].threePercentage} />
         </section>
         </>
     )

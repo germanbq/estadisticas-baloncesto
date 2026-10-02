@@ -2,14 +2,17 @@ export type Player = {
     name: string;
     image: string;
     team: string;
-    jersey_number: string;
+    jerseyNumber: number;
+    position: string;
 }
 
 export type LeaderPlayer = Player & {
+    id: number;
     value: number;
 }
 
 export type PlayerSeasonStats = {
+    season: string;
     points: number;
     rebounds: number;
     ofeRebounds: number;
@@ -21,15 +24,41 @@ export type PlayerSeasonStats = {
     plusMinus: number;
     fgPercentage: number;
     threePercentage: number;
-    fgFraction: number;
+    games: number;
 }
 
 export type PlayerProfile = Player & {
-    position: string;
     country: string;
     height: number;
     weight: number;
     age: number;
     draft: number;
     seasons: PlayerSeasonStats[];
+}
+
+export type PlayerGames = {
+    gameId: number;
+    victory: boolean;
+    home: boolean;
+    rival: string;
+    homeScore: number;
+    awayScore: number;
+    date: Date;
+    secondsPlayed: number;
+    stadium: string;
+    points: number;
+    rebounds: number;
+    assists: number;
+    fgMade: number;
+    fgAttempted: number;
+}
+
+export type SearchedPlayer = Player & {
+    id: number;
+    age: number;
+    points: number;
+    rebounds: number;
+    assists: number;
+    steals: number;
+    blocks: number;
 }

@@ -25,8 +25,8 @@ export default function LeaderBoard() {
         <section className={styles.section}>
             <span className={styles.seasonSpan}>Temporada regular 2025-2026</span>
             <div className={styles.buttonsContainer}>
-                <FilterButton icon={<Sunrise />} value="CONFERENCIA ESTE" selected={conf} setSelected={setConf} className={styles.button} activeClassName={styles.active} />
-                <FilterButton icon={<Sunset />} value="CONFERENCIA OESTE" selected={conf} setSelected={setConf} className={styles.button} activeClassName={styles.active} />
+                <FilterButton icon={<Sunrise />} value="CONFERENCIA ESTE" selected={conf} setSelected={setConf} className={styles.button} activeClassName={styles.active} selectedValue="East"/>
+                <FilterButton icon={<Sunset />} value="CONFERENCIA OESTE" selected={conf} setSelected={setConf} className={styles.button} activeClassName={styles.active} selectedValue="West"/>
             </div>
             <div className={styles.table}>
                 <div className={styles.labelsContainer}>

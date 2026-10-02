@@ -1,7 +1,7 @@
-import { LeaderPlayer, PlayerProfile } from "../entities/playersEntities";
+import { LeaderPlayer, PlayerGames, PlayerProfile, SearchedPlayer } from "../entities/playersEntities";
 import { IPlayersRepository } from "../interfaces/playersIntefaces";
 
-import { MIN_GAMES_FOR_LEADERS, LIMIT_LEADER_PLAYERS, ACTUAL_SEASON } from "../rules/playersRules";
+import { MIN_GAMES_FOR_LEADERS, LIMIT_LEADER_PLAYERS, ACTUAL_SEASON, LIMIT_GAMES_PER_PLAYER } from "../rules/playersRules";
 
 export class PlayersService {
 
@@ -10,8 +10,16 @@ export class PlayersService {
     leadersList(metric: string): Promise<LeaderPlayer[]> {
         return this.repository.leadersList(metric, MIN_GAMES_FOR_LEADERS, LIMIT_LEADER_PLAYERS, ACTUAL_SEASON);
     }
+
     profileStats(id: number): Promise<PlayerProfile | null> {
         return this.repository.profileStats(id);
     }
     
+    lastGames(id: number): Promise<PlayerGames[]> {
+        return this.repository.lastGames(id, LIMIT_GAMES_PER_PLAYER);
+    }
+
+    searchPlayers(search: string, pos: string, conf: string): Promise<SearchedPlayer[]> {
+        return this.repository.searchPlayers(search, pos, conf, ACTUAL_SEASON);
+    }
 }

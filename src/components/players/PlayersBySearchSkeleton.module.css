@@ -1,0 +1,60 @@
+.skeleton {
+    position: relative;
+    overflow: hidden;
+    background-color: #343a45;
+    border-radius: 8px;
+}
+
+.skeleton::after {
+    content: "";
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.08), transparent);
+    transform: translateX(-100%);
+    animation: shimmer 1.5s linear infinite;
+}
+
+.photo {
+    width: 80px;
+    height: 80px;
+    flex-shrink: 0;
+    border-radius: 12px;
+}
+
+.name {
+    width: 220px;
+    height: 1.4rem;
+}
+
+.team {
+    width: 180px;
+    height: 1.2rem;
+}
+
+.profileLink {
+    width: 195px;
+    height: 1.2rem;
+}
+
+.label {
+    width: 28px;
+    height: 1.2rem;
+}
+
+.value {
+    width: 48px;
+    height: 1.7rem;
+    margin: 0;
+}
+
+@keyframes shimmer {
+    to {
+        transform: translateX(100%);
+    }
+}
+
+@media (prefers-reduced-motion: reduce) {
+    .skeleton::after {
+        animation: none;
+    }
+}

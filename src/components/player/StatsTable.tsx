@@ -1,7 +1,8 @@
+import { PlayerProfile } from "@/src/backend/entities/playersEntities";
 import styles from "./StatsTable.module.css";
 
 
-export default function StatsTable() {
+export default function StatsTable({stats}: {stats: PlayerProfile}) {
     return (
         <>
             <span className={styles.title}>Estadísticas completas por temporada</span>
@@ -9,6 +10,7 @@ export default function StatsTable() {
                 <thead>
                     <tr>
                         <th>Temporada</th>
+                        <th>Partidos</th>
                         <th>Puntos</th>
                         <th>Rebotes</th>
                         <th>Rebotes Ofe</th>
@@ -23,34 +25,23 @@ export default function StatsTable() {
                     </tr>    
                 </thead>
                 <tbody>
-                    <tr>
-                        <td>2025-2026</td>
-                        <td>29.8</td>
-                        <td>7.8</td>
-                        <td>7</td>
-                        <td>0.8</td>
-                        <td>8.4</td>
-                        <td>1.2</td>
-                        <td>0.8</td>
-                        <td>1.0</td>
-                        <td>59.8</td>
-                        <td>42.3</td>
-                        <td>+7</td>
-                    </tr>
-                    <tr>
-                        <td>2024-2025</td>
-                        <td>28.1</td>
-                        <td>8.4</td>
-                        <td>7</td>
-                        <td>1.4</td>
-                        <td>9.1</td>
-                        <td>1.1</td>
-                        <td>1.1</td>
-                        <td>0.9</td>
-                        <td>60.3</td>
-                        <td>40.3</td>
-                        <td>+8.9</td>
-                    </tr>
+                    {stats.seasons.map((season) => (
+                        <tr key={season.season}>
+                            <th>{`${String(season.season).slice(-2)}/${String(Number(season.season)+1).slice(2)}`}</th>
+                            <th>{season.games}</th>
+                            <th>{season.points}</th>
+                            <th>{season.rebounds}</th>
+                            <th>{season.ofeRebounds}</th>
+                            <th>{season.defRebounds}</th>
+                            <th>{season.assists}</th>
+                            <th>{season.steals}</th>
+                            <th>{season.blocks}</th>
+                            <th>{season.turnovers}</th>
+                            <th>{season.fgPercentage}</th>
+                            <th>{season.threePercentage}</th>
+                            <th>{season.plusMinus}</th>
+                        </tr>
+                    ))}
                 </tbody>
             </table>
         </>    
