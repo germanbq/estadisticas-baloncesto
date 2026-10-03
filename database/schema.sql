@@ -4,6 +4,7 @@ DROP TABLE IF EXISTS players CASCADE;
 DROP TABLE IF EXISTS player_season_stats CASCADE;
 DROP TABLE IF EXISTS games CASCADE;
 DROP TABLE IF EXISTS player_game_stats CASCADE;
+DROP FUNCTION IF EXISTS validate_player_game_team() CASCADE;
 
 CREATE TABLE teams (
     id INTEGER GENERATED ALWAYS AS IDENTITY PRIMARY KEY,
@@ -11,7 +12,7 @@ CREATE TABLE teams (
     short_name TEXT NOT NULL UNIQUE,
     logo TEXT NOT NULL,
     conference TEXT NOT NULL,
-    divison TEXT NOT NULL,
+    division TEXT NOT NULL,
     stadium TEXT NOT NULL UNIQUE
 );
 
@@ -19,7 +20,7 @@ CREATE TABLE team_season_stats (
     team_id INTEGER REFERENCES teams(id),
     season_init_year INTEGER NOT NULL,
     victorys INTEGER NOT NULL,
-    loses INTEGER NOT NULL,
+    losses INTEGER NOT NULL,
     win_rate NUMERIC(5,2) NOT NULL,
     difference NUMERIC(4,2) NOT NULL,
     streak_number INTEGER NOT NULL,

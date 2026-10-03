@@ -1,7 +1,7 @@
 import { LeaderPlayer, PlayerGames, PlayerProfile, SearchedPlayer } from "../entities/playersEntities";
 import { IPlayersRepository } from "../interfaces/playersIntefaces";
 
-import { MIN_GAMES_FOR_LEADERS, LIMIT_LEADER_PLAYERS, ACTUAL_SEASON, LIMIT_GAMES_PER_PLAYER } from "../rules/playersRules";
+import { MIN_GAMES_FOR_LEADERS, LIMIT_LEADER_PLAYERS, ACTUAL_SEASON, LIMIT_GAMES_PER_PLAYER } from "../rules/rules";
 
 export class PlayersService {
 
