@@ -31,6 +31,7 @@ export class PlayersQueries implements IPlayersQueries {
         return {
             text: `SELECT 
                 p.name, 
+                p.image,
                 p.height, 
                 p.weight, 
                 p.position, 
