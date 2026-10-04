@@ -83,25 +83,25 @@ INSERT INTO players (
 )
 VALUES
 ('LeBron James', 2.06, 113.00, 41, 2003, 23,
- 'USA', 23, 'SF', '/LeBron_James.webp'),
+ 'USA', 23, 'SF', '/players/LeBron_James.webp'),
 ('Kawhi Leonard', 1.98, 102.00, 34, 2011, 22,
- 'USA', 2, 'SF', '/Kawhi_Leonard.webp'),
+ 'USA', 2, 'SF', '/players/Kawhi_Leonard.webp'),
 ('Jayson Tatum', 2.03, 95.00, 28, 2017, 1,
- 'USA', 0, 'SF', '/Jayson_Tatum.webp'),
+ 'USA', 0, 'SF', '/players/Jayson_Tatum.webp'),
 ('Nikola Jokic', 2.11, 129.00, 31, 2014, 16,
- 'Serbia', 15, 'C', '/Nikola_Jokic.webp'),
+ 'Serbia', 15, 'C', '/players/Nikola_Jokic.webp'),
 ('Stephen Curry', 1.88, 91.00, 38, 2009, 21,
- 'USA', 30, 'PG', '/Stephen_Curry.webp'),
+ 'USA', 30, 'PG', '/players/Stephen_Curry.webp'),
 ('Victor Wembanyama', 2.24, 107.00, 22, 2023, 30,
- 'France', 1, 'C', '/Victor_Wembanyama.webp'),
+ 'France', 1, 'C', '/players/Victor_Wembanyama.webp'),
 ('Jalen Brunson', 1.88, 86.00, 29, 2018, 3,
- 'USA', 11, 'PG', '/Jalen_Brunson.webp'),
+ 'USA', 11, 'PG', '/players/Jalen_Brunson.webp'),
 ('Giannis Antetokounmpo', 2.11, 110.00, 31, 2013, 10,
- 'Greece', 34, 'PF', '/Giannis_Antetokounmpo.webp'),
+ 'Greece', 34, 'PF', '/players/Giannis_Antetokounmpo.webp'),
 ('Anthony Edwards', 1.93, 102.00, 24, 2020, 17,
- 'USA', 5, 'SG', '/Anthony_Edwards.webp'),
+ 'USA', 5, 'SG', '/players/Anthony_Edwards.webp'),
 ('Kevin Durant', 2.11, 109.00, 37, 2007, 27,
- 'USA', 7, 'SF', '/Kevin_Durant.webp');
+ 'USA', 7, 'SF', '/players/Kevin_Durant.webp');
 
 
 INSERT INTO player_season_stats (

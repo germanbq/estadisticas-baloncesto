@@ -31,7 +31,7 @@ function PlayerCard(props: PlayerCardProps) {
                 {props.pos === "1"? <Trophy color="#FF5A00"></Trophy>: ""}
                 <span>{props.pos}</span>
             </div>
-            <Image src={props.image} alt={props.name} width={120} height={120} className={styles.image}/>
+            <Image src={props.image} alt={props.name} width={130} height={145} className={styles.image}/>
             <span className={styles.playerName}>{props.name}</span>
             <div className={styles.teamAndJersey}>
                 <span className={styles.team}>{props.team}</span>
@@ -113,7 +113,7 @@ export default function StatsLeader() {
                     <section className={styles.playerCardsContainer}>
                         {leaders.map((player, index) => (
                             <PlayerCard key={player.id} id={player.id}
-                                        className={`position${index+1}`} image="/LeBron_James.jpg"
+                                        className={`position${index+1}`} image={player.image}
                                         name={player.name} pos={String(index+1)} team={player.team} 
                                         jerseyNumber={player.jerseyNumber} metric={Number(player.value)} 
                                         color={["#FF5A00", "#A5E7FF", "#C58A5A"][index]} position={player.position}/>

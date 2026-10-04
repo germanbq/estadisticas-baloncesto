@@ -20,7 +20,7 @@ function DataContainer({label, value, unit}: DataContainerProps) {
 export default function PlayerProfileCard({stats}: {stats: PlayerProfile}) {
     return (
         <article className={styles.card}>
-            <Image src="/LeBron_James.jpg" alt="LeBron James" width={120} height={120} className={styles.image}/>
+            <Image src={stats.image} alt={`Imagen ${stats.name}`} width={120} height={120} className={styles.image} loading="eager"/>
             <div className={styles.labels}>
                 <span className={styles.team}>{stats.team}</span>
                 <span className={styles.jerseyNumber}># {stats.jerseyNumber} {stats.position}</span>
