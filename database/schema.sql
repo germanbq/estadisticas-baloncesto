@@ -70,8 +70,8 @@ CREATE TABLE games (
     away_team_id INTEGER REFERENCES teams(id) NOT NULL,
     date TIMESTAMPTZ NOT NULL,
     finished BOOLEAN NOT NULL,
-    home_score INTEGER NOT NULL,
-    away_score INTEGER NOT NULL,
+    home_score INTEGER,
+    away_score INTEGER,
 
     UNiQUE(home_team_id, away_team_id, date),
     CHECK (home_team_id <> away_team_id)
