@@ -8,7 +8,7 @@ Además, se usa PostgreSQL para la base datos y se puede ver el esquema de la bd
 
 Este proyecto es independiente y no está afiliado, patrocinado ni respaldado por la NBA, sus equipos o sus jugadores.
 
-Las fotografías de public/players/, así como otras imágenes de terceros, pertenecen a sus respectivos titulares. No se reivindica su autoría ni se concede permiso para reutilizarlos.
+Las fotografías de public/players/, así como otras imágenes de terceros, pertenecen a sus respectivos titulares. No se reivindica su autoría ni se concede permiso para reutilizarlos ya que las fotografías tienen sus licencias CC individuales y las insignias tienen declaración CC0.
 
 Cualquier licencia del código de este proyecto excluye estos recursos gráficos. Su conversión a WebP no cambia sus derechos de propiedad intelectual.
 

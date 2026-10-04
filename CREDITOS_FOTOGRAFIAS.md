@@ -1,124 +1,146 @@
-Fotografías
-LeBron James
-- Archivo: players/LeBron_James.webp
+# Créditos de las fotografías
+
+### LeBron James
+
+- Archivo: `players/LeBron_James.webp`
 - Título de la fuente: LeBron James (51959977144) (cropped2).jpg
-- Autor / crédito: Erik Drost.
-- Fuente y ficha de licencia: LeBron James (51959977144) (cropped2).jpg
+- Autor / crédito: **Erik Drost**.
+- Fuente y ficha de licencia: [LeBron James (51959977144) (cropped2).jpg](https://commons.wikimedia.org/wiki/File:LeBron_James_(51959977144)_(cropped2).jpg)
 - Publicación original: https://www.flickr.com/photos/edrost88/51959977144/
-- Licencia de la fotografía y de este WebP: CC BY 2.0.
+- Licencia de la fotografía y de este WebP: [CC BY 2.0](https://creativecommons.org/licenses/by/2.0).
 - Contenido: Lakers, con balón; 2022.
 - Modificaciones anteriores: Recortes previos publicados en Wikimedia Commons; último recorte por HappyBoi3892 (2023).
 - Preparación de este archivo: Conversión a WebP y reducción proporcional de resolución cuando el lado mayor supera 1600 px; sin nuevos recortes.
 - Resolución entregada: 1197 × 1387 px.
-Kawhi Leonard
-- Archivo: players/Kawhi_Leonard.webp
+
+### Kawhi Leonard
+
+- Archivo: `players/Kawhi_Leonard.webp`
 - Título de la fuente: 1 kawhi leonard 2019 nba finals (cropped) (b).jpg
-- Autor / crédito: Chensiyuan.
+- Autor / crédito: **Chensiyuan**.
 - Perfil del autor o publicador: https://commons.wikimedia.org/wiki/User:Chensiyuan
-- Fuente y ficha de licencia: 1 kawhi leonard 2019 nba finals (cropped) (b).jpg
-- Licencia de la fotografía y de este WebP: CC BY-SA 4.0.
+- Fuente y ficha de licencia: [1 kawhi leonard 2019 nba finals (cropped) (b).jpg](https://commons.wikimedia.org/wiki/File:1_kawhi_leonard_2019_nba_finals_(cropped)_(b).jpg)
+- Licencia de la fotografía y de este WebP: [CC BY-SA 4.0](https://creativecommons.org/licenses/by-sa/4.0).
 - Contenido: Raptors, finales de 2019; no es una camiseta de los Clippers.
 - Modificaciones anteriores: Recorte y desenfoque previo del fondo publicados por Wcamp9 (2025–2026).
 - Preparación de este archivo: Conversión a WebP y reducción proporcional de resolución cuando el lado mayor supera 1600 px; sin nuevos recortes.
 - Resolución entregada: 996 × 1600 px.
-Jayson Tatum
-- Archivo: players/Jayson_Tatum.webp
+
+### Jayson Tatum
+
+- Archivo: `players/Jayson_Tatum.webp`
 - Título de la fuente: Jayson Tatum (51839569977) (cropped).jpg
-- Autor / crédito: All-Pro Reels.
-- Fuente y ficha de licencia: Jayson Tatum (51839569977) (cropped).jpg
+- Autor / crédito: **All-Pro Reels**.
+- Fuente y ficha de licencia: [Jayson Tatum (51839569977) (cropped).jpg](https://commons.wikimedia.org/wiki/File:Jayson_Tatum_(51839569977)_(cropped).jpg)
 - Publicación original: https://www.flickr.com/photos/joeglo/51839569977/
-- Licencia de la fotografía y de este WebP: CC BY-SA 2.0.
+- Licencia de la fotografía y de este WebP: [CC BY-SA 2.0](https://creativecommons.org/licenses/by-sa/2.0).
 - Contenido: Celtics, en acción con balón; 2022.
 - Modificaciones anteriores: Recorte previo por Doppelganger.decoy (2022).
 - Preparación de este archivo: Conversión a WebP y reducción proporcional de resolución cuando el lado mayor supera 1600 px; sin nuevos recortes.
 - Resolución entregada: 1014 × 1600 px.
-Nikola Jokic
-- Archivo: players/Nikola_Jokic.webp
+
+### Nikola Jokic
+
+- Archivo: `players/Nikola_Jokic.webp`
 - Título de la fuente: Nikola Jokic free throw (cropped).jpg
-- Autor / crédito: All-Pro Reels.
-- Fuente y ficha de licencia: Nikola Jokic free throw (cropped).jpg
+- Autor / crédito: **All-Pro Reels**.
+- Fuente y ficha de licencia: [Nikola Jokic free throw (cropped).jpg](https://commons.wikimedia.org/wiki/File:Nikola_Jokic_free_throw_(cropped).jpg)
 - Publicación original: https://www.flickr.com/photos/joeglo/49336817701/
-- Licencia de la fotografía y de este WebP: CC BY-SA 2.0.
+- Licencia de la fotografía y de este WebP: [CC BY-SA 2.0](https://creativecommons.org/licenses/by-sa/2.0).
 - Contenido: Nuggets, preparando un tiro libre; 2020.
 - Modificaciones anteriores: Recorte previo por Sportzeditz (2020); ajustes de nitidez y luces por PetarM (2021).
 - Preparación de este archivo: Conversión a WebP y reducción proporcional de resolución cuando el lado mayor supera 1600 px; sin nuevos recortes.
 - Resolución entregada: 948 × 1291 px.
-Stephen Curry
-- Archivo: players/Stephen_Curry.webp
+
+### Stephen Curry
+
+- Archivo: `players/Stephen_Curry.webp`
 - Título de la fuente: Stephen Curry dribbling 2016 (cropped).jpg
-- Autor / crédito: Keith Allison from Hanover, MD, USA.
+- Autor / crédito: **Keith Allison from Hanover, MD, USA**.
 - Perfil del autor o publicador: https://www.flickr.com/people/27003603@N00
-- Fuente y ficha de licencia: Stephen Curry dribbling 2016 (cropped).jpg
+- Fuente y ficha de licencia: [Stephen Curry dribbling 2016 (cropped).jpg](https://commons.wikimedia.org/wiki/File:Stephen_Curry_dribbling_2016_(cropped).jpg)
 - Publicación original: https://www.flickr.com/photos/keithallison/24689550742/
-- Licencia de la fotografía y de este WebP: CC BY-SA 2.0.
+- Licencia de la fotografía y de este WebP: [CC BY-SA 2.0](https://creativecommons.org/licenses/by-sa/2.0).
 - Contenido: Warriors, botando el balón; 2016.
 - Modificaciones anteriores: Recortes previos por Bagumba (2016) y TBMNY (2018).
 - Preparación de este archivo: Conversión a WebP y reducción proporcional de resolución cuando el lado mayor supera 1600 px; sin nuevos recortes.
 - Resolución entregada: 818 × 1351 px.
-Victor Wembanyama
-- Archivo: players/Victor_Wembanyama.webp
+
+### Victor Wembanyama
+
+- Archivo: `players/Victor_Wembanyama.webp`
 - Título de la fuente: Victor Wembanyama San Antonio Spurs 2025 NBA Cup (cropped).jpg
-- Autor / crédito: Daiei Onoguchi.
+- Autor / crédito: **Daiei Onoguchi**.
 - Perfil del autor o publicador: https://commons.wikimedia.org/wiki/User:FireBirdFilm
-- Fuente y ficha de licencia: Victor Wembanyama San Antonio Spurs 2025 NBA Cup (cropped).jpg
-- Licencia de la fotografía y de este WebP: CC BY 4.0.
+- Fuente y ficha de licencia: [Victor Wembanyama San Antonio Spurs 2025 NBA Cup (cropped).jpg](https://commons.wikimedia.org/wiki/File:Victor_Wembanyama_San_Antonio_Spurs_2025_NBA_Cup_(cropped).jpg)
+- Licencia de la fotografía y de este WebP: [CC BY 4.0](https://creativecommons.org/licenses/by/4.0).
 - Contenido: Spurs, botando el balón en la NBA Cup de 2025.
 - Modificaciones anteriores: Recorte previo por Wcamp9 (2026).
 - Preparación de este archivo: Conversión a WebP y reducción proporcional de resolución cuando el lado mayor supera 1600 px; sin nuevos recortes.
 - Resolución entregada: 1052 × 1362 px.
-Jalen Brunson
-- Archivo: players/Jalen_Brunson.webp
+
+### Jalen Brunson
+
+- Archivo: `players/Jalen_Brunson.webp`
 - Título de la fuente: Jalen Brunson (cropped).jpg
-- Autor / crédito: Erik Drost.
-- Fuente y ficha de licencia: Jalen Brunson (cropped).jpg
+- Autor / crédito: **Erik Drost**.
+- Fuente y ficha de licencia: [Jalen Brunson (cropped).jpg](https://commons.wikimedia.org/wiki/File:Jalen_Brunson_(cropped).jpg)
 - Publicación original: https://www.flickr.com/photos/edrost88/52976928581/
-- Licencia de la fotografía y de este WebP: CC BY 2.0.
+- Licencia de la fotografía y de este WebP: [CC BY 2.0](https://creativecommons.org/licenses/by/2.0).
 - Contenido: Knicks, con balón; 2023.
 - Modificaciones anteriores: Recorte previo por Wcamp9 (2024).
 - Preparación de este archivo: Conversión a WebP y reducción proporcional de resolución cuando el lado mayor supera 1600 px; sin nuevos recortes.
 - Resolución entregada: 1220 × 1600 px.
-Tyrese Haliburton
-- Archivo: players/Tyrese_Haliburton.webp
+
+### Tyrese Haliburton
+
+- Archivo: `players/Tyrese_Haliburton.webp`
 - Título de la fuente: Tyrese Haliburton (51923136051) (cropped).jpg
-- Autor / crédito: All-Pro Reels.
-- Fuente y ficha de licencia: Tyrese Haliburton (51923136051) (cropped).jpg
+- Autor / crédito: **All-Pro Reels**.
+- Fuente y ficha de licencia: [Tyrese Haliburton (51923136051) (cropped).jpg](https://commons.wikimedia.org/wiki/File:Tyrese_Haliburton_(51923136051)_(cropped).jpg)
 - Publicación original: https://www.flickr.com/photos/joeglo/51923136051/
-- Licencia de la fotografía y de este WebP: CC BY-SA 2.0.
+- Licencia de la fotografía y de este WebP: [CC BY-SA 2.0](https://creativecommons.org/licenses/by-sa/2.0).
 - Contenido: Pacers, entrando a canasta con balón; 2022.
 - Modificaciones anteriores: Recorte previo por PistonsFan2223 (2026).
 - Preparación de este archivo: Conversión a WebP y reducción proporcional de resolución cuando el lado mayor supera 1600 px; sin nuevos recortes.
 - Resolución entregada: 1232 × 1600 px.
-Giannis Antetokounmpo
-- Archivo: players/Giannis_Antetokounmpo.webp
+
+### Giannis Antetokounmpo
+
+- Archivo: `players/Giannis_Antetokounmpo.webp`
 - Título de la fuente: Giannis Antetokounmpo (39004611954).jpg
-- Autor / crédito: Keith Allison from Hanover, MD, USA.
+- Autor / crédito: **Keith Allison from Hanover, MD, USA**.
 - Perfil del autor o publicador: https://www.flickr.com/people/27003603@N00
-- Fuente y ficha de licencia: Giannis Antetokounmpo (39004611954).jpg
+- Fuente y ficha de licencia: [Giannis Antetokounmpo (39004611954).jpg](https://commons.wikimedia.org/wiki/File:Giannis_Antetokounmpo_(39004611954).jpg)
 - Publicación original: https://www.flickr.com/photos/keithallison/39004611954/
-- Licencia de la fotografía y de este WebP: CC BY-SA 2.0.
+- Licencia de la fotografía y de este WebP: [CC BY-SA 2.0](https://creativecommons.org/licenses/by-sa/2.0).
 - Contenido: Bucks, mate con balón; 2018.
 - Modificaciones anteriores: Se conserva el encuadre de la fotografía publicada en Commons.
 - Preparación de este archivo: Conversión a WebP y reducción proporcional de resolución cuando el lado mayor supera 1600 px; sin nuevos recortes.
 - Resolución entregada: 1081 × 1600 px.
-Anthony Edwards
-- Archivo: players/Anthony_Edwards.webp
+
+### Anthony Edwards
+
+- Archivo: `players/Anthony_Edwards.webp`
 - Título de la fuente: Anthony Edwards Georgia 2 (cropped).jpg
-- Autor / crédito: Katie Dugan / Gamecock Central.
+- Autor / crédito: **Katie Dugan / Gamecock Central**.
 - Perfil del autor o publicador: https://www.flickr.com/people/100058519@N05
-- Fuente y ficha de licencia: Anthony Edwards Georgia 2 (cropped).jpg
+- Fuente y ficha de licencia: [Anthony Edwards Georgia 2 (cropped).jpg](https://commons.wikimedia.org/wiki/File:Anthony_Edwards_Georgia_2_(cropped).jpg)
 - Publicación original: https://www.flickr.com/photos/100058519@N05/49528108596/
-- Licencia de la fotografía y de este WebP: CC BY 2.0.
+- Licencia de la fotografía y de este WebP: [CC BY 2.0](https://creativecommons.org/licenses/by/2.0).
 - Contenido: Georgia Bulldogs, con balón; etapa universitaria, no Timberwolves.
 - Modificaciones anteriores: Se conserva el recorte publicado en Commons; el historial de su ficha identifica las modificaciones anteriores.
 - Preparación de este archivo: Conversión a WebP y reducción proporcional de resolución cuando el lado mayor supera 1600 px; sin nuevos recortes.
 - Resolución entregada: 1117 × 1600 px.
-Kevin Durant
-- Archivo: players/Kevin_Durant.webp
+
+### Kevin Durant
+
+- Archivo: `players/Kevin_Durant.webp`
 - Título de la fuente: Kevin Durant (Wizards v. Warriors, 1-24-2019) (cropped).jpg
-- Autor / crédito: All-Pro Reels.
-- Fuente y ficha de licencia: Kevin Durant (Wizards v. Warriors, 1-24-2019) (cropped).jpg
+- Autor / crédito: **All-Pro Reels**.
+- Fuente y ficha de licencia: [Kevin Durant (Wizards v. Warriors, 1-24-2019) (cropped).jpg](https://commons.wikimedia.org/wiki/File:Kevin_Durant_(Wizards_v._Warriors,_1-24-2019)_(cropped).jpg)
 - Publicación original: https://www.flickr.com/photos/joeglo/47947330406/
-- Licencia de la fotografía y de este WebP: CC BY-SA 2.0.
+- Licencia de la fotografía y de este WebP: [CC BY-SA 2.0](https://creativecommons.org/licenses/by-sa/2.0).
 - Contenido: Warriors, calentamiento con balón; 2019, no Rockets.
 - Modificaciones anteriores: Recorte previo por 824GOAT (2020).
 - Preparación de este archivo: Conversión a WebP y reducción proporcional de resolución cuando el lado mayor supera 1600 px; sin nuevos recortes.
