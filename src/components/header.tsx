@@ -2,9 +2,10 @@
 
 import Link from "next/link";
 import Image from "next/image";
-import { CalendarDays, ListOrdered, Users, CircleUserRound, Star } from "lucide-react";
-import styles from "./header.module.css";
+import { CalendarDays, ListOrdered, Users, Star } from "lucide-react";
+import styles from "./Header.module.css";
 import { usePathname } from "next/navigation";
+import AccountButton from "./profile/AccountButton";
 
 export default function Header() {
     const pathname = usePathname();
@@ -28,9 +29,7 @@ export default function Header() {
                     <Star className={`${styles.icon} ${pathname === "/favoritos" ? styles.active : ""}`}/>
                 </Link>
             </div>
-            <Link href="/" className={styles.profile} aria-label="Perfil">
-                <CircleUserRound className={`${styles.icon} ${pathname === "/perfil" ? styles.active : ""}`}/>
-            </Link>
+            <AccountButton />
         </header>
     )
 }

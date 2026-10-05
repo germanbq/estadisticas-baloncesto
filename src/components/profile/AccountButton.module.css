@@ -1,0 +1,16 @@
+.container {
+    display: flex;
+    justify-self: end;
+    margin-right: 2rem;
+}
+
+.initButtons {
+    font-size: 18px;
+    line-height: 1;
+    align-self: left;
+    cursor: pointer;
+}
+
+.initButtons:hover {
+    color: var(--color-text-primary);
+}
