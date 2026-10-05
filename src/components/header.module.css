@@ -1,0 +1,41 @@
+.header {
+    display: grid;
+    grid-template-columns: 25% 50% 25%;
+    justify-items: center;
+    align-items: center;
+    font-size: 2rem;
+    padding: 0.5rem;
+    background: rgba(20, 24, 30, 0.85);
+    backdrop-filter: blur(12px);
+    border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+}
+
+.logo {
+    justify-self: left;
+    margin-left: 2rem;
+}
+
+.icons {
+    display: flex;
+    flex-direction: row;
+    justify-content: space-around;
+    width: 100%;
+}
+
+.icon {
+    height: 32;
+    width: 32;
+}
+
+.icon:not(.active):hover {
+    color: var(--color-text-primary);
+}
+
+.profile {
+    justify-self: right;
+    margin-right: 2rem;
+}
+
+.active {
+    color: var(--color-orange)
+}

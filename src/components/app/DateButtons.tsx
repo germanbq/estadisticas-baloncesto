@@ -47,7 +47,7 @@ export default function DateButtons({date, setDate, getDateString}:
     const [referenceDate, setReferenceDate] = useState<string>(searchParams.get("reference") ?? getDateString(new Date()))
 
     useEffect(() => {
-        if(searchParams.get("references") === referenceDate) return;
+        if(searchParams.get("reference") === referenceDate) return;
 
         const params = new URLSearchParams(searchParams.toString());
         params.set("reference", referenceDate);
