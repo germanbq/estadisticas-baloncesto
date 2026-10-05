@@ -1,8 +1,10 @@
-Proyecto en desarrollo sobre una aplicación web/móvil para poder consultar estadísticas de NBA.
+Proyecto en desarrollo de una aplicación web para consultar estadísticas de la NBA.
 
-Se utilizan las siguientes tecnologías: Next.js, React, Typescript, CSS y se espera usar React Native para la aplicación móvil.
+La aplicación utiliza Next.js, React, TypeScript, HTML y CSS. Está previsto desarrollar una versión móvil con React Native.
 
-Además, se usa PostgreSQL para la base datos y se puede ver el esquema de la bd de la aplicación en el archivo database/schema.sql
+La autenticación de usuarios se gestiona con Clerk, elegido por su facilidad de integración con Next.js.
+
+La base de datos utiliza PostgreSQL. Su esquema se encuentra en el archivo database/schema.sql.
 
 ## Recursos gráficos y propiedad intelectual
 
