@@ -2,17 +2,9 @@
 import { useEffect, useState } from "react";
 import Image from "next/image";
 import styles from "./Games.module.css";
-import { ChevronRight, ChevronLeft } from "lucide-react";
 import { usePathname, useRouter, useSearchParams } from "next/navigation";
 import { Game } from "@/src/backend/entities/gamesEntities";
-
-
-type DateButtonProps = {
-    date: Date;
-    gamesNumber: number;
-    day: Date;
-    setDay: (date: Date) => void;
-}
+import DateButtons from "./DateButtons";
 
 type GameProps = {
     finalizado: boolean;
@@ -26,23 +18,6 @@ type GameProps = {
     awayLogo: string;
     place: string;
     date: Date;
-}
-
-function DateButton({date, gamesNumber, day, setDay}: DateButtonProps) {
-    const hoy = new Date();
-    const esHoy = date.toDateString() === hoy.toDateString();
-    const weekDay = date.toLocaleDateString("es-ES", { weekday: "short",});
-    const month = date.toLocaleDateString("es-ES", { month: "short" });
-    const monthDate = month.charAt(0).toUpperCase() + month.slice(1);
-    return(
-        <button className={`${styles.button} ${day.getDate() === date.getDate() && day.getMonth() === date.getMonth() && day.getFullYear() === date.getFullYear()     
-                            ? styles.active : ""}`}
-                onClick={() => setDay(date)}>
-            <span>{esHoy ? "Hoy" : `${monthDate}, ${weekDay}`}</span>
-            <span className={styles.date}>{date.getDate()}</span>
-            <span>{gamesNumber} partidos</span>        
-        </button>
-    )
 }
 
 function GameCard(props: GameProps) {
@@ -75,12 +50,6 @@ function GameCard(props: GameProps) {
 }
 
 export default function Games() {
-    function addDays(date: Date, amount: number): Date {
-        const result = new Date(date);
-        result.setDate(result.getDate() + amount);
-        return result;
-    }
-
     function getDateString(date: Date): string {
         const year = date.getFullYear();
         const month = String(date.getMonth() + 1).padStart(2, "0");
@@ -95,7 +64,6 @@ export default function Games() {
     const [date, setDate] = useState(() => { const dateParam = searchParams.get("date");
         return dateParam ? new Date(`${dateParam}T00:00:00`) : new Date();});
     const [games, setGames] = useState<Game[]>([])
-    const defaultDate = new Date();
 
     useEffect(() => {
         if(searchParams.get("date") === getDateString(date)) return;
@@ -108,9 +76,9 @@ export default function Games() {
     useEffect(() => {
         const controller = new AbortController();
 
-        async function dayGames() {
+        async function loadDayGames() {
             try{
-                const response = await fetch(`/api/partidos?${searchParams.toString()}`, 
+                const response = await fetch(`/api/partidos/listado?date=${getDateString(date)}`, 
                 { signal: controller.signal })
                 const result = await response.json();
 
@@ -125,21 +93,13 @@ export default function Games() {
             }
         }
 
-        void dayGames();
+        void loadDayGames();
         return () => controller.abort();
-    }, [searchParams])
+    }, [date])
 
     return (
         <div>
-            <section className={styles.buttonsContainer}>
-                <ChevronLeft className={styles.chevron}/>
-                <DateButton date={addDays(defaultDate, -2)} gamesNumber={5} day={date} setDay={setDate}/>
-                <DateButton date={addDays(defaultDate, -1)} gamesNumber={5} day={date} setDay={setDate}/>
-                <DateButton date={defaultDate} gamesNumber={5} day={date} setDay={setDate}/>
-                <DateButton date={addDays(defaultDate, 1)} gamesNumber={5} day={date} setDay={setDate}/>
-                <DateButton date={addDays(defaultDate, 2)} gamesNumber={5} day={date} setDay={setDate}/>
-                <ChevronRight className={styles.chevron}/>
-            </section>
+            <DateButtons date={date} setDate={setDate} getDateString={getDateString}/>
             <section className={styles.gamesContainer}>
                 {games.map((game) => (
                     <GameCard key={game.homeTeamName} finalizado={game.finished}

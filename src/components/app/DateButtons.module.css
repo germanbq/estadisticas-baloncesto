@@ -1,0 +1,48 @@
+.buttonsContainer {
+    display: grid;
+    grid-template-columns: auto repeat(5, 1fr) auto;
+    gap: 0.5rem;
+    width: 60%;
+    justify-self: center;
+}
+
+.chevron {
+    align-self: center;
+    width: 48px;
+    height: 48px;
+
+    cursor: pointer;
+}
+
+.chevron:hover {
+    color: var(--color-text-primary);
+}
+.button {
+    display: flex;
+    flex-direction: column;
+
+    padding: 0.8rem;
+    border-radius: 10px;
+    cursor: pointer;
+
+    color: var(--color-text-primary);
+    background-color: var(--color-components);
+
+    font-weight: 600;
+}
+
+.button:not(.active):hover {
+    background-color: var(--color-background-lighter);
+}
+
+
+.date {
+    color: white;
+    font-size: 2.5rem;
+    font-weight: bold;
+}
+
+.active {
+    background-color: var(--color-orange);
+    color: #7A2418;
+}

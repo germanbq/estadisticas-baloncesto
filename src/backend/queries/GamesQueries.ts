@@ -40,4 +40,31 @@ export default class GamesQueries implements IGamesQueries {
             ],
         };
     }
+
+    gamesNumber(date: string): SqlQuery {
+        return {
+            text: `
+            WITH days AS (
+                SELECT $1::date + offset_day AS day
+                FROM generate_series(-2, 2) AS offsets(offset_day)
+            )
+            SELECT
+                to_char(d.day, 'YYYY-MM-DD') AS date,
+                COUNT(g.id)::integer AS "gamesNumber"
+            FROM days AS d
+            LEFT JOIN games AS g
+                ON g.date >= (
+                    d.day::timestamp AT TIME ZONE 'Europe/Madrid'
+                )
+                AND g.date < (
+                    (d.day + 1)::timestamp AT TIME ZONE 'Europe/Madrid'
+                )
+            GROUP BY d.day
+            ORDER BY d.day;
+            `,
+            values: [
+                date,
+            ],
+        };
+    }
 }

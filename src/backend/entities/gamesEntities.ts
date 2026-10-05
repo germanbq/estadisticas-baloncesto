@@ -14,3 +14,8 @@ export type Game = {
     stadium: string;
     date: Date;
 }
+
+export type GamesNum = {
+    date: string;
+    gamesNumber: number;
+}

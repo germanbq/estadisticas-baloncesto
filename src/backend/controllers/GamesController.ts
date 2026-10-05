@@ -21,4 +21,23 @@ export default class GamesController {
             );
         }
     }
+
+    async gamesNumber(date: string | null): Promise<Response> {
+        if(date === null) {
+            return Response.json(
+                { error: "Fecha no válida" },
+                { status: 400 }
+            );
+        }
+        try {
+            const data = await this.service.gamesNumber(date);
+            return Response.json({data});
+        } catch(error) {
+            console.error(error);
+            return Response.json(
+                {error: "Error al obtener el número de partidos de la fecha seleccionada"},
+                {status: 500}
+            );
+        }
+    }
 }
