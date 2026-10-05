@@ -40,7 +40,7 @@ export default function LeaderBoard() {
     useEffect(() => {
         const controller = new AbortController();
         
-        async function leaderBoard() {
+        async function loadLeaderBoard() {
             try {
                 const response = await fetch(`/api/clasificacion?conf=${conf}`,
                     { signal: controller.signal });
@@ -58,7 +58,7 @@ export default function LeaderBoard() {
             }
         }
 
-        void leaderBoard();
+        void loadLeaderBoard();
         return () => controller.abort();
     }, [conf])
 
