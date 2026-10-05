@@ -1,0 +1,37 @@
+.container {
+    display: grid;
+    grid-template-columns: 66% 33%;
+    justify-items: center;
+    align-items: center;
+    font-size: 2rem;
+    padding: 0.5rem;
+    background: rgba(20, 24, 30, 0.85);
+    backdrop-filter: blur(12px);
+    border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+
+    font-size: 16px;
+    margin-top: 2rem;
+}
+
+.container a {
+    text-decoration: underline;
+}
+
+.container a:hover{
+    color: var(--color-text-primary);
+}
+
+.links,
+.description {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 1rem;
+}
+.warning {
+    grid-column: 1 / -1;
+    align-self: center;
+    justify-self: center;
+    margin-top: 1rem;
+    font-size: 14px;;
+}
