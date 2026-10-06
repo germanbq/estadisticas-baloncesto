@@ -1,0 +1,21 @@
+.buttonSection {
+    display: flex;
+    flex-direction: row;
+    justify-content: center;
+    gap: 3rem;
+}
+
+.button {
+    color: var(--color-text-primary);
+    border-radius: 10px;
+    background-color: var(--color-components);
+    padding: 0.5rem;
+    cursor: pointer;
+    width: 10%;
+    height: 60px;
+}
+
+.active {
+    background-color: var(--color-orange);
+    color: white;
+}

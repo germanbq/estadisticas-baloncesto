@@ -25,7 +25,7 @@ export default function Header() {
                 <Link href="/jugadores" aria-label="Jugadores">
                     <Users className={`${styles.icon} ${pathname === "/jugadores" ? styles.active : ""}`}/>
                 </Link>
-                <Link href="/" aria-label="Favoritos">
+                <Link href="/favoritos" aria-label="Favoritos">
                     <Star className={`${styles.icon} ${pathname === "/favoritos" ? styles.active : ""}`}/>
                 </Link>
             </div>
