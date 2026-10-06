@@ -1,10 +1,11 @@
-import cardStyles from "./PlayersBySearch.module.css";
+import cardStyles from "../HorizontalPlayerCard.module.css";
+import listStyles from "./PlayersBySearch.module.css";
 import statStyles from "../SingleStat.module.css";
 import styles from "./PlayersBySearchSkeleton.module.css";
 
 export default function PlayersBySearchSkeleton() {
     return (
-        <section className={cardStyles.section} role="status" aria-label="Cargando jugadores">
+        <section className={listStyles.section} role="status" aria-label="Cargando jugadores">
             {[0, 1, 2].map((card) => (
                 <article key={card} className={cardStyles.card} aria-hidden="true">
                     <div className={cardStyles.articleHeader}>
