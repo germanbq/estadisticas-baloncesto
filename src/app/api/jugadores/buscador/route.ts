@@ -1,4 +1,4 @@
-import { playersController } from "@/src/backend/containers/PlayersContainer";
+import { playersController } from "@/src/backend/containers/playersContainer";
 
 export async function GET(request: Request) {
     const params = new URL(request.url).searchParams;

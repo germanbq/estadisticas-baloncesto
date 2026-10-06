@@ -2,7 +2,7 @@ import MainStats from "@/src/components/player/MainStats"
 import PlayerProfileCard from "@/src/components/player/PlayerProfileCard"
 import StatsTable from "@/src/components/player/StatsTable"
 import LastGames from "@/src/components/player/LastGames"
-import { playersController } from "@/src/backend/containers/PlayersContainer";
+import { playersController } from "@/src/backend/containers/playersContainer";
 
 export default async function PlayerStatsPage({params}: {params: Promise<{id : string}>;}) {
     const {id} = await params;
