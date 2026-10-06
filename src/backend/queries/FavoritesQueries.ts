@@ -1,0 +1,128 @@
+import { IFavoritesQueries } from "../interfaces/favoritesInterfaces";
+import { SqlQuery } from "../shared/sql.types";
+
+export class FavoritesQueries implements IFavoritesQueries {
+    favoriteCounts(userId: string): SqlQuery {
+        return {
+            text:`SELECT
+                (
+                    SELECT COUNT(*)::integer
+                    FROM favorite_games
+                    WHERE user_id = $1
+                ) AS "numberGames",
+                (
+                    SELECT COUNT(*)::integer
+                    FROM favorite_players
+                    WHERE user_id = $1
+                ) AS "numberPlayers",
+                (
+                    SELECT COUNT(*)::integer
+                    FROM favorite_teams
+                    WHERE user_id = $1
+                ) AS "numberTeams"
+            `,
+            values: [
+                userId
+            ],
+        };
+    }
+
+    favoriteGames(userId: string): SqlQuery {
+        return {
+            text: `SELECT
+                g.id,
+                ht.name AS "homeTeamName",
+                ht.logo AS "homeTeamLogo",
+                hts.victorys AS "homeTeamVictorys",
+                hts.losses AS "homeTeamLosses",
+                g.home_score AS "homeTeamScore",
+                at.name AS "awayTeamName",
+                at.logo AS "awayTeamLogo",
+                ats.victorys AS "awayTeamVictorys",
+                ats.losses AS "awayTeamLosses",
+                g.away_score AS "awayTeamScore",
+                g.finished,
+                ht.stadium,
+                g.date
+            FROM favorite_games as fg
+            JOIN games AS g ON g.id = fg.game_id
+            JOIN teams AS ht ON ht.id = g.home_team_id
+            JOIN teams AS at ON at.id = g.away_team_id
+            JOIN team_season_stats AS hts ON hts.team_id = ht.id
+                AND hts.season_init_year = EXTRACT(
+                    YEAR FROM (
+                        (g.date AT TIME ZONE 'Europe/Madrid') - INTERVAL '9 months'
+                    )
+                )::integer
+            JOIN team_season_stats AS ats ON ats.team_id = at.id
+                AND ats.season_init_year = EXTRACT(
+                    YEAR FROM (
+                        (g.date AT TIME ZONE 'Europe/Madrid') - INTERVAL '9 months'
+                    )
+                )::integer
+            WHERE fg.user_id = $1
+            ORDER BY g.date DESC
+            `,
+            values: [
+                userId,
+            ],
+        };
+    }
+
+    favoritePlayers(userId: string, season: number): SqlQuery {
+        return {
+            text: `SELECT
+                p.id,
+                p.name,
+                p.image,
+                t.name AS team,
+                p.jersey_number as "jerseyNumber",
+                p.position,
+                p.age,
+                pss.points,
+                pss.rebounds,
+                pss.assists,
+                pss.steals,
+                pss.blocks
+            FROM favorite_players AS fp
+            JOIN players AS p ON p.id = fp.player_id
+            JOIN teams AS t ON t.id = p.team_id
+            JOIN player_season_stats AS pss ON pss.player_id = p.id
+            WHERE fp.user_id = $1
+                AND pss.season_init_year = $2
+            ORDER BY (pss.points + pss.assists*1.8 + pss.rebounds*2) DESC
+            `,
+            values: [
+                userId,
+                season
+            ],
+        };
+    }
+
+    favoriteTeams(userId: string, season: number): SqlQuery {
+        return {
+            text:`SELECT
+                t.id,
+                t.logo,
+                t.name,
+                t.division,
+                tss.victorys,
+                tss.losses,
+                tss.win_rate AS "winRate",
+                tss.difference,
+                tss.streak_number AS "streakNumber",
+                tss.streak_victory AS "streakVictory"
+            FROM favorite_teams as ft
+            JOIN teams AS t ON t.id = ft.team_id
+            JOIN team_season_stats as tss ON tss.team_id = t.id
+            WHERE ft.user_id = $1
+                AND tss.season_init_year = $2
+            ORDER BY tss.win_rate DESC
+            `,
+            values: [
+                userId,
+                season,
+            ],
+        };
+    }
+}
