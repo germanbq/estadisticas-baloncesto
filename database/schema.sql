@@ -99,6 +99,27 @@ CREATE TABLE player_game_stats (
     PRIMARY KEY(player_id, game_id)
 );
 
+CREATE TABLE favorite_players (
+    user_id TEXT,
+    player_id INTEGER REFERENCES players(id),
+
+    PRIMARY KEY(user_id, player_id)
+);
+
+CREATE TABLE favorite_teams (
+    user_id TEXT,
+    team_id INTEGER REFERENCES teams(id),
+
+    PRIMARY KEY(user_id, team_id)
+);
+
+CREATE TABLE favorite_games (
+    user_id TEXT,
+    game_id INTEGER REFERENCES games(id),
+
+    PRIMARY KEY(user_id, game_id)
+);
+
 CREATE FUNCTION validate_player_game_team()
 RETURNS TRIGGER AS $$
 BEGIN
