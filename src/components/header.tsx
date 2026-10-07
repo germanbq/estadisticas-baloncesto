@@ -6,10 +6,26 @@ import { CalendarDays, ListOrdered, Users, Star } from "lucide-react";
 import styles from "./Header.module.css";
 import { usePathname } from "next/navigation";
 import AccountButton from "./profile/AccountButton";
+import { useClerk, useUser } from "@clerk/nextjs";
+import { useRouter } from "next/navigation";
 
 export default function Header() {
     const pathname = usePathname();
+    const router = useRouter();
+    const {isLoaded, isSignedIn} = useUser();
+    const { openSignIn } = useClerk();
 
+    function handleClick() {
+        if(!isLoaded) return;
+        if(!isSignedIn) {
+            openSignIn();
+            router.push(`${pathname}`);
+            return;
+        }
+
+        router.push("/favoritos");
+        return;
+    }
     return (
         <header className={styles.header}>
             <Link href="/" className={styles.logo}>
@@ -25,9 +41,9 @@ export default function Header() {
                 <Link href="/jugadores" aria-label="Jugadores">
                     <Users className={`${styles.icon} ${pathname === "/jugadores" ? styles.active : ""}`}/>
                 </Link>
-                <Link href="/favoritos" aria-label="Favoritos">
+                <button aria-label="Favoritos" onClick={handleClick}>
                     <Star className={`${styles.icon} ${pathname === "/favoritos" ? styles.active : ""}`}/>
-                </Link>
+                </button>
             </div>
             <AccountButton />
         </header>
