@@ -45,6 +45,7 @@ export default function DateButtons({date, setDate, getDateString}:
 
     const [numberGames, setNumberGames] = useState<GamesNum[]>([]);
     const [referenceDate, setReferenceDate] = useState<string>(searchParams.get("reference") ?? getDateString(new Date()))
+    const [loading, setLoading] = useState(true);
 
     useEffect(() => {
         if(searchParams.get("reference") === referenceDate) return;
@@ -59,6 +60,7 @@ export default function DateButtons({date, setDate, getDateString}:
 
         async function loadNumberGames() {
             try{
+                setLoading(true);
                 const response = await fetch(`/api/partidos/numero?date=${referenceDate}`, 
                 { signal: controller.signal })
                 const result = await response.json();
@@ -71,6 +73,8 @@ export default function DateButtons({date, setDate, getDateString}:
             } catch (error) {
                 if (controller.signal.aborted) return;
                 console.error(error);
+            } finally {
+                if (!controller.signal.aborted) setLoading(false);
             }
         }
 
@@ -80,11 +84,11 @@ export default function DateButtons({date, setDate, getDateString}:
 
     return (
         <section className={styles.buttonsContainer}>
-                <ChevronLeft className={styles.chevron} onClick={() => { const auxDate = addDays(referenceDate, -5); setReferenceDate(getDateString(auxDate)); setDate(auxDate)}}/>
+                {!loading ?  <ChevronLeft className={styles.chevron} onClick={() => { const auxDate = addDays(referenceDate, -5); setReferenceDate(getDateString(auxDate)); setDate(auxDate)}}/> : ""}
                 {numberGames.map((number, index) => 
                     <DateButton key={index} date={new Date(`${number.date}T00:00:00`)} gamesNumber={number.gamesNumber} day={date} setDay={setDate}/>
                 )}
-                <ChevronRight className={styles.chevron} onClick={() => { const auxDate = addDays(referenceDate, 5); setReferenceDate(getDateString(auxDate)); setDate(auxDate)}} />
+                {!loading ?  <ChevronRight className={styles.chevron} onClick={() => { const auxDate = addDays(referenceDate, 5); setReferenceDate(getDateString(auxDate)); setDate(auxDate)}}/> : ""}
         </section>
     )
 }
