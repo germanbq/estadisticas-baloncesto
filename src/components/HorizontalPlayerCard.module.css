@@ -6,6 +6,8 @@
 
     background-color: var(--color-components);
     padding: 0.8rem 3rem;
+
+    position: relative;
 }
 
 .articleHeader {
@@ -14,6 +16,10 @@
     justify-content: space-between;
     gap: 32px;
     padding: 0px 5rem;
+}
+
+.articleHeader button{
+    justify-self: end;
 }
 
 .information {
@@ -67,6 +73,12 @@
 
 .profileLink:hover svg {
    transform: translateX(4px);
+}
+
+.favorite {
+    position: absolute;
+    top: 1rem;
+    right: 1rem;
 }
 
 .statsContainer {

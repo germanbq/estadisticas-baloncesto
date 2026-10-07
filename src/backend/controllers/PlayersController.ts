@@ -1,3 +1,4 @@
+import { auth } from "@clerk/nextjs/server";
 import { PlayersService } from "../services/PlayersService";
 export class PlayersController {
      
@@ -32,16 +33,15 @@ export class PlayersController {
                 { status: 400 }
             );
         }
-
+        const { userId } = await auth();
         try{
-            const data = await this.service.profileStats(id);
+            const data = await this.service.profileStats(id, userId);
             if(data === null) {
                 return Response.json(
                     { error: "Jugador no encontrado" },
                     { status: 404 }
                 );
             }
-
             return Response.json({data});
         } catch(error) {
             console.error(error);
@@ -60,7 +60,7 @@ export class PlayersController {
                 { status: 400 }
             );
         }
-
+        
         try{
             const data = await this.service.lastGames(id);
             return Response.json({data});
@@ -82,8 +82,9 @@ export class PlayersController {
                 { status: 400 }
             );
         }
+        const { userId } = await auth();
         try {
-            const data = await this.service.searchPlayers(search, pos, conf);
+            const data = await this.service.searchPlayers(search, pos, conf, userId);
             return Response.json({data});
         } catch(error) {
             console.error(error);

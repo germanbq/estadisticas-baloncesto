@@ -4,10 +4,10 @@ export type Player = {
     team: string;
     jerseyNumber: number;
     position: string;
+    id: number;
 }
 
 export type LeaderPlayer = Player & {
-    id: number;
     value: number;
 }
 
@@ -34,6 +34,7 @@ export type PlayerProfile = Player & {
     age: number;
     draft: number;
     seasons: PlayerSeasonStats[];
+    isFavorite: boolean;
 }
 
 export type PlayerGames = {
@@ -54,11 +55,11 @@ export type PlayerGames = {
 }
 
 export type SearchedPlayer = Player & {
-    id: number;
     age: number;
     points: number;
     rebounds: number;
     assists: number;
     steals: number;
     blocks: number;
+    isFavorite: boolean;
 }

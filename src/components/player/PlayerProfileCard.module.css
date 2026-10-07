@@ -3,9 +3,12 @@
     flex-direction: column;
     align-items: center;
     gap: 1rem;
+    
     background-color: var(--color-components);
     padding: 1rem 0;
     border-radius: 10px;
+
+    position: relative;
 }
 
 .image {
@@ -66,4 +69,10 @@
 
 .dataName {
     color: var(--color-text-primary);
+}
+
+.favorite {
+    position: absolute;
+    top: 1rem;
+    right: 1rem;
 }

@@ -4,9 +4,11 @@ import Link from "next/link";
 import { SearchedPlayer } from "../backend/entities/playersEntities"
 import SingleStat from "./SingleStat";
 import { ArrowRight } from "lucide-react";
+import FavoriteButton from "./FavoriteButton";
 
 
-export default function HorizontalPlayerCard({player}: {player: SearchedPlayer}) {
+export default function HorizontalPlayerCard({player, onFavoriteChange, disabled}: 
+                                {player: SearchedPlayer, onFavoriteChange?: (fav: boolean) => void, disabled?: boolean}) {
     return (
         <article className={styles.card}>
             <div className={styles.articleHeader}>     
@@ -21,6 +23,9 @@ export default function HorizontalPlayerCard({player}: {player: SearchedPlayer})
                     Ver ficha completa
                     <ArrowRight size={18} />
                 </Link>
+            </div>
+            <div className={styles.favorite}>
+                <FavoriteButton type="jugadores" itemId={player.id} isFavorite={player.isFavorite} onFavoriteChange={onFavoriteChange} disabled={disabled}/>
             </div>
             <div className={styles.statsContainer}>
                 <SingleStat label="PTS" value={player.points} />

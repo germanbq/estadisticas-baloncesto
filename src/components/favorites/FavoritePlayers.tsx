@@ -1,4 +1,4 @@
-import styles from "./FavoritePlayers.module.css";
+import styles from "../players/PlayersBySearch.module.css";
 import { useEffect, useState } from "react";
 import { SearchedPlayer } from "@/src/backend/entities/playersEntities";
 import HorizontalPlayerCard from "../HorizontalPlayerCard";
@@ -34,9 +34,9 @@ export default function FavoritePlayers({onFavoriteChange, disabled}:
     }, []);
     
     return (
-        <section className={styles.container}>
+        <section className={styles.section}>
             {players.map((player) => (
-                <HorizontalPlayerCard key={player.id} player={player} />
+                <HorizontalPlayerCard key={player.id} player={player} onFavoriteChange={onFavoriteChange} disabled={disabled}/>
             ))}
         </section>
     )

@@ -2,7 +2,7 @@ import { SqlQuery } from "../shared/sql.types";
 import type { IPlayersQueries } from "../interfaces/playersIntefaces";
 
 export class PlayersQueries implements IPlayersQueries {
-    leaders(metric: string, minGames: number, playersLimit: number, season: number): SqlQuery {
+    leadersList(metric: string, minGames: number, playersLimit: number, season: number): SqlQuery {
         return {
             text: `SELECT 
                 p.id, 
@@ -27,9 +27,10 @@ export class PlayersQueries implements IPlayersQueries {
         };
     }
 
-    profile(id: number): SqlQuery {
+    profileStats(id: number, userId: string | null): SqlQuery {
         return {
             text: `SELECT 
+                p.id,
                 p.name, 
                 p.image,
                 p.height, 
@@ -64,13 +65,19 @@ export class PlayersQueries implements IPlayersQueries {
                         WHERE pss.player_id = p.id
                     ),
                     '[]'::jsonb
-                ) AS seasons
-
+                ) AS seasons,
+                EXISTS (
+                    SELECT 1
+                    FROM favorite_players AS fp
+                    WHERE fp.player_id = p.id 
+                        AND fp.user_id = $2
+                ) AS "isFavorite"
             FROM players AS p
             JOIN teams AS t ON t.id = p.team_id
             WHERE p.id = $1;`,
             values: [
                 id,
+                userId,
             ],
         };
     }
@@ -117,7 +124,7 @@ export class PlayersQueries implements IPlayersQueries {
         }
     }
 
-    searchPlayers(search: string, pos: string, conf: string, season: number): SqlQuery {
+    searchPlayers(search: string, pos: string, conf: string, userId: string | null, season: number): SqlQuery {
         return {
             text: `SELECT
                 p.id,
@@ -131,7 +138,13 @@ export class PlayersQueries implements IPlayersQueries {
                 pss.rebounds,
                 pss.assists,
                 pss.steals,
-                pss.blocks
+                pss.blocks,
+                EXISTS (
+                    SELECT 1
+                    FROM favorite_players AS fp
+                    WHERE fp.player_id = p.id 
+                        AND fp.user_id = $5
+                ) AS "isFavorite"
             FROM players AS p
             JOIN teams AS t ON t.id = p.team_id
             JOIN player_season_stats AS pss ON pss.player_id = p.id
@@ -146,6 +159,7 @@ export class PlayersQueries implements IPlayersQueries {
                 pos,
                 conf,
                 season,
+                userId,
             ],
         }
     }

@@ -84,11 +84,14 @@ export class FavoritesQueries implements IFavoritesQueries {
                 pss.rebounds,
                 pss.assists,
                 pss.steals,
-                pss.blocks
+                pss.blocks,
+                TRUE AS "isFavorite"
             FROM favorite_players AS fp
             JOIN players AS p ON p.id = fp.player_id
             JOIN teams AS t ON t.id = p.team_id
-            JOIN player_season_stats AS pss ON pss.player_id = p.id
+            LEFT JOIN player_season_stats AS pss
+                ON pss.player_id = p.id
+                AND pss.season_init_year = $2
             WHERE fp.user_id = $1
                 AND pss.season_init_year = $2
             ORDER BY (pss.points + pss.assists*1.8 + pss.rebounds*2) DESC

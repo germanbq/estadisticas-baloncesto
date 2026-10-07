@@ -1,6 +1,8 @@
+"use client"
+
 import { useClerk, useUser } from "@clerk/nextjs";
 import { useEffect, useRef, useState } from "react";
-import { Pointer, Star } from "lucide-react";
+import { Star } from "lucide-react";
 
 export default function FavoriteButton({type, itemId, isFavorite, onFavoriteChange, disabled}: 
                     {type: string, itemId: number, isFavorite: boolean, 

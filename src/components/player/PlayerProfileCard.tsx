@@ -1,6 +1,7 @@
 import Image from "next/image";
 import styles from "./PlayerProfileCard.module.css";
 import { PlayerProfile } from "@/src/backend/entities/playersEntities";
+import FavoriteButton from "../FavoriteButton";
 
 type DataContainerProps = {
     label: string;
@@ -35,6 +36,9 @@ export default function PlayerProfileCard({stats}: {stats: PlayerProfile}) {
                 <DataContainer label="Edad" value={stats.age} unit="años"/>
                 <DataContainer label="Draft" value={stats.draft} />
             </dl>
+            <div className={styles.favorite}>
+                <FavoriteButton type="jugadores" itemId={stats.id} isFavorite={stats.isFavorite} />
+            </div>
         </article>
     );
 }

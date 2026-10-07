@@ -11,15 +11,15 @@ export class PlayersService {
         return this.repository.leadersList(metric, MIN_GAMES_FOR_LEADERS, LIMIT_LEADER_PLAYERS, ACTUAL_SEASON);
     }
 
-    profileStats(id: number): Promise<PlayerProfile | null> {
-        return this.repository.profileStats(id);
+    profileStats(id: number, userId: string | null): Promise<PlayerProfile | null> {
+        return this.repository.profileStats(id, userId);
     }
     
     lastGames(id: number): Promise<PlayerGames[]> {
         return this.repository.lastGames(id, LIMIT_GAMES_PER_PLAYER);
     }
 
-    searchPlayers(search: string, pos: string, conf: string): Promise<SearchedPlayer[]> {
-        return this.repository.searchPlayers(search, pos, conf, ACTUAL_SEASON);
+    searchPlayers(search: string, pos: string, conf: string, userId: string | null): Promise<SearchedPlayer[]> {
+        return this.repository.searchPlayers(search, pos, conf, userId, ACTUAL_SEASON);
     }
 }
