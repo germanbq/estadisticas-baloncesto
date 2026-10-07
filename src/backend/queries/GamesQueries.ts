@@ -1,8 +1,9 @@
+import { use } from "react";
 import { IGamesQueries } from "../interfaces/gamesInterfaces";
 import { SqlQuery } from "../shared/sql.types";
 
 export default class GamesQueries implements IGamesQueries {
-    dayGames(date: string, season: number): SqlQuery {
+    dayGames(date: string, userId: string | null, season: number): SqlQuery {
         return {
             text: `SELECT
                 g.id,
@@ -18,7 +19,13 @@ export default class GamesQueries implements IGamesQueries {
                 g.away_score AS "awayTeamScore",
                 g.finished,
                 ht.stadium,
-                g.date
+                g.date,
+                EXISTS (
+                    SELECT 1
+                    FROM favorite_games AS fg
+                    WHERE fg.game_id = g.id 
+                        AND fg.user_id = $3
+                ) AS "isFavorite"
             FROM games AS g
             JOIN teams AS ht ON ht.id = g.home_team_id
             JOIN teams AS at ON at.id = g.away_team_id
@@ -37,6 +44,7 @@ export default class GamesQueries implements IGamesQueries {
             values: [
                 date,
                 season,
+                userId,
             ],
         };
     }

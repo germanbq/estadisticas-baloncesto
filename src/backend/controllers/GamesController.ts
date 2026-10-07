@@ -1,3 +1,4 @@
+import { auth } from "@clerk/nextjs/server";
 import GamesService from "../services/GamesService";
 
 export default class GamesController {
@@ -10,8 +11,10 @@ export default class GamesController {
                 { status: 400 }
             );
         }
+        const { userId } = await auth();
+            
         try {
-            const data = await this.service.dayGames(date);
+            const data = await this.service.dayGames(date, userId);
             return Response.json({data});
         } catch(error) {
             console.error(error);

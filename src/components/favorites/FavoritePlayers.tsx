@@ -1,4 +1,4 @@
-import styles from "./FavoritesPlayers.module.css";
+import styles from "./FavoritePlayers.module.css";
 import { useEffect, useState } from "react";
 import { SearchedPlayer } from "@/src/backend/entities/playersEntities";
 import HorizontalPlayerCard from "../HorizontalPlayerCard";

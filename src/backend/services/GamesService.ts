@@ -5,8 +5,8 @@ import { ACTUAL_SEASON } from "../rules/rules";
 export default class GamesService {
     constructor(private readonly repository: IGamesRepository) {}
 
-    dayGames(date: string): Promise<Game[]> {
-        return this.repository.dayGames(date, ACTUAL_SEASON);
+    dayGames(date: string, userId: string | null): Promise<Game[]> {
+        return this.repository.dayGames(date, userId, ACTUAL_SEASON);
     }
 
     gamesNumber(date: string): Promise<GamesNum[]> {

@@ -57,9 +57,9 @@ export default function Games() {
     return (
         <div>
             <DateButtons date={date} setDate={setDate} getDateString={getDateString}/>
-            <section className={styles.gamesContainer}>
+            <section className={styles.container}>
                 {games.map((game) => (
-                    <GameCard key={game.homeTeamName} finalizado={game.finished}
+                    <GameCard key={game.id} id={game.id} isFavorite={game.isFavorite} finalizado={game.finished}
                         homeTeam={game.homeTeamName} awayTeam={game.awayTeamName}
                         homeScore={game.homeTeamScore} awayScore={game.awayTeamScore}
                         homeRecord={`${game.homeTeamVictorys}-${game.homeTeamLosses}`} awayRecord={`${game.awayTeamVictorys}-${game.awayTeamLosses}`}

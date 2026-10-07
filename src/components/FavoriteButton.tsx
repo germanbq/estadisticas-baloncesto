@@ -1,15 +1,16 @@
 import { useClerk, useUser } from "@clerk/nextjs";
 import { useEffect, useRef, useState } from "react";
-import { Star } from "lucide-react";
+import { Pointer, Star } from "lucide-react";
 
 export default function FavoriteButton({type, itemId, isFavorite, onFavoriteChange, disabled}: 
                     {type: string, itemId: number, isFavorite: boolean, 
-                        onFavoriteChange?: (fav: boolean) => void, disabled: boolean}) {
+                        onFavoriteChange?: (fav: boolean) => void, disabled?: boolean}) {
     const {isLoaded, isSignedIn} = useUser();
     const { openSignIn } = useClerk();
     const [favorite, setFavorite] = useState(isFavorite);
     const [loading, setLoading] = useState(false);
     const controllerRef = useRef<AbortController | null>(null);
+    const showFavorite = isSignedIn && favorite;
 
     useEffect(() => {
         return () => controllerRef.current?.abort();
@@ -53,8 +54,11 @@ export default function FavoriteButton({type, itemId, isFavorite, onFavoriteChan
     }
 
     return (
-        <button type="button" onClick={handleClick} disabled={!isLoaded || loading || disabled}>
-            <Star />
+        <button type="button" onClick={handleClick} disabled={!isLoaded || loading || disabled} style={{ cursor: "pointer" }} aria-label="Cambiar estado de favorito">
+            <Star
+                fill={showFavorite ? "#f59e0b" : "none"}
+                color={showFavorite ? "#f59e0b" : "currentColor"}
+            />
         </button>
     )
 }

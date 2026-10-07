@@ -43,18 +43,19 @@ export class FavoritesQueries implements IFavoritesQueries {
                 g.away_score AS "awayTeamScore",
                 g.finished,
                 ht.stadium,
-                g.date
+                g.date,
+                TRUE as "isFavorite"
             FROM favorite_games as fg
             JOIN games AS g ON g.id = fg.game_id
             JOIN teams AS ht ON ht.id = g.home_team_id
             JOIN teams AS at ON at.id = g.away_team_id
-            JOIN team_season_stats AS hts ON hts.team_id = ht.id
+            LEFT JOIN team_season_stats AS hts ON hts.team_id = ht.id
                 AND hts.season_init_year = EXTRACT(
                     YEAR FROM (
                         (g.date AT TIME ZONE 'Europe/Madrid') - INTERVAL '9 months'
                     )
                 )::integer
-            JOIN team_season_stats AS ats ON ats.team_id = at.id
+            LEFT JOIN team_season_stats AS ats ON ats.team_id = at.id
                 AND ats.season_init_year = EXTRACT(
                     YEAR FROM (
                         (g.date AT TIME ZONE 'Europe/Madrid') - INTERVAL '9 months'

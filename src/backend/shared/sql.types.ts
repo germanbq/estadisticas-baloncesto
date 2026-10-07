@@ -1,6 +1,6 @@
 export type SqlQuery = {
   text: string;
-  values: Array<string | number>;
+  values: Array<string | number | null>;
 };
 
 export interface IQueryExecutor {

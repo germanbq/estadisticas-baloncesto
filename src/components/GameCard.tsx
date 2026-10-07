@@ -1,7 +1,12 @@
 import styles from "./GameCard.module.css";
-import Image
- from "next/image";
+import Image from "next/image";
+import FavoriteButton from "./FavoriteButton";
+
 type GameProps = {
+    id: number;
+    isFavorite: boolean;
+    onFavoriteChange?: (fav: boolean) => void;
+    disabled?: boolean;
     finalizado: boolean;
     homeTeam: string;
     awayTeam: string;
@@ -22,6 +27,7 @@ export default function GameCard(props: GameProps) {
                 {props.finalizado ? <span>Finalizado</span> : <span>{props.date.toLocaleDateString("es-ES", {day: "2-digit", month: "2-digit", year: "numeric", timeZone: "Europe/Madrid",})
 }</span>}
                 <span>{props.place}</span>
+                <FavoriteButton type="partidos" itemId={props.id} isFavorite={props.isFavorite} onFavoriteChange={props.onFavoriteChange} disabled={props.disabled}/>
             </div>
             <div className={styles.gameTeams}>
                 <div className={styles.teamColumn}>

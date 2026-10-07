@@ -13,6 +13,7 @@ export type Game = {
     finished: boolean;
     stadium: string;
     date: Date;
+    isFavorite: boolean;
 }
 
 export type GamesNum = {

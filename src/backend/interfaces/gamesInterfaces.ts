@@ -2,11 +2,11 @@ import { Game, GamesNum } from "../entities/gamesEntities";
 import { SqlQuery } from "../shared/sql.types";
 
 export interface IGamesQueries {
-    dayGames(date: string, season: number): SqlQuery;
+    dayGames(date: string, userId: string | null, season: number): SqlQuery;
     gamesNumber(date: string): SqlQuery;
 }
 
 export interface IGamesRepository {
-    dayGames(date: string, season: number): Promise<Game[]>;
+    dayGames(date: string, userId: string | null, season: number): Promise<Game[]>;
     gamesNumber(date: string): Promise<GamesNum[]>;
 }
