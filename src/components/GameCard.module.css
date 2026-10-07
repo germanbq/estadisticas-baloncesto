@@ -13,8 +13,12 @@
 }
 
 .gameLabels {
-    display: flex;
-    justify-content: space-between;
+    display: grid;
+    grid-template-columns: 1fr auto 1fr;
+}
+
+.gameLabels > :last-child {
+    justify-self: end;
 }
 
 .gameTeams {
