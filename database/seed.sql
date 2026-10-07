@@ -74,7 +74,43 @@ VALUES
 (27, 2025, 52, 30, 63.41, 5.20, 1, TRUE),     -- Houston Rockets
 (28, 2025, 25, 57, 30.49, -6.00, 8, FALSE),   -- Memphis Grizzlies
 (29, 2025, 26, 56, 31.71, -4.50, 2, FALSE),   -- New Orleans Pelicans
-(30, 2025, 62, 20, 75.61, 8.30, 1, FALSE);    -- San Antonio Spurs
+(30, 2025, 62, 20, 75.61, 8.30, 1, FALSE),    -- San Antonio Spurs
+
+(1, 2026, 0, 0, 0, 0, 0, TRUE),  -- Boston Celtics
+(2, 2026, 0, 0, 0, 0, 0, TRUE),  -- Brooklyn Nets
+(3, 2026, 0, 0, 0, 0, 0, TRUE),  -- New York Knicks
+(4, 2026, 0, 0, 0, 0, 0, TRUE),  -- Philadelphia 76ers
+(5, 2026, 0, 0, 0, 0, 0, TRUE),  -- Toronto Raptors
+
+(6, 2026, 0, 0, 0, 0, 0, TRUE),  -- Chicago Bulls
+(7, 2026, 0, 0, 0, 0, 0, TRUE),  -- Cleveland Cavaliers
+(8, 2026, 0, 0, 0, 0, 0, TRUE),  -- Detroit Pistons
+(9, 2026, 0, 0, 0, 0, 0, TRUE),  -- Indiana Pacers
+(10, 2026, 0, 0, 0, 0, 0, TRUE), -- Milwaukee Bucks
+
+(11, 2026, 0, 0, 0, 0, 0, TRUE), -- Atlanta Hawks
+(12, 2026, 0, 0, 0, 0, 0, TRUE), -- Charlotte Hornets
+(13, 2026, 0, 0, 0, 0, 0, TRUE), -- Miami Heat
+(14, 2026, 0, 0, 0, 0, 0, TRUE), -- Orlando Magic
+(15, 2026, 0, 0, 0, 0, 0, TRUE), -- Washington Wizards
+
+(16, 2026, 0, 0, 0, 0, 0, TRUE), -- Denver Nuggets
+(17, 2026, 0, 0, 0, 0, 0, TRUE), -- Minnesota Timberwolves
+(18, 2026, 0, 0, 0, 0, 0, TRUE), -- Oklahoma City Thunder
+(19, 2026, 0, 0, 0, 0, 0, TRUE), -- Portland Trail Blazers
+(20, 2026, 0, 0, 0, 0, 0, TRUE), -- Utah Jazz
+
+(21, 2026, 0, 0, 0, 0, 0, TRUE), -- Golden State Warriors
+(22, 2026, 0, 0, 0, 0, 0, TRUE), -- Los Angeles Clippers
+(23, 2026, 0, 0, 0, 0, 0, TRUE), -- Los Angeles Lakers
+(24, 2026, 0, 0, 0, 0, 0, TRUE), -- Phoenix Suns
+(25, 2026, 0, 0, 0, 0, 0, TRUE), -- Sacramento Kings
+
+(26, 2026, 0, 0, 0, 0, 0, TRUE), -- Dallas Mavericks
+(27, 2026, 0, 0, 0, 0, 0, TRUE), -- Houston Rockets
+(28, 2026, 0, 0, 0, 0, 0, TRUE), -- Memphis Grizzlies
+(29, 2026, 0, 0, 0, 0, 0, TRUE), -- New Orleans Pelicans
+(30, 2026, 0, 0, 0, 0, 0, TRUE); -- San Antonio Spurs
 
 
 INSERT INTO players (
