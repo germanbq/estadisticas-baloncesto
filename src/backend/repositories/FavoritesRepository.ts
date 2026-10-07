@@ -35,4 +35,36 @@ export class FavoritesRepository implements IFavoriteRepository {
 
         return result;
     }
+
+
+    async addFavoriteGame(userId: string, itemId: number): Promise<void> {
+        const query = this.queries.addFavoriteGame(userId, itemId);
+        await this.executor.query<void>(query.text, query.values);
+    }
+
+    async addFavoritePlayer(userId: string, itemId: number): Promise<void> {
+        const query = this.queries.addFavoritePlayer(userId, itemId);
+        await this.executor.query<void>(query.text, query.values);
+    }
+
+    async addFavoriteTeam(userId: string, itemId: number): Promise<void> {
+        const query = this.queries.addFavoriteTeam(userId, itemId);
+        await this.executor.query<void>(query.text, query.values);
+    }
+    
+
+    async removeFavoriteGame(userId: string, itemId: number): Promise<void> {
+        const query = this.queries.removeFavoriteGame(userId, itemId);
+        await this.executor.query<void>(query.text, query.values);
+    }
+
+    async removeFavoritePlayer(userId: string, itemId: number): Promise<void> {
+        const query = this.queries.removeFavoritePlayer(userId, itemId);
+        await this.executor.query<void>(query.text, query.values);
+    }
+
+    async removeFavoriteTeam(userId: string, itemId: number): Promise<void> {
+        const query = this.queries.removeFavoriteTeam(userId, itemId);
+        await this.executor.query<void>(query.text, query.values);
+    }
 }

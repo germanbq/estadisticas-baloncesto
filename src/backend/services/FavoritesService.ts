@@ -22,5 +22,31 @@ export class FavoritesService {
 
     async favoriteTeams(userId: string): Promise<Team[]> {
         return this.repository.favoriteTeams(userId, ACTUAL_SEASON);
-    } 
+    }
+    
+
+    async addFavoriteGame(userId: string, itemId: number): Promise<void> {
+        return this.repository.addFavoriteGame(userId, itemId);
+    }
+
+    async addFavoritePlayer(userId: string, itemId: number): Promise<void> {
+        return this.repository.addFavoritePlayer(userId, itemId);
+    }
+
+    async addFavoriteTeam(userId: string, itemId: number): Promise<void> {
+        return this.repository.addFavoriteTeam(userId, itemId);
+    }
+    
+
+    async removeFavoriteGame(userId: string, itemId: number): Promise<void> {
+        return this.repository.removeFavoriteGame(userId, itemId);
+    }
+
+    async removeFavoritePlayer(userId: string, itemId: number): Promise<void> {
+        return this.repository.removeFavoritePlayer(userId, itemId);
+    }
+
+    async removeFavoriteTeam(userId: string, itemId: number): Promise<void> {
+        return this.repository.removeFavoriteTeam(userId, itemId);
+    }
 }

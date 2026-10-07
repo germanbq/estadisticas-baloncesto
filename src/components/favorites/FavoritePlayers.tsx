@@ -1,9 +1,10 @@
-import styles from "./FavoritesFilters.module.css";
+import styles from "./FavoritesPlayers.module.css";
 import { useEffect, useState } from "react";
 import { SearchedPlayer } from "@/src/backend/entities/playersEntities";
 import HorizontalPlayerCard from "../HorizontalPlayerCard";
 
-export default function FavoritePlayers() {
+export default function FavoritePlayers({onFavoriteChange, disabled}: 
+                                {onFavoriteChange: (fav: boolean) => void, disabled: boolean}) {
     
     const [players, setPlayers] = useState<SearchedPlayer[]>([])
     
@@ -12,7 +13,7 @@ export default function FavoritePlayers() {
             
         async function loadFavoriteCounts() {
             try {
-                const response = await fetch(`/api/favoritos/players`,
+                const response = await fetch(`/api/favoritos/jugadores`,
                     { signal: controller.signal });
                 const result = await response.json();
                     

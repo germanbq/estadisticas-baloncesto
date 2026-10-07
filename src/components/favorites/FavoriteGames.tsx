@@ -1,9 +1,10 @@
-import styles from "./FavoritesFilters.module.css";
+import styles from "./FavoritesGames.module.css";
 import GameCard from "../GameCard"
 import { useEffect, useState } from "react";
 import { Game } from "@/src/backend/entities/gamesEntities";
 
-export default function FavoriteGames() {
+export default function FavoriteGames({onFavoriteChange, disabled}: 
+                                {onFavoriteChange: (fav: boolean) => void, disabled: boolean}) {
     const [games, setGames] = useState<Game[]>([])
     
     useEffect(() => {

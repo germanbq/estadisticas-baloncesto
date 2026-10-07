@@ -13,8 +13,34 @@ export default function FavoritesPage() {
     const pathname = usePathname();
     const searchParams = useSearchParams();
 
+    const [loading, setLoading] = useState(true);
     const [selected, setSelected] = useState(searchParams.get("selected") ?? "Players");
     const [counts, setCounts] = useState<FavCounts>({numberGames: 0, numberPlayers: 0, numberTeams: 0});
+
+    function handleGameFavoriteChange(isFavorite: boolean) {
+        if(!loading) {
+            setCounts(previous => ({
+            ...previous,
+            numberGames: previous.numberGames + (isFavorite ? 1 : -1),
+        }));
+        }
+    }
+    function handlePlayerFavoriteChange(isFavorite: boolean) {
+        if(!loading) {
+            setCounts(previous => ({
+            ...previous,
+            numberPlayers: previous.numberPlayers + (isFavorite ? 1 : -1),
+        }));
+        }
+    }
+    function handleTeamFavoriteChange(isFavorite: boolean) {
+        if(!loading) {
+            setCounts(previous => ({
+            ...previous,
+            numberTeams: previous.numberTeams + (isFavorite ? 1 : -1),
+        }));
+        }
+    }
 
     useEffect(() => {
         if(searchParams.get("selected") === selected) return;
@@ -42,6 +68,8 @@ export default function FavoritesPage() {
             catch(error) {
                 if (controller.signal.aborted) return;
                 console.error(error);
+            } finally {
+                if (!controller.signal.aborted) setLoading(false);
             }
         }
 
@@ -61,9 +89,9 @@ export default function FavoritesPage() {
                 }
             `}</style>
             <FavoritesFilters selected={selected} setSelected={setSelected} counts={counts}/>
-            {selected === "Players" && <FavoritePlayers />}
-            {selected === "Teams" && <FavoriteTeams />}
-            {selected === "Games" && <FavoriteGames />}      
+            {selected === "Players" && <FavoritePlayers onFavoriteChange={handlePlayerFavoriteChange} disabled={loading}/>}
+            {selected === "Teams" && <FavoriteTeams onFavoriteChange={handleTeamFavoriteChange} disabled={loading}/>}
+            {selected === "Games" && <FavoriteGames onFavoriteChange={handleGameFavoriteChange} disabled={loading}/>}      
         </div>
     )
 }

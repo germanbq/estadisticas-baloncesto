@@ -125,4 +125,87 @@ export class FavoritesQueries implements IFavoritesQueries {
             ],
         };
     }
+    
+
+    addFavoriteGame(userId: string, itemId: number): SqlQuery {
+        return {
+            text: `
+            INSERT INTO favorite_games (user_id, game_id)
+            VALUES ($1, $2)
+            ON CONFLICT (user_id, game_id) DO nothing
+            `,
+            values: [
+                userId,
+                itemId,
+            ],
+        };
+    }
+
+    addFavoritePlayer(userId: string, itemId: number): SqlQuery {
+        return {
+            text: `
+            INSERT INTO favorite_players (user_id, player_id)
+            VALUES ($1, $2)
+            ON CONFLICT (user_id, player_id) DO nothing
+            `,
+            values: [
+                userId,
+                itemId,
+            ],
+        };
+    }
+
+    addFavoriteTeam(userId: string, itemId: number): SqlQuery {
+        return {
+            text: `
+            INSERT INTO favorite_teams (user_id, team_id)
+            VALUES ($1, $2)
+            ON CONFLICT (user_id, team_id) DO nothing
+            `,
+            values: [
+                userId,
+                itemId,
+            ],
+        };
+    }
+
+
+    removeFavoriteGame(userId: string, itemId: number): SqlQuery {
+        return {
+            text: `
+            DELETE FROM favorite_games
+            WHERE user_id = $1 AND game_id = $2
+            `,
+            values: [
+                userId,
+                itemId,
+            ],
+        };
+    }
+
+    removeFavoritePlayer(userId: string, itemId: number): SqlQuery {
+        return {
+            text: `
+            DELETE FROM favorite_players
+            WHERE user_id = $1 AND player_id = $2
+            `,
+            values: [
+                userId,
+                itemId,
+            ],
+        };
+    }
+
+    removeFavoriteTeam(userId: string, itemId: number): SqlQuery {
+        return {
+            text: `
+            DELETE FROM favorite_teams
+            WHERE user_id = $1 AND team_id = $2
+            `,
+            values: [
+                userId,
+                itemId,
+            ],
+        };
+    }
 }
