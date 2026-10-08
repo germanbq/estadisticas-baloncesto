@@ -1,3 +1,4 @@
+import { auth } from "@clerk/nextjs/server";
 import { TeamsService } from "../services/TeamsService";
 
 export class TeamsController {
@@ -11,9 +12,9 @@ export class TeamsController {
                 { status: 400 }
             );
         }
-
+        const { userId } = await auth(); 
         try {
-            const data = await this.service.leaderBoard(conf);
+            const data = await this.service.leaderBoard(conf, userId);
             return Response.json({data});
         } catch(error) {
             console.error(error);

@@ -7,6 +7,7 @@ import Image from "next/image";
 import { Sunrise, Sunset } from "lucide-react";
 import { usePathname, useRouter, useSearchParams } from "next/navigation";
 import { Team } from "@/src/backend/entities/teamsEntities";
+import FavoriteButton from "../FavoriteButton";
 
 type StandingLabelProps = {
     text: string;
@@ -97,6 +98,7 @@ export default function LeaderBoard() {
                                     <div className={styles.logoAndName}>
                                         <Image src={team.logo} className={styles.teamLogo} alt={`Logo ${team.name}`} width={0} height={0}/>
                                         <span>{team.name}</span>
+                                        <FavoriteButton type="equipos" itemId={team.id} isFavorite={team.isFavorite} />
                                     </div>
                                 </td>
                                 <td>{team.division}</td>

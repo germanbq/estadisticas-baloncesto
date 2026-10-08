@@ -41,7 +41,7 @@ export default function Header() {
                 <Link href="/jugadores" aria-label="Jugadores">
                     <Users className={`${styles.icon} ${pathname === "/jugadores" ? styles.active : ""}`}/>
                 </Link>
-                <button aria-label="Favoritos" onClick={handleClick}>
+                <button aria-label="Favoritos" onClick={handleClick} style={{cursor:"pointer"}}>
                     <Star className={`${styles.icon} ${pathname === "/favoritos" ? styles.active : ""}`}/>
                 </button>
             </div>

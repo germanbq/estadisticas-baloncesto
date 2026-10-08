@@ -115,7 +115,8 @@ export class FavoritesQueries implements IFavoritesQueries {
                 tss.win_rate AS "winRate",
                 tss.difference,
                 tss.streak_number AS "streakNumber",
-                tss.streak_victory AS "streakVictory"
+                tss.streak_victory AS "streakVictory",
+                TRUE as "isFavorite"
             FROM favorite_teams as ft
             JOIN teams AS t ON t.id = ft.team_id
             JOIN team_season_stats as tss ON tss.team_id = t.id

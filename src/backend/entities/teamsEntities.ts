@@ -8,5 +8,6 @@ export type Team = {
     winRate: number;
     difference: number;
     streakNumber: number;
-    streakVictory: boolean,
+    streakVictory: boolean;
+    isFavorite: boolean;
 }

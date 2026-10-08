@@ -3,13 +3,18 @@ import styles from "./SingleStat.module.css";
 type SingleStatProps = {
     label: string;
     value: number | string;
+    color?: string;
+    smallValue?: string;
 }
 
-export default function SingleStat({label, value}: SingleStatProps) {
+export default function SingleStat({label, value, color, smallValue}: SingleStatProps) {
     return (
         <div className={styles.stat}>
             <dt className={styles.statLabel}>{label}</dt>
-            <dd className={styles.value}>{value}</dd>
+            <dd>
+                <span className={styles.value} style={{color}}>{value}</span>
+                <span className={styles.smallValue}>{smallValue}</span>
+            </dd>
         </div>
     )
 }
