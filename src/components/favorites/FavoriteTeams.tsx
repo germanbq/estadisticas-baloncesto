@@ -17,6 +17,9 @@ function TeamCard(props: TeamCardProps) {
     const positionClass = props.team.position <= 6 ? styles.playoffs
                                 : props.team.position <= 10 ? styles.playin
                                     : styles.eliminated;
+
+    const matchDate = props.team.nextMatchDate ? new Date(props.team.nextMatchDate).toLocaleDateString("es-ES", {day: "2-digit", month: "2-digit", timeZone: "Europe/Madrid",})
+                                                : undefined
     return (
         <article className={styles.article}>
             <div className={styles.articleHeader} >
@@ -34,12 +37,12 @@ function TeamCard(props: TeamCardProps) {
                 </Link>
             </div>
             <div className={styles.statsContainer}>
-                    <SingleStat label="net rating" value={props.team.netRating} color={props.team.netRating > 0 ? "var(--color-green)" : "var(--color-text-primay)"}/>
-                    <SingleStat label="ppg" value={props.team.pointsPerGame} />
-                    <SingleStat label="papg" value={props.team.pointsAllowedPerGame} />
+                    <SingleStat label="net rating" value={Number(props.team.netRating.toFixed(2))} color={props.team.netRating > 0 ? "var(--color-green)" : "var(--color-text-primay)"}/>
+                    <SingleStat label="ppg" value={Number(props.team.pointsPerGame.toFixed(2))} />
+                    <SingleStat label="papg" value={Number(props.team.pointsAllowedPerGame.toFixed(2))} />
                     <SingleStat label="home record" value={`${props.team.homeVictorys}-${props.team.homeLosses}`} />
                     <SingleStat label="away record" value={`${props.team.victorys - props.team.homeVictorys}-${props.team.losses - props.team.homeLosses}`} />
-                    <SingleStat label="próximo partido" value={"vs CLE"} smallValue={"01/10"} color="var(--color-blue)"/>
+                    <SingleStat label="próximo partido" value={props.team.nextMatch} smallValue={matchDate} color="var(--color-blue)"/>
                 </div>
             <div className={styles.favorite}>
                 <FavoriteButton type="equipos" itemId={props.team.id} isFavorite={props.team.isFavorite} onFavoriteChange={props.onFavoriteChange} disabled={props.disabled}/>
@@ -79,7 +82,7 @@ export default function FavoriteTeams({onFavoriteChange, disabled}:
     }, []);
     
     return (
-        <section>
+        <section className={styles.section}>
             {teams.map((team) => (
                 <TeamCard key={team.id} team={team} onFavoriteChange={onFavoriteChange} disabled={disabled} />
             ))}

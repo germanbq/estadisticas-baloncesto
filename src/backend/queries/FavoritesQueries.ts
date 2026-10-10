@@ -115,31 +115,77 @@ export class FavoritesQueries implements IFavoritesQueries {
 
     favoriteTeams(userId: string, season: number): SqlQuery {
         return {
-            text:`SELECT
+            text: `WITH standings AS (
+                SELECT
+                    tss.*,
+                    (ROW_NUMBER() OVER (
+                        PARTITION BY t.conference
+                        ORDER BY
+                            COALESCE(
+                                1.0 * tss.victorys / NULLIF(tss.victorys + tss.losses, 0),
+                                0
+                            ) DESC,
+                            tss.victorys DESC,
+                            t.id
+                    ))::integer AS position
+                FROM team_season_stats AS tss
+                JOIN teams AS t ON t.id = tss.team_id
+                WHERE tss.season_init_year = $2
+            )
+            SELECT
                 t.id,
                 t.logo,
                 t.name,
                 t.division,
                 tss.victorys,
                 tss.losses,
-                COALESCE(
-                    100.0 * tss.victorys / NULLIF(tss.victorys + tss.losses, 0),
-                    0
-                )::double precision AS "winRate",
-                COALESCE(
-                    1.0 * (tss.total_points - tss.total_points_allowed)
-                        / NULLIF(tss.victorys + tss.losses, 0),
-                    0
-                )::double precision AS difference,
                 tss.streak_number AS "streakNumber",
                 tss.streak_victory AS "streakVictory",
-                TRUE as "isFavorite"
-            FROM favorite_teams as ft
+                TRUE AS "isFavorite",
+                (
+                    COALESCE(
+                        100.0 * tss.total_points / NULLIF(tss.total_possessions, 0),
+                        0
+                    ) - COALESCE(
+                        100.0 * tss.total_points_allowed
+                            / NULLIF(tss.total_opponent_possessions, 0),
+                        0
+                    )
+                )::double precision AS "netRating",
+                tss.position,
+                next_game.opponent AS "nextMatch",
+                next_game.date AS "nextMatchDate",
+                COALESCE(
+                    1.0 * tss.total_points / NULLIF(tss.victorys + tss.losses, 0),
+                    0
+                )::double precision AS "pointsPerGame",
+                COALESCE(
+                    1.0 * tss.total_points_allowed / NULLIF(tss.victorys + tss.losses, 0),
+                    0
+                )::double precision AS "pointsAllowedPerGame",
+                tss.home_victory AS "homeVictorys",
+                tss.home_losses AS "homeLosses"
+            FROM favorite_teams AS ft
             JOIN teams AS t ON t.id = ft.team_id
-            JOIN team_season_stats as tss ON tss.team_id = t.id
+            JOIN standings AS tss ON tss.team_id = t.id
+            LEFT JOIN LATERAL (
+                SELECT
+                    rival.short_name AS opponent,
+                    g.date
+                FROM games AS g
+                JOIN teams AS rival ON rival.id = CASE
+                    WHEN g.home_team_id = t.id THEN g.away_team_id
+                    ELSE g.home_team_id
+                END
+                WHERE (g.home_team_id = t.id OR g.away_team_id = t.id)
+                    AND g.season_init_year = $2
+                    AND NOT g.finished
+                    AND g.date >= CURRENT_TIMESTAMP
+                ORDER BY g.date, g.id
+                LIMIT 1
+            ) AS next_game ON TRUE
             WHERE ft.user_id = $1
-                AND tss.season_init_year = $2
-            ORDER BY "winRate" DESC
+            ORDER BY tss.position, t.id
             `,
             values: [
                 userId,

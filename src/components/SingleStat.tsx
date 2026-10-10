@@ -2,7 +2,7 @@ import styles from "./SingleStat.module.css";
 
 type SingleStatProps = {
     label: string;
-    value: number | string;
+    value: number | string | null;
     color?: string;
     smallValue?: string;
 }
