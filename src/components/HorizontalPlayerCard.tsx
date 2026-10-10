@@ -28,11 +28,11 @@ export default function HorizontalPlayerCard({player, onFavoriteChange, disabled
                 <FavoriteButton type="jugadores" itemId={player.id} isFavorite={player.isFavorite} onFavoriteChange={onFavoriteChange} disabled={disabled}/>
             </div>
             <div className={styles.statsContainer}>
-                <SingleStat label="PTS" value={player.points} />
-                <SingleStat label="REB" value={player.rebounds} />
-                <SingleStat label="AST" value={player.assists} />
-                <SingleStat label="STL" value={player.steals} />
-                <SingleStat label="BLK" value={player.blocks} />
+                <SingleStat label="PTS" value={Number(player.points.toFixed(2))} />
+                <SingleStat label="REB" value={Number(player.rebounds.toFixed(2))} />
+                <SingleStat label="AST" value={Number(player.assists.toFixed(2))} />
+                <SingleStat label="STL" value={Number(player.steals.toFixed(2))} />
+                <SingleStat label="BLK" value={Number(player.blocks.toFixed(2))} />
             </div>
         </article>
     )

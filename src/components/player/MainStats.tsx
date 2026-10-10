@@ -16,7 +16,7 @@ function DataContainer({icon, label, value}: DataContainerProps) {
                 <span>{label}</span>
                 {icon}
             </dt>
-            <dd className={styles.value}>{value}</dd>
+            <dd className={styles.value}>{Number(value.toFixed(2))}</dd>
         </div>
     )
 }

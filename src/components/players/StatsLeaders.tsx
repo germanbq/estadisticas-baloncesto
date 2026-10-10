@@ -38,7 +38,7 @@ function PlayerCard(props: PlayerCardProps) {
                 <span className={styles.jersey}>#{props.jerseyNumber} {props.position}</span>
             </div>
             <div className={`${styles.metric} ${props.pos === "1" ? styles.numberOne : ""}`} >
-                {props.metric}
+                {Number(props.metric.toFixed(2))}
             </div>
         </Link>
     )

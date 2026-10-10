@@ -11,8 +11,15 @@ export class TeamsQueries implements ITeamsQueries {
                 t.division,
                 tss.victorys,
                 tss.losses,
-                tss.win_rate AS "winRate",
-                tss.difference,
+                COALESCE(
+                    100.0 * tss.victorys / NULLIF(tss.victorys + tss.losses, 0), 
+                    0
+                )::double precision AS "winRate",
+                COALESCE(
+                    1.0 * (tss.total_points - tss.total_points_allowed)
+                        / NULLIF(tss.victorys + tss.losses, 0),
+                    0
+                )::double precision AS difference,
                 tss.streak_number AS "streakNumber",
                 tss.streak_victory AS "streakVictory",
                 EXISTS (
@@ -25,7 +32,7 @@ export class TeamsQueries implements ITeamsQueries {
             JOIN team_season_stats as tss ON tss.team_id = t.id
             WHERE t.conference = $1
                 AND tss.season_init_year = $3
-            ORDER BY tss.win_rate DESC
+            ORDER BY "winRate" DESC
             `,
             values: [
                 conf,

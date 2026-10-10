@@ -13,7 +13,9 @@ export default function SingleStat({label, value, color, smallValue}: SingleStat
             <dt className={styles.statLabel}>{label}</dt>
             <dd>
                 <span className={styles.value} style={{color}}>{value}</span>
-                <span className={styles.smallValue}>{smallValue}</span>
+                {smallValue != null && smallValue !== "" && (
+                    <span className={styles.smallValue}>{smallValue}</span>
+                )}
             </dd>
         </div>
     )

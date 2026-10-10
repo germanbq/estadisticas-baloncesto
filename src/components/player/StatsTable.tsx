@@ -29,17 +29,17 @@ export default function StatsTable({stats}: {stats: PlayerProfile}) {
                         <tr key={season.season}>
                             <th>{`${String(season.season).slice(-2)}/${String(Number(season.season)+1).slice(2)}`}</th>
                             <th>{season.games}</th>
-                            <th>{season.points}</th>
-                            <th>{season.rebounds}</th>
-                            <th>{season.ofeRebounds}</th>
-                            <th>{season.defRebounds}</th>
-                            <th>{season.assists}</th>
-                            <th>{season.steals}</th>
-                            <th>{season.blocks}</th>
-                            <th>{season.turnovers}</th>
-                            <th>{season.fgPercentage}</th>
-                            <th>{season.threePercentage}</th>
-                            <th>{season.plusMinus}</th>
+                            <th>{Number(season.points.toFixed(2))}</th>
+                            <th>{Number(season.rebounds.toFixed(2))}</th>
+                            <th>{Number(season.ofeRebounds.toFixed(2))}</th>
+                            <th>{Number(season.defRebounds.toFixed(2))}</th>
+                            <th>{Number(season.assists.toFixed(2))}</th>
+                            <th>{Number(season.steals.toFixed(2))}</th>
+                            <th>{Number(season.blocks.toFixed(2))}</th>
+                            <th>{Number(season.turnovers.toFixed(2))}</th>
+                            <th>{Number(season.fgPercentage.toFixed(2))}</th>
+                            <th>{Number(season.threePercentage.toFixed(2))}</th>
+                            <th>{Number(season.plusMinus.toFixed(2))}</th>
                         </tr>
                     ))}
                 </tbody>

@@ -104,8 +104,8 @@ export default function LeaderBoard() {
                                 <td>{team.division}</td>
                                 <td>{team.victorys}</td>
                                 <td>{team.losses}</td>
-                                <td className={styles.percentage}>{team.winRate}</td>
-                                <td className={team.difference > 0 ? styles.positive : styles.negative}>{team.difference > 0 ? "+" : ""}{team.difference}</td>
+                                <td className={styles.percentage}>{Number(team.winRate.toFixed(2))}</td>
+                                <td className={team.difference > 0 ? styles.positive : styles.negative}>{team.difference > 0 ? "+" : ""}{Number(team.difference.toFixed(1))}</td>
                                 <td className={team.streakVictory ? styles.positive : styles.negative}>{team.streakVictory ? "W" : "L"}{team.streakNumber}</td>
                             </tr>
                         ))}

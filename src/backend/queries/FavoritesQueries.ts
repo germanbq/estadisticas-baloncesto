@@ -50,17 +50,9 @@ export class FavoritesQueries implements IFavoritesQueries {
             JOIN teams AS ht ON ht.id = g.home_team_id
             JOIN teams AS at ON at.id = g.away_team_id
             LEFT JOIN team_season_stats AS hts ON hts.team_id = ht.id
-                AND hts.season_init_year = EXTRACT(
-                    YEAR FROM (
-                        (g.date AT TIME ZONE 'Europe/Madrid') - INTERVAL '9 months'
-                    )
-                )::integer
+                AND hts.season_init_year = g.season_init_year
             LEFT JOIN team_season_stats AS ats ON ats.team_id = at.id
-                AND ats.season_init_year = EXTRACT(
-                    YEAR FROM (
-                        (g.date AT TIME ZONE 'Europe/Madrid') - INTERVAL '9 months'
-                    )
-                )::integer
+                AND ats.season_init_year = g.season_init_year
             WHERE fg.user_id = $1
             ORDER BY g.date DESC
             `,
@@ -80,11 +72,26 @@ export class FavoritesQueries implements IFavoritesQueries {
                 p.jersey_number as "jerseyNumber",
                 p.position,
                 p.age,
-                pss.points,
-                pss.rebounds,
-                pss.assists,
-                pss.steals,
-                pss.blocks,
+                COALESCE(
+                    1.0 * pss.total_points / NULLIF(pss.games_played, 0),
+                    0
+                )::double precision AS points,
+                COALESCE(
+                    1.0 * pss.total_rebounds / NULLIF(pss.games_played, 0),
+                    0
+                )::double precision AS rebounds,
+                COALESCE(
+                    1.0 * pss.total_assists / NULLIF(pss.games_played, 0),
+                    0
+                )::double precision AS assists,
+                COALESCE(
+                    1.0 * pss.total_steals / NULLIF(pss.games_played, 0),
+                    0
+                )::double precision AS steals,
+                COALESCE(
+                    1.0 * pss.total_blocks / NULLIF(pss.games_played, 0),
+                    0
+                )::double precision AS blocks,
                 TRUE AS "isFavorite"
             FROM favorite_players AS fp
             JOIN players AS p ON p.id = fp.player_id
@@ -93,8 +100,11 @@ export class FavoritesQueries implements IFavoritesQueries {
                 ON pss.player_id = p.id
                 AND pss.season_init_year = $2
             WHERE fp.user_id = $1
-                AND pss.season_init_year = $2
-            ORDER BY (pss.points + pss.assists*1.8 + pss.rebounds*2) DESC
+            ORDER BY COALESCE(
+                (pss.total_points + pss.total_assists * 1.8 + pss.total_rebounds * 2)
+                    / NULLIF(pss.games_played, 0),
+                0
+            ) DESC
             `,
             values: [
                 userId,
@@ -112,8 +122,15 @@ export class FavoritesQueries implements IFavoritesQueries {
                 t.division,
                 tss.victorys,
                 tss.losses,
-                tss.win_rate AS "winRate",
-                tss.difference,
+                COALESCE(
+                    100.0 * tss.victorys / NULLIF(tss.victorys + tss.losses, 0),
+                    0
+                )::double precision AS "winRate",
+                COALESCE(
+                    1.0 * (tss.total_points - tss.total_points_allowed)
+                        / NULLIF(tss.victorys + tss.losses, 0),
+                    0
+                )::double precision AS difference,
                 tss.streak_number AS "streakNumber",
                 tss.streak_victory AS "streakVictory",
                 TRUE as "isFavorite"
@@ -122,7 +139,7 @@ export class FavoritesQueries implements IFavoritesQueries {
             JOIN team_season_stats as tss ON tss.team_id = t.id
             WHERE ft.user_id = $1
                 AND tss.season_init_year = $2
-            ORDER BY tss.win_rate DESC
+            ORDER BY "winRate" DESC
             `,
             values: [
                 userId,
@@ -130,7 +147,7 @@ export class FavoritesQueries implements IFavoritesQueries {
             ],
         };
     }
-    
+
 
     addFavoriteGame(userId: string, itemId: number): SqlQuery {
         return {

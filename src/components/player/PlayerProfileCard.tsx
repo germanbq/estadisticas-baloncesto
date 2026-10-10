@@ -31,8 +31,8 @@ export default function PlayerProfileCard({stats}: {stats: PlayerProfile}) {
                 <span className={styles.country}>{stats.country}</span>
             </div>
             <dl className={styles.dataContainer}>
-                <DataContainer label="Altura" value={stats.height} unit="m"/>
-                <DataContainer label="Peso" value={stats.weight} unit="kg"/>
+                <DataContainer label="Altura" value={Number(stats.height)} unit="m"/>
+                <DataContainer label="Peso" value={Number(stats.weight)} unit="kg"/>
                 <DataContainer label="Edad" value={stats.age} unit="años"/>
                 <DataContainer label="Draft" value={stats.draft} />
             </dl>

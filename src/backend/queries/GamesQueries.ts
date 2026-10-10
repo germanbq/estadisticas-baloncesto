@@ -1,4 +1,3 @@
-import { use } from "react";
 import { IGamesQueries } from "../interfaces/gamesInterfaces";
 import { SqlQuery } from "../shared/sql.types";
 
