@@ -1,3 +1,4 @@
+import { notFound } from "next/navigation";
 import MainStats from "@/src/components/player/MainStats"
 import PlayerProfileCard from "@/src/components/player/PlayerProfileCard"
 import StatsTable from "@/src/components/player/StatsTable"
@@ -10,6 +11,10 @@ export default async function PlayerStatsPage({params}: {params: Promise<{id : s
         playersController.profileStats(Number(id)),
         playersController.lastGames(Number(id)),
     ]);
+
+    if (profileStats.status === 404) {
+        notFound();
+    }
 
     if (!profileStats.ok || !lastGames.ok) {
     throw new Error("Error al obtener los datos del jugador");
