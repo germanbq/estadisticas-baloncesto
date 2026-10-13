@@ -1,0 +1,78 @@
+.cardContainer {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    width: 80%;
+    gap: 1rem;
+}
+
+.title {
+    font-size: 1.5rem;
+    font-weight: 600;
+    line-height: 1;
+
+    display: flex;
+    flex-direction: row;
+    gap: 0.5rem;
+    align-items: center;
+}
+
+.card {
+    background-color: var(--color-components);
+    border-radius: 12px;
+    padding: 1rem;
+    font-weight: 600;
+    font-size: 1.4rem;
+    
+    display: flex;
+    flex-direction: column;
+    gap: 2rem;
+}
+
+.cardContent {
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+}
+
+.data {
+    display: flex;
+    flex-direction: row;
+    gap: 8rem;
+}
+
+.teamData {
+    display: flex;
+    flex-direction: row;
+    gap: 1rem;
+    align-items: center;
+}
+
+.jerseyNumberContainer {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+
+    gap: 2px;
+    padding: 0.8rem;
+    border-radius: 12px;
+    background-color: var(--color-table-secondary);
+}
+
+.player {
+    display: flex;
+    flex-direction: column;
+}
+
+.team {
+    color: var(--color-text-primary);
+    font-size: 0.7rem;
+    font-weight: 600;
+}
+
+.jerseyNumber {
+    font-size: 1.6rem;
+    font-weight: 700;
+    line-height: 1.1;
+}

@@ -1,0 +1,72 @@
+.comparisonBlock {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    width: 80%;
+    gap: 1rem;
+}
+
+.title {
+    font-size: 1.5rem;
+    font-weight: 600;
+    line-height: 1;
+
+    display: flex;
+    flex-direction: row;
+    gap: 0.5rem;
+    align-items: center;
+}
+
+.statsComparison {
+    display: flex;
+    flex-direction: column;
+    width: 100%;
+
+    border-radius: 12px;
+    background-color: var(--color-components);
+    padding: 1rem;
+    gap: 1rem;
+
+    font-size: 1.1rem;
+    font-weight: 600;
+}
+
+.teamNames {
+    display: flex;
+    flex-direction: row;
+    justify-content: space-between;
+}
+
+.homeValue,
+.homeName {
+    color: var(--color-blue);
+}
+
+.awayValue,
+.awayName {
+    color: var(--color-violet);
+}
+
+.rowSpans {
+    display: flex;
+    flex-direction: row;
+    justify-content: space-between;
+}
+
+.homeStreak {
+    color: var(--color-blue);
+    background-color: #103544;
+    padding: 0.3rem;
+    width: 8%;
+    border-radius: 12px;
+    text-align: center;
+}
+
+.awayStreak {
+    color: var(--color-violet);
+    background-color: #302641;
+    padding: 0.3rem;
+    width: 8%;
+    border-radius: 12px;
+    text-align: center;
+}

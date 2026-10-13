@@ -1,0 +1,115 @@
+.gamesSection {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    width: 80%;
+    gap: 1rem;
+}
+
+.title {
+    font-size: 1.5rem;
+    font-weight: 600;
+    line-height: 1;
+
+    display: flex;
+    flex-direction: row;
+    gap: 0.5rem;
+    align-items: center;
+}
+
+.game {
+    background-color: var(--color-components);
+    border-radius: 12px;
+    padding: 1rem;
+    font-weight: 600;
+    font-size: 1.1rem;
+    
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    gap: 2rem;
+}
+
+.date {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+
+    gap: 2px;
+    padding: 0.8rem;
+    border-radius: 12px;
+    background-color: var(--color-table-secondary);
+}
+
+.month {
+    color: var(--color-text-primary);
+    font-size: 0.7rem;
+    font-weight: 600;
+}
+
+.day {
+    color: #ededed;
+    font-size: 1.8rem;
+    font-weight: 700;
+    line-height: 1;
+}
+
+.data {
+    display: flex;
+    flex-direction: column;
+    font-size: 1.2rem;
+}
+
+.stadium {
+    font-size: 1rem;
+    color: var(--color-text-primary);
+}
+
+.local {
+    background-color: var(--color-background-blue);
+    color: var(--color-blue);
+}
+
+.away {
+    background-color: var(--color-background-violet);
+    color: var(--color-violet);
+}
+
+.local,
+.away {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+
+    gap: 1rem;
+    padding: 0.5rem;
+    border-radius: 12px;
+}
+
+.emptyMatchups {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 16px;
+
+  padding: 40px 24px;
+  background-color: #242933;
+  border: 1px solid rgba(255, 255, 255, 0.06);
+  border-radius: 18px;
+  text-align: center;
+}
+
+.emptyMatchups_icon {
+  color: #fda58f;
+  flex-shrink: 0;
+}
+
+.emptyMatchups p {
+  margin: 0;
+  max-width: 45ch;
+  color: #c3c9d2;
+  font-size: 16px;
+  line-height: 1.6;
+}

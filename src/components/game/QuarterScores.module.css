@@ -1,0 +1,19 @@
+.table {
+    align-self: center;
+    table-layout: fixed;
+    margin-top: 0.5rem;
+}
+
+.table tbody {
+    color: white;
+}
+
+.table th,
+.table td {
+    text-align: center;
+    padding: 0 2.25rem;
+}
+
+.green {
+    color: var(--color-green);
+}

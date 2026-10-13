@@ -63,13 +63,13 @@
 
 .positive {
     color: var(--color-green);
-    background-color: #173B32;
+    background-color: var(--color-background-green);
     
 }
 
 .negative {
     color: var(--color-text-primary);
-    background-color: #3B171D;
+    background-color: var(--color-background-red);
 }
 
 .profileLink {

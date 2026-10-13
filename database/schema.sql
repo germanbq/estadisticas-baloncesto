@@ -7,7 +7,7 @@ DROP TABLE IF EXISTS player_game_stats CASCADE;
 DROP TABLE IF EXISTS favorite_games CASCADE;
 DROP TABLE IF EXISTS favorite_players CASCADE;
 DROP TABLE IF EXISTS favorite_teams CASCADE;
-DROP FUNCTION IF EXISTS validate_player_game_team() CASCADE;
+DROP FUNCTION IF EXISTS sum_scores(SMALLINT[]) CASCADE;
 
 CREATE TABLE teams (
     id INTEGER GENERATED ALWAYS AS IDENTITY PRIMARY KEY,
@@ -78,6 +78,16 @@ CREATE TABLE player_season_stats (
     CHECK (total_three_made <= total_fg_made)
 );
 
+CREATE FUNCTION sum_scores(scores SMALLINT[])
+RETURNS BIGINT
+LANGUAGE SQL
+IMMUTABLE
+STRICT
+AS $$
+    SELECT COALESCE(SUM(score), 0)
+    FROM unnest(scores) AS quarters(score);
+$$;
+
 CREATE TABLE games (
     id INTEGER GENERATED ALWAYS AS IDENTITY PRIMARY KEY,
     home_team_id INTEGER REFERENCES teams(id) NOT NULL,
@@ -89,6 +99,8 @@ CREATE TABLE games (
     away_score INTEGER CHECK (away_score >= 0),
     home_possessions INTEGER CHECK (home_possessions >= 0),
     away_possessions INTEGER CHECK (away_possessions >= 0),
+    home_period_scores SMALLINT[],
+    away_period_scores SMALLINT[],
 
     UNiQUE(home_team_id, away_team_id, date),
     CONSTRAINT games_different_teams_id CHECK 
@@ -104,6 +116,8 @@ CREATE TABLE games (
             AND away_possessions IS NOT NULL
             AND home_possessions > 0
             AND away_possessions > 0
+            AND sum_scores(home_period_scores) = home_score
+            AND sum_scores(away_period_scores) = away_score
         )
     )
 );

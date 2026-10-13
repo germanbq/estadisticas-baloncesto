@@ -15,6 +15,11 @@
   --color-blue: #00d2ff;
   --color-green: #4edea3;
   --color-gray: #6b7280;
+  --color-violet: #A78BFA;
+  --color-background-green: #123746;
+  --color-background-red: #3B171D;
+  --color-background-blue: #123340;
+  --color-background-violet: #2D2345;
 }
 
 body {
