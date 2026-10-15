@@ -131,7 +131,7 @@ export default async function GamePage({params}: {params: Promise<{id : string}>
                         padding: 1rem;
                         display: flex;
                         flex-direction: column;
-                        gap: 2rem;
+                        gap: 1rem;
                         margin-top: 1rem;
                         align-items: center;
                     }
