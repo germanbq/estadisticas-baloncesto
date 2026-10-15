@@ -6,6 +6,7 @@ import { Game } from "@/src/backend/entities/gamesEntities";
 import DateButtons from "./DateButtons";
 import GameCard from "../GameCard";
 import GamesSkeleton from './GamesSkeleton';
+import Link from "next/link";
 
 export default function Games() {
     function getDateString(date: Date): string {
@@ -64,13 +65,15 @@ export default function Games() {
             <DateButtons date={date} setDate={setDate} getDateString={getDateString}/>
             {loadedDate !== dateKey ? <GamesSkeleton /> : <section className={styles.container}>
                 {games.map((game) => (
-                    <GameCard key={game.id} id={game.id} isFavorite={game.isFavorite} finalizado={game.finished}
-                        homeTeam={game.homeTeamName} awayTeam={game.awayTeamName}
-                        homeScore={game.homeTeamScore} awayScore={game.awayTeamScore}
-                        homeRecord={`${game.homeTeamVictorys}-${game.homeTeamLosses}`} awayRecord={`${game.awayTeamVictorys}-${game.awayTeamLosses}`}
-                        homeLogo={game.homeTeamLogo} awayLogo={game.awayTeamLogo}
-                        place={game.stadium} date={new Date(game.date)}
-                    />
+                    <Link href={`/partidos/${game.id}`} key={game.id} className={styles.gameLink}>
+                        <GameCard id={game.id} isFavorite={game.isFavorite} finalizado={game.finished}
+                            homeTeam={game.homeTeamName} awayTeam={game.awayTeamName}
+                            homeScore={game.homeTeamScore} awayScore={game.awayTeamScore}
+                            homeRecord={`${game.homeTeamVictorys}-${game.homeTeamLosses}`} awayRecord={`${game.awayTeamVictorys}-${game.awayTeamLosses}`}
+                            homeLogo={game.homeTeamLogo} awayLogo={game.awayTeamLogo}
+                            place={game.stadium} date={new Date(game.date)}
+                        />
+                    </Link>
                 ))}
             </section>}
         </div>
