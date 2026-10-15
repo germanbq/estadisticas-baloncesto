@@ -52,6 +52,7 @@ export type LastTeamGame = {
 }
 
 export type HeadToHeadGame = {
+    id: number;
     date: Date,
     homeScore: number;
     awayScore: number;

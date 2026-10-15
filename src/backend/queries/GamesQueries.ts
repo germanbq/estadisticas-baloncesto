@@ -203,6 +203,7 @@ export default class GamesQueries implements IGamesQueries {
     headToHeadGames(homeId: number, awayId: number, season: number): SqlQuery {
         return {
             text:`SELECT
+                g.id,
                 g.date,
                 g.home_score AS "homeScore",
                 g.away_score AS "awayScore",

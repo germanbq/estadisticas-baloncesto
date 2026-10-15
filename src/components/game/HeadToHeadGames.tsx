@@ -1,6 +1,7 @@
 import { HeadToHeadGame } from "@/src/backend/entities/gamesEntities";
 import { Swords, CircleCheck, CalendarX } from "lucide-react";
 import styles from './HeadToHeadGames.module.css';
+import Link from "next/link";
 
 function HTHGameCard({game, referenceTeamName}: {game: HeadToHeadGame, referenceTeamName: string}) {
     const winner = game.homeScore > game.awayScore ? game.homeName : game.awayName;
@@ -9,7 +10,7 @@ function HTHGameCard({game, referenceTeamName}: {game: HeadToHeadGame, reference
     const date = new Date(game.date);
     const month = date.toLocaleDateString("es-ES", { month: "short" }).replace(".", "").toUpperCase();
     return (
-        <article className={styles.game}>
+        <Link href={`/partidos/${game.id}`} className={styles.game}>
             <div className={styles.date}>
                 <span className={styles.month}>{month}</span>
                 <span className={styles.day}>{date.getDate()}</span>
@@ -26,7 +27,7 @@ function HTHGameCard({game, referenceTeamName}: {game: HeadToHeadGame, reference
                 <CircleCheck size={22} strokeWidth={2} aria-hidden="true" />
                 <span>Victoria {winner}</span>
             </div>  
-        </article>
+        </Link>
     )
 }
 
@@ -49,7 +50,7 @@ export default function HeadToHeadGames({games, referenceTeamName}:{games: HeadT
             : 
                 <>
                     {games.map((game, index) => (
-                        <HTHGameCard key={index} game={game} referenceTeamName={referenceTeamName}/>
+                        <HTHGameCard key={game.id} game={game} referenceTeamName={referenceTeamName}/>
                     ))}        
                 </>
             }
