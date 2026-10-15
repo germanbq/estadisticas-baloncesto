@@ -126,4 +126,61 @@ export default class GamesController {
             );
         }
     }
+
+    async gameTeamStats(teamId: number, gameId: number) {
+        if(!Number.isSafeInteger(teamId) || !Number.isSafeInteger(gameId)) {
+            return Response.json(
+                { error: "ID de equipo o partido no válido para conseguir las estadísticas del equipo" },
+                { status: 400 }
+            );
+        }
+        try{
+            const data = await this.service.gameTeamStats(teamId, gameId);
+            return Response.json({data});
+        } catch(error) {
+            console.error(error);
+            return Response.json(
+                { error: "Error al conseguir las estadisticas del equipo en el partido" },
+                { status: 500 }
+            );
+        }
+    }
+
+    async gameMVP(gameId: number) {
+        if(!Number.isSafeInteger(gameId)) {
+            return Response.json(
+                { error: "ID de partido no válido para conseguir el MVP" },
+                { status: 400 }
+            );
+        }
+        try{
+            const data = await this.service.gameMVP(gameId);
+            return Response.json({data});
+        } catch(error) {
+            console.error(error);
+            return Response.json(
+            { error: "Error al conseguir el MVP del partido" },
+            { status: 500 }
+            );
+        }
+    }
+
+    async playersStats(gameId: number, teamId: number) {
+        if(!Number.isSafeInteger(gameId) || !Number.isSafeInteger(teamId)) {
+            return Response.json(
+                { error: "ID de equipo o partido no válido para conseguir las estadísticas de los jugadores" },
+                { status: 400 }
+            );
+        }
+        try{
+            const data = await this.service.playersStats(gameId, teamId);
+            return Response.json({data});
+        } catch(error) {
+            console.error(error);
+            return Response.json(
+                { error: "Error al conseguir las estadisticas de los jugadores" },
+                { status: 500 }
+            );
+        }
+    }
 }

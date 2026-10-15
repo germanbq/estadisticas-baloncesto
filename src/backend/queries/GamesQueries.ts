@@ -275,4 +275,133 @@ export default class GamesQueries implements IGamesQueries {
             values: [teamId, season],
         };
     }
+
+    gameTeamStats(teamId: number, gameId: number): SqlQuery {
+        return {
+            text: `SELECT
+                fg_made AS "fgMade",
+                fg_attempted AS "fgAttempted",
+                three_made AS "threeMade",
+                three_attempted AS "threeAttempted",
+                ft_made AS "ftMade",
+                ft_attempted AS "ftAttempted",
+                paint_points AS "paintPoints",
+                fastbreak_points AS "fastbreakPoints",
+                bench_points AS "benchPoints",
+                second_chance_points AS "secondChancePoints",
+                effective_field_goal_percentage::double precision AS "effectiveFieldGoal",
+                true_shooting_percentage::double precision AS "trueShooting",
+                offensive_rating AS "offensiveRating",
+                defensive_rating AS "defensiveRating",
+                rebounds,
+                assists,
+                steals,
+                tapones,
+                turnovers,
+                personal_fouls AS "personalFouls"
+            FROM team_game_stats
+            WHERE team_id = $1 AND game_id = $2
+            `,
+            values: [
+                teamId, 
+                gameId
+            ],
+        };
+    }
+
+    gameMVP(gameId: number): SqlQuery {
+        return {
+            text: `WITH scored_players AS (
+                    SELECT
+                        s.*,
+                        (
+                            s.points
+                            + 0.4 * s.fg_made
+                            - 0.7 * s.fg_attempted
+                            + 0.4 * s.three_made
+                            - 0.6 * s.three_attempted
+                            + 0.7 * s.ofe_rebounds
+                            + 0.3 * s.def_rebounds
+                            + s.assists
+                            + 0.7 * s.steals
+                            + 0.7 * s.blocks
+                            - s.turnovers
+                            + 0.2 * s.plusminus
+                        ) AS mvp_score
+                    FROM player_game_stats AS s
+                    JOIN games AS g ON g.id = s.game_id
+                    WHERE s.game_id = $1
+                    AND g.finished
+                    AND s.seconds_played > 0
+                    )
+                SELECT
+                    sp.team_id AS "teamId",
+                    sp.player_id AS "playerId",
+                    p.name AS "playerName",
+                    t.short_name AS "teamShortName",
+                    p.jersey_number AS "jerseyNumber",
+                    p.position,
+                    sp.points,
+                    sp.rebounds,
+                    sp.assists,
+                    sp.steals,
+                    sp.blocks,
+                    sp.seconds_played AS "secondsPlayed",
+                    sp.plusminus AS "plusMinus",
+                    sp.fg_made AS "fgMade",
+                    sp.fg_attempted AS "fgAttempted",
+                    sp.three_made AS "threeMade",
+                    sp.three_attempted AS "threeAttempted",
+                    sp.ft_made AS "ftMade",
+                    sp.ft_attempted AS "ftAttempted"
+                FROM scored_players AS sp
+                JOIN players AS p ON p.id = sp.player_id
+                JOIN teams AS t ON t.id = sp.team_id
+                ORDER BY
+                    mvp_score DESC,
+                    points DESC,
+                    player_id ASC
+                LIMIT 1;
+                `,
+                values: [
+                    gameId
+                ],
+        };
+    }
+
+   playersStats(gameId: number, teamId: number): SqlQuery {
+        return {
+            text: `SELECT
+                p.name,
+                pgs.player_id AS "playerId",
+                pgs.seconds_played AS "secondsPlayed",
+                pgs.points,
+                pgs.rebounds,
+                pgs.ofe_rebounds AS "ofeRebounds",
+                pgs.def_rebounds AS "defRebounds",
+                pgs.assists,
+                pgs.steals,
+                pgs.blocks,
+                pgs.turnovers,
+                pgs.plusminus AS "plusMinus",
+                COALESCE(
+                    100.0 * pgs.fg_made / NULLIF(pgs.fg_attempted, 0),
+                    0
+                )::double precision AS "fgPercentage",
+                COALESCE(
+                    100.0 * pgs.three_made / NULLIF(pgs.three_attempted, 0),
+                    0
+                )::double precision AS "threePercentage"
+            FROM player_game_stats AS pgs
+            JOIN players AS p ON p.id = pgs.player_id
+            WHERE pgs.game_id = $1
+                AND pgs.team_id = $2
+            ORDER BY p.name DESC
+            `,
+            values: [
+                gameId,
+                teamId,
+            ],
+        };
+    }
 }

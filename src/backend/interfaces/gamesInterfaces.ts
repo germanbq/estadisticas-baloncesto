@@ -1,4 +1,4 @@
-import { Game, GameProfile, GamesNum, HeadToHeadGame, LastTeamGame, StatLeader } from "../entities/gamesEntities";
+import { Game, GameMVP, GameProfile, GamesNum, GameTeamStats, HeadToHeadGame, LastTeamGame, PlayerStats, StatLeader } from "../entities/gamesEntities";
 import { SqlQuery } from "../shared/sql.types";
 
 export interface IGamesQueries {
@@ -8,6 +8,9 @@ export interface IGamesQueries {
     lastTeamGames(id: number): SqlQuery;
     headToHeadGames(homeId: number, awayId: number, season: number): SqlQuery;
     statsLeaders(teamId: number, season: number): SqlQuery;
+    gameTeamStats(teamId: number, gameId: number): SqlQuery;
+    gameMVP(gameId: number): SqlQuery;
+    playersStats(gameId: number, teamId: number): SqlQuery;
 }
 
 export interface IGamesRepository {
@@ -17,4 +20,7 @@ export interface IGamesRepository {
     lastTeamGames(id: number): Promise<LastTeamGame[]>;
     headToHeadGames(homeId: number, awayId: number, season: number): Promise<HeadToHeadGame[]>;
     statsLeaders(teamId: number, season: number): Promise<StatLeader[]>;
+    gameTeamStats(teamId: number, gameId: number): Promise<GameTeamStats>;
+    gameMVP(gameId: number): Promise<GameMVP>;
+    playersStats(gameId: number, teamId: number): Promise<PlayerStats[]>;
 }

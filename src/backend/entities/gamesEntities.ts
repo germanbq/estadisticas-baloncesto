@@ -65,3 +65,65 @@ export type StatLeader = {
     name: string;
     jerseyNumber: string;
 }
+
+export type GameTeamStats = {
+    fgMade: number;
+    fgAttempted: number;
+    threeMade: number;
+    threeAttempted: number;
+    ftMade: number;
+    ftAttempted: number;
+    paintPoints: number;
+    fastbreakPoints: number;
+    benchPoints: number;
+    secondChancePoints: number;
+    effectiveFieldGoal: number;
+    trueShooting: number;
+    offensiveRating: number;
+    defensiveRating: number;
+    rebounds: number;
+    assists: number;
+    steals: number;
+    tapones: number;
+    turnovers: number;
+    personalFouls: number;
+}
+
+export type GameMVP = {
+    teamId: number,
+    playerId: number,
+    playerName: string,
+    teamShortName: string;
+    jerseyNumber: number;
+    position: string;
+    points: number;
+    rebounds: number;
+    assists: number;
+    steals: number;
+    blocks: number;
+    secondsPlayed: number;
+    plusMinus: number;
+    fgMade: number;
+    fgAttempted: number;
+    threeMade: number;
+    threeAttempted: number;
+    ftMade: number;
+    ftAttempted: number;
+}
+
+export type PlayerStats = {
+    name: string;
+    playerId: number;
+    secondsPlayed: number;
+    points: number;
+    rebounds: number;
+    ofeRebounds: number;
+    defRebounds: number;
+    assists: number;
+    steals: number;
+    blocks: number;
+    turnovers: number;
+    plusMinus: number;
+    fgPercentage: number;
+    threePercentage: number;
+}

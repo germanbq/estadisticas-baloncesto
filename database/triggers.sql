@@ -39,8 +39,6 @@ BEGIN
                     NEW.home_team_id,
                     NEW.home_score,
                     NEW.away_score,
-                    NEW.home_possessions,
-                    NEW.away_possessions,
                     TRUE,
                     NEW.home_score > NEW.away_score
                 ),
@@ -48,14 +46,11 @@ BEGIN
                     NEW.away_team_id,
                     NEW.away_score,
                     NEW.home_score,
-                    NEW.away_possessions,
-                    NEW.home_possessions,
                     FALSE,
                     NEW.away_score > NEW.home_score
                 )
         ) AS t(
             team_id, scored, allowed,
-            possessions, opponent_possessions,
             is_home, won
         )
         ORDER BY t.team_id
@@ -64,7 +59,6 @@ BEGIN
             team_id, season_init_year,
             victorys, losses, home_victory, home_losses,
             total_points, total_points_allowed,
-            total_possessions, total_opponent_possessions,
             streak_number, streak_victory
         )
         VALUES (
@@ -74,7 +68,6 @@ BEGIN
             (v_team.is_home AND v_team.won)::INTEGER,
             (v_team.is_home AND NOT v_team.won)::INTEGER,
             v_team.scored, v_team.allowed,
-            v_team.possessions, v_team.opponent_possessions,
             1, v_team.won
         )
         ON CONFLICT (team_id, season_init_year)
@@ -86,11 +79,6 @@ BEGIN
             total_points = s.total_points + EXCLUDED.total_points,
             total_points_allowed =
                 s.total_points_allowed + EXCLUDED.total_points_allowed,
-            total_possessions =
-                s.total_possessions + EXCLUDED.total_possessions,
-            total_opponent_possessions =
-                s.total_opponent_possessions
-                + EXCLUDED.total_opponent_possessions,
             streak_number = CASE
                 WHEN s.streak_victory = EXCLUDED.streak_victory
                     THEN s.streak_number + 1

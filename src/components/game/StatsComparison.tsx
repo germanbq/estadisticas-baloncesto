@@ -46,7 +46,7 @@ function StatsComparisonRow(props: StatsComparisonRowProps) {
         awayPercentage = 100 - homePercentage;
     } else if(props.label === "Net Rating") {
         const difference = props.homeValue - props.awayValue;
-        const sensitivity = 2;
+        const sensitivity = 1.3;
 
         homePercentage = Math.max(
             0,

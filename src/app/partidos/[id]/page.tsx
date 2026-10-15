@@ -7,6 +7,9 @@ import GameCard from "@/src/components/GameCard";
 import LastGamesComparison from "@/src/components/game/LastGamesComparison";
 import HeadToHeadGames from "@/src/components/game/HeadToHeadGames";
 import StatsLeadersComparison from "@/src/components/game/StatsLeadersComparison";
+import FinishedTeamStatsComparison from "@/src/components/game/FinishedTeamStatsComparison";
+import MVPCard from "@/src/components/game/MVPCard";
+import PlayersStats from "@/src/components/game/PlayersStats";
 
 
 export default async function GamePage({params}: {params: Promise<{id : string}>;}) {
@@ -72,6 +75,52 @@ export default async function GamePage({params}: {params: Promise<{id : string}>
                 <HeadToHeadGames games={hthGames} referenceTeamName={game.homeTeamName}/>
                 <LastGamesComparison homeGames={homeGames} awayGames={awayGames} homeName={game.homeTeamName} awayName={game.awayTeamName}/>
                 <StatsLeadersComparison homeLeaders={homeLeaders} awayLeaders={awayLeaders} homeName={game.homeShortName} awayName={game.awayShortName} />
+            </>
+        )
+    } else {
+        const [homeStatsResponse, awayStatsResponse, MVPResponse, homePlayersResponse, awayPlayersResponse] = await Promise.all([
+            gamesController.gameTeamStats(game.homeTeamId, Number(id)),
+            gamesController.gameTeamStats(game.awayTeamId, Number(id)),
+            gamesController.gameMVP(Number(id)),
+            gamesController.playersStats(Number(id), game.homeTeamId),
+            gamesController.playersStats(Number(id), game.awayTeamId),
+        ]);
+
+        const [homeStatsResult, awayStatsResult, MVPResult, homePlayersResult, awayPlayersResult] = await Promise.all([
+            homeStatsResponse.json(),
+            awayStatsResponse.json(),
+            MVPResponse.json(),
+            homePlayersResponse.json(),
+            awayPlayersResponse.json(),
+        ]);
+
+        if (!homeStatsResponse.ok) {
+            throw new Error(homeStatsResult.error);
+        }
+        if (!awayStatsResponse.ok) {
+            throw new Error(awayStatsResult.error);
+        }
+        if (!MVPResponse.ok) {
+            throw new Error(MVPResult.error);
+        }
+        if (!homePlayersResponse.ok) {
+            throw new Error(homePlayersResult.error);
+        }
+        if (!awayPlayersResponse.ok) {
+            throw new Error(awayPlayersResult.error);
+        }
+
+        const homeStats = homeStatsResult.data;
+        const awayStats = awayStatsResult.data;
+        const gameMVP = MVPResult.data;
+        const homePlayers = homePlayersResult.data;
+        const awayPlayers = awayPlayersResult.data;
+
+        content = (
+            <>
+                <MVPCard player={gameMVP} home={gameMVP.teamId === game.homeTeamId}/>
+                <FinishedTeamStatsComparison homeStats={homeStats} awayStats={awayStats} homeName={game.homeTeamName} awayName={game.awayTeamName}/>
+                <PlayersStats homePlayers={homePlayers} awayPlayers={awayPlayers} homeName={game.homeTeamName} awayName={game.awayTeamName}/>
             </>
         )
     }

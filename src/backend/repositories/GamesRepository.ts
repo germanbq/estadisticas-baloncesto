@@ -1,4 +1,4 @@
-import { Game, GameProfile, GamesNum, HeadToHeadGame, LastTeamGame, StatLeader } from "../entities/gamesEntities";
+import { Game, GameMVP, GameProfile, GamesNum, GameTeamStats, HeadToHeadGame, LastTeamGame, PlayerStats, StatLeader } from "../entities/gamesEntities";
 import { IGamesQueries, IGamesRepository } from "../interfaces/gamesInterfaces";
 import { IQueryExecutor } from "../shared/sql.types";
 
@@ -43,6 +43,27 @@ export default class GamesRepository implements IGamesRepository {
     async statsLeaders(teamId: number, season: number): Promise<StatLeader[]> {
         const query = this.queries.statsLeaders(teamId, season);
         const result = await this.executor.query<StatLeader>(query.text, query.values);
+
+        return result;
+    }
+
+    async gameTeamStats(teamId: number, gameId: number): Promise<GameTeamStats> {
+        const query = this.queries.gameTeamStats(teamId, gameId);
+        const result = await this.executor.query<GameTeamStats>(query.text, query.values);
+
+        return result[0];
+    }
+
+    async gameMVP(gameId: number): Promise<GameMVP> {
+        const query = this.queries.gameMVP(gameId);
+        const result = await this.executor.query<GameMVP>(query.text, query.values);
+
+        return result[0];
+    }
+
+    async playersStats(gameId: number, teamId: number): Promise<PlayerStats[]> {
+        const query = this.queries.playersStats(gameId, teamId);
+        const result = await this.executor.query<PlayerStats>(query.text, query.values);
 
         return result;
     }

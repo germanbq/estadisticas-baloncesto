@@ -3,6 +3,7 @@ DROP TABLE IF EXISTS team_season_stats CASCADE;
 DROP TABLE IF EXISTS players CASCADE;
 DROP TABLE IF EXISTS player_season_stats CASCADE;
 DROP TABLE IF EXISTS games CASCADE;
+DROP TABLE IF EXISTS team_game_stats CASCADE;
 DROP TABLE IF EXISTS player_game_stats CASCADE;
 DROP TABLE IF EXISTS favorite_games CASCADE;
 DROP TABLE IF EXISTS favorite_players CASCADE;
@@ -97,8 +98,6 @@ CREATE TABLE games (
     finished BOOLEAN NOT NULL,
     home_score INTEGER CHECK (home_score >= 0),
     away_score INTEGER CHECK (away_score >= 0),
-    home_possessions INTEGER CHECK (home_possessions >= 0),
-    away_possessions INTEGER CHECK (away_possessions >= 0),
     home_period_scores SMALLINT[],
     away_period_scores SMALLINT[],
 
@@ -112,14 +111,38 @@ CREATE TABLE games (
             AND home_score >= 0
             AND away_score >= 0
             AND home_score <> away_score
-            AND home_possessions IS NOT NULL
-            AND away_possessions IS NOT NULL
-            AND home_possessions > 0
-            AND away_possessions > 0
             AND sum_scores(home_period_scores) = home_score
             AND sum_scores(away_period_scores) = away_score
         )
     )
+);
+
+CREATE TABLE team_game_stats (
+    team_id INTEGER REFERENCES teams(id),
+    game_id INTEGER REFERENCES games(id),
+    possessions INTEGER NOT NULL CHECK (possessions >= 0),
+    fg_made INTEGER NOT NULL CHECK (fg_made >= 0),
+    fg_attempted INTEGER NOT NULL CHECK (fg_attempted >= 0),
+    three_made INTEGER NOT NULL CHECK (three_made >= 0),
+    three_attempted INTEGER NOT NULL CHECK (three_attempted >= 0),
+    ft_made INTEGER NOT NULL CHECK (ft_made >= 0),
+    ft_attempted INTEGER NOT NULL CHECK (ft_attempted >= 0),
+    paint_points INTEGER NOT NULL CHECK (paint_points >= 0),
+    fastbreak_points INTEGER NOT NULL CHECK (fastbreak_points >= 0),
+    bench_points INTEGER NOT NULL CHECK (bench_points >= 0),
+    second_chance_points INTEGER NOT NULL CHECK (second_chance_points >= 0),
+    effective_field_goal_percentage NUMERIC(5,2) NOT NULL CHECK (effective_field_goal_percentage >= 0),
+    true_shooting_percentage NUMERIC(5,2) NOT NULL CHECK (true_shooting_percentage >= 0),
+    offensive_rating INTEGER NOT NULL CHECK (offensive_rating >= 0),
+    defensive_rating INTEGER NOT NULL CHECK (defensive_rating >= 0),
+    rebounds INTEGER NOT NULL CHECK (rebounds >= 0),
+    assists INTEGER NOT NULL CHECK (assists >= 0),
+    steals INTEGER NOT NULL CHECK (steals >= 0),
+    tapones INTEGER NOT NULL CHECK (tapones >= 0), 
+    turnovers INTEGER NOT NULL CHECK (turnovers >= 0),
+    personal_fouls INTEGER NOT NULL CHECK (personal_fouls >= 0),
+
+    PRIMARY KEY (team_id, game_id)
 );
 
 CREATE TABLE player_game_stats (
@@ -140,6 +163,8 @@ CREATE TABLE player_game_stats (
     fg_attempted INTEGER NOT NULL CHECK (fg_attempted >= 0),
     three_made INTEGER NOT NULL CHECK (three_made >= 0),
     three_attempted INTEGER NOT NULL CHECK (three_attempted >= 0),
+    ft_made INTEGER NOT NULL CHECK (ft_made >= 0),
+    ft_attempted INTEGER NOT NULL CHECK (ft_attempted >= 0),
 
     PRIMARY KEY(player_id, game_id),
 
@@ -147,7 +172,6 @@ CREATE TABLE player_game_stats (
     CHECK (fg_attempted >= fg_made),
     CHECK (three_attempted >= three_made AND three_attempted <= fg_attempted),
     CHECK (three_made <= fg_made)
-
 );
 
 CREATE TABLE favorite_players (

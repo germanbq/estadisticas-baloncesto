@@ -1,4 +1,4 @@
-import { Game, GameProfile, GamesNum, HeadToHeadGame, LastTeamGame, StatLeader } from "../entities/gamesEntities";
+import { Game, GameMVP, GameProfile, GamesNum, GameTeamStats, HeadToHeadGame, LastTeamGame, PlayerStats, StatLeader } from "../entities/gamesEntities";
 import { IGamesRepository } from "../interfaces/gamesInterfaces";
 import { ACTUAL_SEASON } from "../rules/rules";
 
@@ -27,5 +27,17 @@ export default class GamesService {
 
     statsLeaders(teamId: number): Promise<StatLeader[]> {
         return this.repository.statsLeaders(teamId, ACTUAL_SEASON);
+    }
+
+    gameTeamStats(teamId: number, gameId: number): Promise<GameTeamStats> {
+        return this.repository.gameTeamStats(teamId, gameId);
+    }
+
+    gameMVP(teamId: number): Promise<GameMVP> {
+        return this.repository.gameMVP(teamId);
+    }
+
+    playersStats(gameId: number, teamId: number): Promise<PlayerStats[]> {
+        return this.repository.playersStats(gameId, teamId);
     }
 }
