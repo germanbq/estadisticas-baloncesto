@@ -111,6 +111,8 @@ CREATE TABLE games (
             AND home_score >= 0
             AND away_score >= 0
             AND home_score <> away_score
+            AND home_period_scores IS NOT NULL
+            AND away_period_scores IS NOT NULL
             AND sum_scores(home_period_scores) = home_score
             AND sum_scores(away_period_scores) = away_score
         )
@@ -142,7 +144,13 @@ CREATE TABLE team_game_stats (
     turnovers INTEGER NOT NULL CHECK (turnovers >= 0),
     personal_fouls INTEGER NOT NULL CHECK (personal_fouls >= 0),
 
-    PRIMARY KEY (team_id, game_id)
+    PRIMARY KEY (team_id, game_id),
+
+    CHECK (fg_attempted >= fg_made),
+    CHECK (three_attempted >= three_made),
+    CHECK (three_attempted <= fg_attempted),
+    CHECK (three_made <= fg_made),
+    CHECK (ft_attempted >= ft_made)
 );
 
 CREATE TABLE player_game_stats (
@@ -171,7 +179,8 @@ CREATE TABLE player_game_stats (
     CHECK (rebounds = ofe_rebounds + def_rebounds),
     CHECK (fg_attempted >= fg_made),
     CHECK (three_attempted >= three_made AND three_attempted <= fg_attempted),
-    CHECK (three_made <= fg_made)
+    CHECK (three_made <= fg_made),
+    CHECK (ft_attempted >= ft_made)
 );
 
 CREATE TABLE favorite_players (

@@ -99,6 +99,73 @@ FOR EACH ROW
 WHEN (NEW.finished)
 EXECUTE FUNCTION update_team_season_stats();
 
+CREATE TRIGGER trg_finish_game_update_team_season_stats
+AFTER UPDATE OF finished ON games
+FOR EACH ROW
+WHEN (NOT OLD.finished AND NEW.finished)
+EXECUTE FUNCTION update_team_season_stats();
+
+CREATE OR REPLACE FUNCTION update_team_season_stats_from_game_stats()
+RETURNS TRIGGER
+LANGUAGE plpgsql
+AS $$
+DECLARE
+    v_game RECORD;
+    v_opponent_id INTEGER;
+BEGIN
+    SELECT season_init_year, home_team_id, away_team_id, finished
+    INTO v_game
+    FROM games
+    WHERE id = NEW.game_id;
+
+    IF NOT FOUND THEN
+        RAISE EXCEPTION 'El partido no existe';
+    END IF;
+
+    IF NEW.team_id = v_game.home_team_id THEN
+        v_opponent_id := v_game.away_team_id;
+    ELSIF NEW.team_id = v_game.away_team_id THEN
+        v_opponent_id := v_game.home_team_id;
+    ELSE
+        RAISE EXCEPTION 'El equipo no participa en este partido';
+    END IF;
+
+    INSERT INTO team_season_stats AS tss (
+        team_id,
+        season_init_year,
+        total_possessions,
+        total_opponent_possessions
+    )
+    SELECT
+        totals.team_id,
+        v_game.season_init_year,
+        totals.possessions,
+        totals.opponent_possessions
+    FROM (
+        VALUES
+            (NEW.team_id, NEW.possessions, 0),
+            (v_opponent_id, 0, NEW.possessions)
+    ) AS totals(team_id, possessions, opponent_possessions)
+    ORDER BY totals.team_id
+    ON CONFLICT (team_id, season_init_year)
+    DO UPDATE SET
+        total_possessions =
+            tss.total_possessions + EXCLUDED.total_possessions,
+        total_opponent_possessions =
+            tss.total_opponent_possessions
+            + EXCLUDED.total_opponent_possessions;
+
+    RETURN NULL;
+END;
+$$;
+
+DROP TRIGGER IF EXISTS trg_update_team_season_stats_from_game_stats
+ON team_game_stats;
+
+CREATE TRIGGER trg_update_team_season_stats_from_game_stats
+AFTER INSERT ON team_game_stats
+FOR EACH ROW
+EXECUTE FUNCTION update_team_season_stats_from_game_stats();
 
 
 CREATE OR REPLACE FUNCTION update_player_season_stats()
@@ -112,6 +179,10 @@ BEGIN
     INTO v_season_init_year
     FROM games
     WHERE id = NEW.game_id;
+
+    IF NOT FOUND THEN
+        RAISE EXCEPTION 'El partido no existe';
+    END IF;
 
     INSERT INTO player_season_stats AS p (
         player_id, season_init_year, total_points, total_rebounds, 
