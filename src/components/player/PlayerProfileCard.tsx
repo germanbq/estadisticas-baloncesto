@@ -2,6 +2,7 @@ import Image from "next/image";
 import styles from "./PlayerProfileCard.module.css";
 import { PlayerProfile } from "@/src/backend/entities/playersEntities";
 import FavoriteButton from "../FavoriteButton";
+import Link from "next/link";
 
 type DataContainerProps = {
     label: string;
@@ -23,7 +24,7 @@ export default function PlayerProfileCard({stats}: {stats: PlayerProfile}) {
         <article className={styles.card}>
             <Image src={stats.image} alt={`Imagen ${stats.name}`} width={120} height={120} className={styles.image} loading="eager"/>
             <div className={styles.labels}>
-                <span className={styles.team}>{stats.team}</span>
+                <Link href={`/equipos/${stats.teamId}`} className={styles.team}>{stats.team}</Link>
                 <span className={styles.jerseyNumber}># {stats.jerseyNumber} {stats.position}</span>
             </div>
             <div className={styles.nameAndCountry}>

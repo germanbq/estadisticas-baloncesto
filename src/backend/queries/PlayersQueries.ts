@@ -58,6 +58,7 @@ export class PlayersQueries implements IPlayersQueries {
                 p.age,
                 p.draft,
                 t.name AS team,
+                t.id AS "teamId",
                 COALESCE(
                     (
                         SELECT jsonb_agg(

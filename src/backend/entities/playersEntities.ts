@@ -28,6 +28,7 @@ export type PlayerSeasonStats = {
 }
 
 export type PlayerProfile = Player & {
+    teamId: number;
     country: string;
     height: number;
     weight: number;
