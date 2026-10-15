@@ -36,7 +36,7 @@ export default function MVPCard({player, home}: {player: GameMVP, home: boolean}
                 <CircleStar size={25} strokeWidth={2} aria-hidden="true" />
                 MVP del partido
             </span>
-            <article className={styles.article}>
+            <article className={`${styles.article} ${home ? styles.home : styles.away}`}>
                 <div className={styles.playerData}>
                     <div className={styles.jerseyNumberContainer}>
                         <span className={styles.team} style={{color}}>{player.teamShortName}</span>

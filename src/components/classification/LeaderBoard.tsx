@@ -8,6 +8,7 @@ import { Sunrise, Sunset } from "lucide-react";
 import { usePathname, useRouter, useSearchParams } from "next/navigation";
 import { Team } from "@/src/backend/entities/teamsEntities";
 import FavoriteButton from "../FavoriteButton";
+import Link from "next/link";
 
 type StandingLabelProps = {
     text: string;
@@ -22,7 +23,9 @@ function StandingLabel({text, className}: StandingLabelProps) {
         </div>
     )
 }
-export default function LeaderBoard() {
+export default function LeaderBoard({season}: {season: number}) {
+    const endingYear = season+1;
+
     const router = useRouter();
     const pathname = usePathname();
     const searchParams = useSearchParams();
@@ -65,7 +68,7 @@ export default function LeaderBoard() {
 
     return (
         <section className={styles.section}>
-            <span className={styles.seasonSpan}>Temporada regular 2025-2026</span>
+            <span className={styles.seasonSpan}>Temporada regular {season}-{endingYear}</span>
             <div className={styles.buttonsContainer}>
                 <FilterButton icon={<Sunrise />} value="CONFERENCIA ESTE" selected={conf} setSelected={setConf} className={styles.button} activeClassName={styles.active} selectedValue="East"/>
                 <FilterButton icon={<Sunset />} value="CONFERENCIA OESTE" selected={conf} setSelected={setConf} className={styles.button} activeClassName={styles.active} selectedValue="West"/>
@@ -96,8 +99,10 @@ export default function LeaderBoard() {
                                 <td><span className={styles.positionBadge}>{index+1}</span></td>
                                 <td>
                                     <div className={styles.logoAndName}>
-                                        <Image src={team.logo} className={styles.teamLogo} alt={`Logo ${team.name}`} width={0} height={0}/>
-                                        <span>{team.name}</span>
+                                        <Link href={`/equipos/${team.id}`} className={styles.teamLink}>
+                                            <Image src={team.logo} className={styles.teamLogo} alt={`Logo ${team.name}`} width={0} height={0}/>
+                                            <span>{team.name}</span>
+                                        </Link>
                                         <FavoriteButton type="equipos" itemId={team.id} isFavorite={team.isFavorite} />
                                     </div>
                                 </td>

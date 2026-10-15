@@ -1,10 +1,10 @@
 .page {
   display: flex;
   flex-direction: column;
-  gap: 24px;
+  gap: 1rem;
 
   min-height: 100vh;
-  padding: 14px 16px;
+  padding: 1rem;
 
   background-color: #0e1116;
 }
@@ -52,6 +52,14 @@
 
   background-color: #252a33;
   border-radius: 10px;
+}
+
+.profileCard,
+.statsSection,
+.tableSection {
+  width: 80%;
+  min-width: 0;
+  margin-inline: auto;
 }
 
 .avatar {
@@ -123,7 +131,8 @@
 }
 
 .sectionTitle {
-  width: 275px;
+  width: min(275px, 100%);
+  margin-inline: auto;
   height: 22px;
 }
 

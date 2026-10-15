@@ -8,6 +8,9 @@
     padding: 0.8rem 3rem;
 
     position: relative;
+
+    width: 80%;
+    margin-inline: auto;
 }
 
 .articleHeader {
@@ -42,13 +45,42 @@
     line-height: 1;
 }
 
+.badges {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 0.5rem;
+}
+
+.badge {
+    display: inline-flex;
+    align-items: center;
+    padding: 0.4rem 0.75rem;
+    border-radius: 999px;
+    font-size: 0.95rem;
+    font-weight: 800;
+    line-height: 1.2;
+    text-transform: uppercase;
+}
+
+.teamBadge {
+    background-color: var(--color-background-blue);
+    color: var(--color-blue);
+}
+
+.numberBadge {
+    background-color: color-mix(in srgb, var(--color-orange) 15%, var(--color-components));
+    color: var(--color-text-primary);
+}
+
 .image {
     border-radius: 12px;
 }
 
 .name {
     color: white;
-    font-size: 1.4rem;
+    font-size: 1.8rem;
+    font-weight: 800;
 }
 
 .profileLink {

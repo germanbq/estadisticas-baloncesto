@@ -8,7 +8,7 @@
 
 .title {
     font-size: 1.5rem;
-    font-weight: 600;
+    font-weight: 900;
     line-height: 1;
 
     display: flex;
@@ -25,9 +25,17 @@
     padding: 1rem;
     border-radius: 12px;
     width: 100%;
-    background-color: var(--color-components);
+    background: linear-gradient(125deg, var(--color-components), var(--gradient-end));
 
     font-weight: 600;
+}
+
+.home {
+    --gradient-end: color-mix(in srgb, var(--color-blue) 12%, var(--color-components));
+}
+
+.away {
+    --gradient-end: color-mix(in srgb, var(--color-violet) 18%, var(--color-components));
 }
 
 .jerseyNumberContainer {
@@ -81,6 +89,7 @@
 .playerName {
     font-size: 1.8rem;
     line-height: 1.1;
+    font-weight: 800;
 }
 
 .position {

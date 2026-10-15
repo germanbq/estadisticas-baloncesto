@@ -16,7 +16,10 @@ export default function HorizontalPlayerCard({player, onFavoriteChange, disabled
                     <Image src={player.image} alt={player.name} width={80} height={80} className={styles.image}/>
                     <div className={styles.personalInformation}>
                         <span className={styles.name}>{player.name}</span>
-                        <span className={styles.teams}>{player.team} · #{player.jerseyNumber} · {player.position}</span>
+                        <div className={styles.badges}>
+                            <span className={`${styles.badge} ${styles.teamBadge}`}>{player.team}</span>
+                            <span className={`${styles.badge} ${styles.numberBadge}`}>#{player.jerseyNumber} · {player.position}</span>
+                        </div>
                     </div>
                 </div>
                 <Link href={`/jugadores/${player.id}`} className={styles.profileLink}>

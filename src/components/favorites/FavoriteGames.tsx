@@ -1,4 +1,3 @@
-import stylesCont from "../app/Games.module.css"
 import styles from "./FavoriteGames.module.css"
 import GameCard from "../GameCard"
 import { useEffect, useState } from "react";
@@ -35,7 +34,7 @@ export default function FavoriteGames({onFavoriteChange, disabled}:
     }, []);
     
     return (
-        <section className={stylesCont.container}>
+        <section style={{ display: "flex", flexDirection: "column", alignItems: "center", gap: "2rem" }}>
             {games.map((game) => (
                 <Link href={`/partidos/${game.id}`} key={game.id} className={styles.gameLink}>
                     <GameCard id={game.id} isFavorite={game.isFavorite} disabled={disabled}

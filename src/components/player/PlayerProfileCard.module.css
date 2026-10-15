@@ -2,13 +2,17 @@
     display: flex;
     flex-direction: column;
     align-items: center;
-    gap: 1rem;
+    gap: 0.6rem;
     
-    background-color: var(--color-components);
+    background: linear-gradient(115deg, #292222, #1c2026 50%, #14272d);
     padding: 1rem 0;
     border-radius: 10px;
 
     position: relative;
+    width: 80%;
+    margin-inline: auto;
+
+    font-weight: 600;
 }
 
 .image {
@@ -19,6 +23,8 @@
     display: flex;
     flex-direction: row;
     gap: 1rem;
+    font-weight: 800;
+    text-transform: uppercase;
 }
 
 .jerseyNumber {
@@ -29,24 +35,27 @@
 }
 
 .team {
-    color: var(--colo-blue);
+    color: var(--color-blue);
     background-color: #102A38;
     padding: 0 0.5rem;
     border-radius: 10px;
+    font-size: 0.95rem;
 }
 
 .nameAndCountry{
     display: flex;
     flex-direction: column;
     align-items: center;
+    gap: 0.4rem;
 }
 
 .name {
-    font-size: 2.5rem;
+    font-size: 2.3rem;
     font-weight: bold;
     line-height: 1;
+    font-weight: 800;
+    
 }
-
 
 .country {
     color: var(--color-text-primary);

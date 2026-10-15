@@ -1,4 +1,5 @@
 import LeaderBoard from "@/src/components/classification/LeaderBoard"
+import { ACTUAL_SEASON } from "@/src/backend/rules/rules";
 
 export default function ClassificationPage() {
     return (
@@ -12,7 +13,7 @@ export default function ClassificationPage() {
                         margin-top: 1rem;
                     }
                 `}</style>
-            <LeaderBoard />
+            <LeaderBoard season={ACTUAL_SEASON}/>
         </div>
     )
 }

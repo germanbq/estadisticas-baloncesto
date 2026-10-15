@@ -91,7 +91,7 @@ export default function StatsLeader() {
     }, [metric])
 
     return (
-        <>
+        <section>
             <span className={styles.title}>LÍDERES DE LA LIGA</span>
             <section className={styles.filters}>
                 <div className={styles.filtersIcon}>
@@ -121,6 +121,6 @@ export default function StatsLeader() {
                     </section>
                 </>
             }
-        </>
+        </section>
     )
 }

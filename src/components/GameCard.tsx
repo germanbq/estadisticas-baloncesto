@@ -33,11 +33,12 @@ type GameProps = {
     place: string;
     date: Date;
     children?: ReactNode;
+    featured?: boolean;
 } & LinkProps;
 
 export default function GameCard(props: GameProps) {
     return (
-        <article className={styles.game}>
+        <article className={`${styles.game} ${props.featured ? styles.featured : ''}`}>
             <div className={styles.gameLabels}>
                 {props.finalizado ? <span>Finalizado</span> 
                     : <span>{props.date.toLocaleDateString("es-ES", {day: "2-digit", month: "2-digit", year: "numeric", timeZone: "Europe/Madrid",})}</span>}

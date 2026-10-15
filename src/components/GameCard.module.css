@@ -12,6 +12,10 @@
     width: 65%; 
 }
 
+.featured {
+    background: linear-gradient(125deg, #192d38, var(--color-components) 50%, #292239);
+}
+
 .gameLabels {
     display: grid;
     grid-template-columns: 1fr auto 1fr;
@@ -37,6 +41,14 @@
 .teamScore {
     color: white;
     font-size: 1.5rem;
+    font-weight: 800;
+}
+
+.teamName {
+    max-width: 15rem;
+    text-align: center;
+    line-height: 1.15;
+    text-wrap: balance;
 }
 
 .hour {

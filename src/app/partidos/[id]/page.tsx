@@ -136,13 +136,13 @@ export default async function GamePage({params}: {params: Promise<{id : string}>
                         align-items: center;
                     }
                 `}</style>
-            <GameCard key={game.id} id={game.id} isFavorite={game.isFavorite} finalizado={game.finished}
+            <GameCard featured key={game.id} id={game.id} isFavorite={game.isFavorite} finalizado={game.finished}
                 homeTeam={game.homeTeamName} awayTeam={game.awayTeamName}
                 homeScore={game.homeTeamScore} awayScore={game.awayTeamScore}
                 homeRecord={`${game.homeTeamVictorys}-${game.homeTeamLosses}`} awayRecord={`${game.awayTeamVictorys}-${game.awayTeamLosses}`}
                 homeLogo={game.homeTeamLogo} awayLogo={game.awayTeamLogo}
                 place={game.stadium} date={new Date(game.date)}
-                teamLinks={true} homeId={game.homeTeamId} awayId={game.awayTeamId}
+                teamLinks homeId={game.homeTeamId} awayId={game.awayTeamId}
             >
                 {game.finished && game.homeTeamScore !== null && game.awayTeamScore !== null && <QuarterScores homeScores={game.homePeriodScores} awayScores={game.awayPeriodScores} homeName={game.homeShortName} awayName={game.awayShortName} homeTotal={game.homeTeamScore} awayTotal={game.awayTeamScore} />}
             </GameCard>

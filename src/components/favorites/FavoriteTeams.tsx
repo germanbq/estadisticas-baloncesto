@@ -26,13 +26,15 @@ function TeamCard(props: TeamCardProps) {
                 <div className={styles.information}>
                     <Image src={props.team.logo} alt={`Logo de ${props.team.name}`} width={80} height={80} />
                     <div className={styles.spans}>
-                        <span>{props.team.name}</span>
-                        <span className={positionClass}>#{props.team.position} {props.team.victorys}-{props.team.losses}</span>
-                        <span className={props.team.streakVictory ? styles.positive : styles.negative}>{props.team.streakVictory ? "W" : "L"}{props.team.streakNumber}</span>
+                        <span className={styles.name}>{props.team.name}</span>
+                        <div className={styles.badges}>
+                            <span className={`${styles.badge} ${styles.recordBadge} ${positionClass}`}>#{props.team.position} · {props.team.victorys}-{props.team.losses}</span>
+                            <span className={`${styles.badge} ${props.team.streakVictory ? styles.positive : styles.negative}`}>{props.team.streakVictory ? "W" : "L"}{props.team.streakNumber}</span>
+                        </div>
                     </div>
                 </div>
-                <Link href={`/favoritos?selected=Teams`} className={styles.profileLink}>
-                    Ver ficha completa(no funciona todavia)
+                <Link href={`/equipos/${props.team.id}`} className={styles.profileLink}>
+                    Ver ficha completa
                     <ArrowRight size={18} />
                 </Link>
             </div>

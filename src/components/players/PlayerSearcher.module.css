@@ -36,16 +36,20 @@
 }
 
 .filters {
-    display: grid;
-    grid-template-columns: minmax(0,50%) minmax(0,50%);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 1rem 4rem;
 }
 
 .confFilters,
 .posFilters {
     display: flex;
     justify-content: center;
-    gap: 1rem;
     align-items: center;
+    flex-wrap: wrap;
+    gap: 0.75rem;
 }
 
 .button {

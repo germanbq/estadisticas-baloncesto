@@ -1,6 +1,7 @@
 import { PlayerGames } from "@/src/backend/entities/playersEntities";
 import SingleStat from "../SingleStat";
 import styles from "./LastGames.module.css";
+import { History } from 'lucide-react';
 
 type Props = {
     games: PlayerGames[];
@@ -37,11 +38,14 @@ function Game({game}: {game: PlayerGames}) {
 }
 export default function LastGames({games}: Props)  {
     return (
-        <>
-            <span className={styles.title}>Últimos 5 partidos</span>
+        <section className={styles.section}>
+            <span className={styles.title}>
+                <History size={25} strokeWidth={2} aria-hidden="true" />
+                Últimos 5 partidos
+            </span>
             {games.map((game) => (
                 <Game key={game.gameId} game={game}/>
             ))}
-        </>
+        </section>
     )
 }

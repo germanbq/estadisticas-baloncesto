@@ -1,3 +1,30 @@
+.section {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    margin-inline: auto;
+    gap: 1rem;
+    width: 80%;
+}
+
+.title {
+    font-size: 1.5rem;
+    font-weight: 900;
+    line-height: 1;
+
+    display: flex;
+    flex-direction: row;
+    gap: 0.5rem;
+    align-items: center;
+}
+
+.article {
+    background-color:  var(--color-components);
+    border-radius: 10px;
+    padding: 1rem;
+    width: 100%;
+} 
+
 .statsGrid {
     display: grid;
     grid-template-columns: repeat(auto-fit, minmax(min(100%, 150px), 1fr));
@@ -6,15 +33,13 @@
 .percentageGrid {
     display: grid;
     grid-template-columns: repeat(2, 1fr);
+    
 }
 
 .statsGrid,
 .percentageGrid {
     gap: 0.5rem;
-}
-
-.title {
-    color: var(--color-text-primary);
+    width: 100%;
 }
 
 .dataContainers {
@@ -34,6 +59,7 @@
 
 .value {
     font-size: 3rem;
+    line-height: 1.5;
     font-weight: bold;
     display: flex;
     justify-content: center;

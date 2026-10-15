@@ -1,11 +1,15 @@
 import { PlayerProfile } from "@/src/backend/entities/playersEntities";
 import styles from "./StatsTable.module.css";
-
+import { TableProperties } from 'lucide-react';
 
 export default function StatsTable({stats}: {stats: PlayerProfile}) {
     return (
-        <>
-            <span className={styles.title}>Estadísticas completas por temporada</span>
+        <section className={styles.section}>
+            <span className={styles.title}>
+                <TableProperties size={25} strokeWidth={2} aria-hidden="true" />
+                Estadísticas completas por temporada
+            </span>
+            <div className={styles.tableScroll} role="region" aria-label="Estadísticas completas por temporada" tabIndex={0}>
             <table className={styles.table}>
                 <thead>
                     <tr>
@@ -44,6 +48,7 @@ export default function StatsTable({stats}: {stats: PlayerProfile}) {
                     ))}
                 </tbody>
             </table>
-        </>    
+            </div>
+        </section>    
     )
 }
