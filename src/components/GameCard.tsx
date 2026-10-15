@@ -2,6 +2,19 @@ import styles from "./GameCard.module.css";
 import Image from "next/image";
 import FavoriteButton from "./FavoriteButton";
 import { ReactNode } from "react";
+import Link from "next/link";
+
+type LinkProps =
+    | {
+        teamLinks: true;
+        homeId: number;
+        awayId: number;
+    }
+    | {
+        teamLinks?: false;
+        homeId?: never;
+        awayId?: never;
+    };
 
 type GameProps = {
     id: number;
@@ -20,7 +33,7 @@ type GameProps = {
     place: string;
     date: Date;
     children?: ReactNode;
-}
+} & LinkProps;
 
 export default function GameCard(props: GameProps) {
     return (
@@ -34,7 +47,8 @@ export default function GameCard(props: GameProps) {
             <div className={styles.gameTeams}>
                 <div className={styles.teamColumn}>
                     <Image src={props.homeLogo} alt="Logo del local" width={64} height={64}/>
-                    <span className={styles.teamName}>{props.homeTeam}</span>
+                    {props.teamLinks ? <Link href={`/equipos/${props.homeId}`} className={styles.teamName}>{props.homeTeam}</Link>
+                                : <span className={styles.teamName}>{props.homeTeam}</span>}
                     <span>({props.homeRecord})</span>
                     <span className={`${styles.teamScore} ${(props.homeScore && props.awayScore) && props.homeScore > props.awayScore ? styles.green : ''}`}>{props.homeScore}</span>
                 </div>
@@ -45,7 +59,8 @@ export default function GameCard(props: GameProps) {
                 </div>}
                 <div className={styles.teamColumn}>
                     <Image src={props.awayLogo} alt="Logo del visitante" width={64} height={64}/>
-                    <span className={styles.teamName}>{props.awayTeam}</span>
+                    {props.teamLinks ? <Link href={`/equipos/${props.awayId}`} className={styles.teamName}>{props.awayTeam}</Link>
+                                : <span className={styles.teamName}>{props.awayTeam}</span>}
                     <span>({props.awayRecord})</span>
                     <span className={`${styles.teamScore} ${(props.homeScore && props.awayScore) && props.homeScore < props.awayScore ? styles.green : ''}`}>{props.awayScore}</span>
                 </div>

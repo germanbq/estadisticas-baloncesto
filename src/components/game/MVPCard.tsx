@@ -1,6 +1,7 @@
 import { GameMVP } from "@/src/backend/entities/gamesEntities";
 import styles from './MVPCard.module.css';
 import { CircleStar } from "lucide-react";
+import Link from "next/link";
 
 function StatContainer({label, value, color}: {label: string, value: number, color: string}) {
     return (
@@ -43,7 +44,7 @@ export default function MVPCard({player, home}: {player: GameMVP, home: boolean}
                     </div>
                     <div className={styles.playerInfo}>
                         <div className={styles.playerHeading}>
-                            <span className={styles.playerName}>{player.playerName}</span>
+                            <Link href={`/jugadores/${player.playerId}`} className={styles.playerName}>{player.playerName}</Link>
                             <span className={styles.position} style={{color}}>{player.position}</span>
                         </div>
                         <div className={styles.playerDetails}>

@@ -1,0 +1,10 @@
+.gameLink {
+    display: flex;
+    width: 65%;
+    color: inherit;
+    text-decoration: none;
+}
+
+.gameLink > article {
+    width: 100%;
+}
