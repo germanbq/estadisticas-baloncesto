@@ -5,6 +5,7 @@ import { usePathname, useRouter, useSearchParams } from "next/navigation";
 import { Game } from "@/src/backend/entities/gamesEntities";
 import DateButtons from "./DateButtons";
 import GameCard from "../GameCard";
+import GamesSkeleton from './GamesSkeleton';
 
 export default function Games() {
     function getDateString(date: Date): string {
@@ -21,6 +22,8 @@ export default function Games() {
     const [date, setDate] = useState(() => { const dateParam = searchParams.get("date");
         return dateParam ? new Date(`${dateParam}T00:00:00`) : new Date();});
     const [games, setGames] = useState<Game[]>([])
+    const [loadedDate, setLoadedDate] = useState<string | null>(null);
+    const dateKey = getDateString(date);
 
     useEffect(() => {
         if(searchParams.get("date") === getDateString(date)) return;
@@ -47,6 +50,8 @@ export default function Games() {
             } catch (error) {
                 if (controller.signal.aborted) return;
                 console.error(error);
+            } finally {
+                if (!controller.signal.aborted) setLoadedDate(getDateString(date));
             }
         }
 
@@ -57,7 +62,7 @@ export default function Games() {
     return (
         <div>
             <DateButtons date={date} setDate={setDate} getDateString={getDateString}/>
-            <section className={styles.container}>
+            {loadedDate !== dateKey ? <GamesSkeleton /> : <section className={styles.container}>
                 {games.map((game) => (
                     <GameCard key={game.id} id={game.id} isFavorite={game.isFavorite} finalizado={game.finished}
                         homeTeam={game.homeTeamName} awayTeam={game.awayTeamName}
@@ -67,7 +72,7 @@ export default function Games() {
                         place={game.stadium} date={new Date(game.date)}
                     />
                 ))}
-            </section>
+            </section>}
         </div>
     ) 
 }

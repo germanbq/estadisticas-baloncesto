@@ -1,0 +1,108 @@
+.skeleton {
+    background: var(--color-background-lighter);
+    border-radius: 6px;
+    animation: pulse 1.5s ease-in-out infinite;
+}
+
+.games {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 2rem;
+    margin-top: 3rem;
+}
+
+.card {
+    width: 65%;
+    padding: 1.5rem 1rem;
+    border-radius: 10px;
+    background: var(--color-components);
+}
+
+.header {
+    display: grid;
+    grid-template-columns: 1fr auto 1fr;
+    align-items: center;
+    gap: 0.5rem;
+}
+
+.label {
+    width: min(100%, 100px);
+    height: 20px;
+}
+
+.stadium {
+    width: 130px;
+    height: 20px;
+}
+
+.favorite {
+    width: 24px;
+    height: 24px;
+    justify-self: end;
+}
+
+.teams {
+    position: relative;
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 3rem;
+    margin-top: 1.5rem;
+}
+
+.team {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 0.75rem;
+    min-width: 0;
+}
+
+.logo {
+    width: 64px;
+    height: 64px;
+    border-radius: 12px;
+}
+
+.name {
+    width: 80%;
+    max-width: 220px;
+    height: 28px;
+}
+
+.record {
+    width: 55px;
+    height: 20px;
+}
+
+.score {
+    width: 60px;
+    height: 30px;
+}
+
+.versus {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    width: 35px;
+    height: 45px;
+}
+
+@keyframes pulse {
+    50% {
+        opacity: 0.45;
+    }
+}
+
+@media (prefers-reduced-motion: reduce) {
+    .skeleton {
+        animation: none;
+    }
+}
+
+@media (max-width: 600px) {
+    .stadium {
+        width: 80px;
+    }
+}

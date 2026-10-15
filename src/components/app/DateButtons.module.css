@@ -46,3 +46,22 @@
     background-color: var(--color-orange);
     color: #7A2418;
 }
+
+.loadingButton {
+     cursor: default; 
+}
+
+.placeholder {
+    color: transparent;
+    background: var(--color-background-lighter);
+    border-radius: 6px;
+    animation: pulse 1.5s ease-in-out infinite;
+}
+.loadingButton .placeholder { 
+    max-width: 100%; 
+}
+
+@keyframes pulse { 50% { opacity: 0.45; } }
+@media (prefers-reduced-motion: reduce) {
+    .placeholder { animation: none; }
+}

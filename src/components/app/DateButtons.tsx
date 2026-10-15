@@ -5,6 +5,7 @@ import styles from "./DateButtons.module.css";
 import { ChevronRight, ChevronLeft } from "lucide-react";
 import { GamesNum } from "@/src/backend/entities/gamesEntities";
 import { usePathname, useRouter, useSearchParams } from "next/navigation";
+import DateButtonsSkeleton from './DateButtonsSkeleton';
 
 type DateButtonProps = {
     date: Date;
@@ -81,6 +82,8 @@ export default function DateButtons({date, setDate, getDateString}:
         void loadNumberGames();
         return () => controller.abort();
     }, [referenceDate])
+
+    if (loading) return <DateButtonsSkeleton />;
 
     return (
         <section className={styles.buttonsContainer}>
