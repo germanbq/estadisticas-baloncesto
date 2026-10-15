@@ -43,6 +43,7 @@ export type GameProfile = Game & {
 }
 
 export type LastTeamGame = {
+    id: number;
     rivalName: string;
     home: boolean;
     stadium: string;

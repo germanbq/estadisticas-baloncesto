@@ -2,6 +2,7 @@ import { PlayerGames } from "@/src/backend/entities/playersEntities";
 import SingleStat from "../SingleStat";
 import styles from "./LastGames.module.css";
 import { History } from 'lucide-react';
+import Link from "next/link";
 
 type Props = {
     games: PlayerGames[];
@@ -19,7 +20,7 @@ function Game({game}: {game: PlayerGames}) {
     })
     .replaceAll("/", "-");
     return (
-        <article className={styles.article}>
+        <Link href={`/partidos/${game.gameId}`} className={styles.article}>
             <div className={styles.articleHeader}>
                 <span className={styles.dot} style={{ backgroundColor: game.victory ? "#22c55e" : "#ef4444" }}/>
                 {game.home ? <span>{`VS ${game.rival}`}</span> : <span>{`@ ${game.rival}`}</span>}
@@ -33,7 +34,7 @@ function Game({game}: {game: PlayerGames}) {
                 <SingleStat label="AST" value={String(game.assists)} />
                 <SingleStat label="FG" value={`${game.fgMade}/${game.fgAttempted}`} />
             </div>
-        </article>
+        </Link>
     )
 }
 export default function LastGames({games}: Props)  {

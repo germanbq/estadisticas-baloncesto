@@ -27,7 +27,7 @@ export default async function GamePage({params}: {params: Promise<{id : string}>
     const result = await response.json()
     const game: GameProfile = result.data;
     let content: React.ReactNode = null;
-    if(!game.finished) {
+    if(game.finished) {
         const [homeGamesResponse, awayGamesResponse, hthGamesResponse, homeLeadersResponse, awayLeadersResponse] = await Promise.all([
             gamesController.lastTeamGames(game.homeTeamId),
             gamesController.lastTeamGames(game.awayTeamId),

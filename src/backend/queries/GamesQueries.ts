@@ -171,20 +171,21 @@ export default class GamesQueries implements IGamesQueries {
     lastTeamGames(id: number): SqlQuery {
         return {
             text: `SELECT
-            CASE WHEN g.home_team_id = $1
-                THEN at.name
-                ELSE ht.name
-            END AS "rivalName",
-            (g.home_team_id = $1) AS home,
-            ht.stadium,
-            CASE WHEN g.home_team_id = $1
-                THEN g.home_score
-                ELSE g.away_score
-            END AS score,
-            CASE WHEN g.home_team_id = $1
-                THEN g.away_score
-                ELSE g.home_score
-            END AS "rivalScore"
+                g.id,
+                CASE WHEN g.home_team_id = $1
+                    THEN at.name
+                    ELSE ht.name
+                END AS "rivalName",
+                (g.home_team_id = $1) AS home,
+                ht.stadium,
+                CASE WHEN g.home_team_id = $1
+                    THEN g.home_score
+                    ELSE g.away_score
+                END AS score,
+                CASE WHEN g.home_team_id = $1
+                    THEN g.away_score
+                    ELSE g.home_score
+                END AS "rivalScore"
             FROM games AS g
             JOIN teams AS ht ON ht.id = g.home_team_id
             JOIN teams AS at ON at.id = g.away_team_id

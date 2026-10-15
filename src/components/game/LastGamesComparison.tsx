@@ -1,12 +1,13 @@
 import { LastTeamGame } from "@/src/backend/entities/gamesEntities";
 import styles from './LastGamesComparison.module.css';
 import { CalendarDays } from "lucide-react";
+import Link from "next/link";
 
 function Game(props: LastTeamGame) {
     const result = props.home ? `${props.score}-${props.rivalScore}` : `${props.rivalScore}-${props.score}`;
     const victory = props.score > props.rivalScore;
     return (
-        <article className={styles.articleGame}>
+        <Link href={`/partidos/${props.id}`} className={styles.articleGame}>
             <div className={styles.data}>
                 <div className={styles.won} style={{
                     color: victory ? 'var(--color-green)' : 'var(--color-text-primary)',
@@ -21,7 +22,7 @@ function Game(props: LastTeamGame) {
                 <span className={styles.result} style={{color: victory ? 'var(--color-green)' : 'var(--color-text-primary)',}}>{result}</span>
                 <span className={styles.final}>Final</span>
             </div>
-        </article>
+        </Link>
     )
 }
 
