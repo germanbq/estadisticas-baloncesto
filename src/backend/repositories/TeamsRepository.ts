@@ -1,4 +1,4 @@
-import { Team } from "../entities/teamsEntities";
+import { Team, TeamHeader, teamPlayersStats } from "../entities/teamsEntities";
 import { ITeamsQueries, ITeamsRepository } from "../interfaces/teamsInterfaces";
 import { IQueryExecutor } from "../shared/sql.types";
 
@@ -8,6 +8,20 @@ export class TeamsRepository implements ITeamsRepository {
     async leaderBoard(conf: string, userId: string | null, season: number): Promise<Team[]> {
         const query = this.queries.leaderBoard(conf, userId, season);
         const result = await this.executor.query<Team>(query.text, query.values);
+
+        return result;
+    }
+
+    async teamProfile(teamId: number, userId: string | null, season: number): Promise<TeamHeader> {
+        const query = this.queries.teamProfile(teamId, userId, season);
+        const result = await this.executor.query<TeamHeader>(query.text, query.values);
+
+        return result[0];
+    }
+
+    async playersSeasonStats(teamId: number, season: number): Promise<teamPlayersStats[]> {
+        const query = this.queries.playersSeasonStats(teamId, season);
+        const result = await this.executor.query<teamPlayersStats>(query.text, query.values);
 
         return result;
     }

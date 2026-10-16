@@ -1,10 +1,14 @@
-import { Team } from "../entities/teamsEntities";
+import { Team, TeamHeader, teamPlayersStats } from "../entities/teamsEntities";
 import type { SqlQuery } from "../shared/sql.types";
 
 export interface ITeamsQueries {
     leaderBoard(conf: string, userId: string | null, season: number): SqlQuery;
+    teamProfile(teamId: number, userId: string | null, season: number): SqlQuery;
+    playersSeasonStats(teamId: number, season: number): SqlQuery;
 }
 
 export interface ITeamsRepository {
     leaderBoard(conf: string, userId: string | null, season: number): Promise<Team[]>;
+    teamProfile(teamId: number, userId: string | null, season: number): Promise<TeamHeader>;
+    playersSeasonStats(teamId: number, season: number): Promise<teamPlayersStats[]>;
 }

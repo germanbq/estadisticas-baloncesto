@@ -11,3 +11,32 @@ export type Team = {
     streakVictory: boolean;
     isFavorite: boolean;
 }
+
+export type TeamHeader = Team & {
+    shortName: string;
+    conference: string;
+    rank: number;
+    stadium: string;
+    coach: string;
+    homeVictorys: number;
+    homeLosses: number;
+    awayVictorys: number;
+    awayLosses: number;
+};
+
+export type teamPlayersStats = {
+    playerName: string;
+    playerId: number;
+    points: number;
+    rebounds: number;
+    ofeRebounds: number;
+    defRebounds: number;
+    assists: number;
+    steals: number;
+    blocks: number;
+    turnovers: number;
+    plusMinus: number;
+    fgPercentage: number;
+    threePercentage: number;
+    games: number;
+}

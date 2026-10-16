@@ -24,4 +24,43 @@ export class TeamsController {
             );
         }
     }
+
+    async teamProfile(teamId: number): Promise<Response> {
+        if(!Number.isSafeInteger(teamId)) {
+            return Response.json(
+                { error: "ID de equipo no válido" },
+                { status: 400 }
+            );
+        }
+        const { userId } = await auth();
+        try {
+            const data = await this.service.teamProfile(teamId, userId);
+            return Response.json({data});
+        } catch(error) {
+            console.error(error);
+            return Response.json(
+                {error: "Error al obtener las estadisticas de perfil del equipo"},
+                {status: 500}
+            );
+        }
+    }
+
+    async playersSeasonStats(teamId: number): Promise<Response> {
+        if(!Number.isSafeInteger(teamId)) {
+            return Response.json(
+                { error: "ID de equipo no válido" },
+                { status: 400 }
+            );
+        }
+        try {
+            const data = await this.service.playersSeasonStats(teamId);
+            return Response.json({data});
+        } catch(error) {
+            console.error(error);
+            return Response.json(
+                {error: "Error al obtener las estadisticas de los jugadores del equipo"},
+                {status: 500}
+            );
+        }
+    }
 }

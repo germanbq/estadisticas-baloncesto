@@ -17,7 +17,8 @@ CREATE TABLE teams (
     logo TEXT NOT NULL,
     conference TEXT NOT NULL,
     division TEXT NOT NULL,
-    stadium TEXT NOT NULL UNIQUE
+    stadium TEXT NOT NULL UNIQUE,
+    coach TEXT NOT NULL UNIQUE
 );
 
 CREATE TABLE team_season_stats (

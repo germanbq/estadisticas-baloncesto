@@ -1,0 +1,106 @@
+.card {
+    width: 100%;
+    max-width: 760px;
+    padding: 1.25rem;
+    border: 1px solid var(--color-border);
+    border-radius: 18px;
+    background: linear-gradient(125deg, var(--color-components), #18232e);
+    color: #ededed;
+    box-sizing: border-box;
+}
+
+.badges {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.5rem;
+    margin-bottom: 1.25rem;
+}
+
+.recordBadge,
+.streakBadge {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.4rem;
+    padding: 0.4rem 0.75rem;
+    border-radius: 99px;
+    font-size: 0.75rem;
+    font-weight: 800;
+    text-transform: uppercase;
+}
+
+.recordBadge { background: #343941; }
+.dot { width: 8px; height: 8px; border-radius: 50%; }
+.playoffs { background: var(--color-green); }
+.playin { background: var(--color-blue); }
+.out { background: var(--color-gray); }
+.streakBadge { background: #104b3e; color: var(--color-green); }
+.losing { background: var(--color-background-red); color: #ff9292; }
+
+.identity {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+}
+
+.logoBox {
+    position: relative;
+    display: grid;
+    place-items: center;
+    flex-shrink: 0;
+    width: 88px;
+    height: 88px;
+    border-radius: 12px;
+    background: var(--color-background-lighter);
+}
+
+.teamInfo { min-width: 0; }
+.name {
+    margin: 0;
+    font-weight: 800;
+    font-size: clamp(1.6rem, 4vw, 2.7rem);
+    line-height: 1.1;
+    letter-spacing: -0.04em;
+    overflow-wrap: anywhere;
+}
+
+.description {
+    margin: 0.5rem 0 0;
+    color: var(--color-text-primary);
+    font-size: 0.85rem;
+    line-height: 1.5;
+}
+
+.stats {
+    display: grid;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: 0.6rem;
+    margin-top: 1.5rem;
+}
+
+.stat {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 0.35rem;
+    padding: 0.75rem 0.25rem;
+    border-radius: 8px;
+    text-align: center;
+    font-variant-numeric: tabular-nums;
+}
+
+.label { color: var(--color-text-primary); font-size: 0.7rem; font-weight: 00; text-transform: uppercase; letter-spacing: 0.05em; }
+.value { font-family: Impact, 'Arial Narrow', Arial, sans-serif; font-size: 1.8rem; line-height: 1.1; }
+.detail { color: var(--color-green); font-size: 0.6rem; font-weight: 800; }
+.stat:nth-child(2) .detail { color: var(--color-blue); }
+.difference .value,
+.difference .detail { color: var(--color-orange); }
+
+@media (max-width: 420px) {
+    .card { padding: 1rem; }
+    .identity { gap: 0.75rem; }
+    .logoBox { width: 68px; height: 68px; }
+    .logo { width: 54px; height: 54px; }
+    .recordBadge,
+    .streakBadge { font-size: 0.65rem; }
+    .value { font-size: 1.5rem; }
+}
