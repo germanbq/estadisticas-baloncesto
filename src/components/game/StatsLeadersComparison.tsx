@@ -27,7 +27,7 @@ function LeaderComparisonCard({homeLeader, awayLeader, homeName, awayName}:
                     <div className={styles.teamData}>
                         <div className={styles.jerseyNumberContainer}>
                             <span className={styles.team} style={{color: `var(--color-violet)`}}>{awayName}</span>
-                            <span className={styles.jerserNumber}>#{awayLeader.jerseyNumber}</span>
+                            <span className={styles.jerseyNumber}>#{awayLeader.jerseyNumber}</span>
                         </div>
                         <div className={styles.player}>
                             <span>{awayLeader.name}</span>

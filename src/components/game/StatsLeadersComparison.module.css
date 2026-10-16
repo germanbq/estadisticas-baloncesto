@@ -76,3 +76,68 @@
     font-weight: 700;
     line-height: 1.1;
 }
+
+@media (max-width: 1023px) {
+    .cardContainer {
+        width: 100%;
+        min-width: 0;
+    }
+
+    .card {
+        width: 100%;
+        min-width: 0;
+        font-size: 1.1rem;
+    }
+
+    .data {
+        display: grid;
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+        gap: 1rem;
+    }
+
+    .teamData {
+        min-width: 0;
+        gap: 0.75rem;
+    }
+
+    .player {
+        min-width: 0;
+        overflow-wrap: anywhere;
+    }
+
+    .jerseyNumberContainer {
+        flex-shrink: 0;
+    }
+}
+
+@media (max-width: 600px) {
+    .title {
+        font-size: 1.1rem;
+        line-height: 1.3;
+        text-align: center;
+        justify-content: center;
+    }
+
+    .title svg {
+        flex-shrink: 0;
+    }
+
+    .card {
+        padding: 0.75rem;
+        gap: 1rem;
+        font-size: 0.9rem;
+    }
+
+    .data {
+        grid-template-columns: minmax(0, 1fr);
+    }
+
+    .jerseyNumberContainer {
+        padding: 0.5rem;
+    }
+
+    .jerseyNumber {
+        font-size: 1.3rem;
+    }
+}
+

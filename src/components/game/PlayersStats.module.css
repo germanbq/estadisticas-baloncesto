@@ -116,7 +116,7 @@
     border-bottom: none;
 }
 
-@media (max-width: 768px) {
+@media (max-width: 1023px) {
     .section {
         width: 100%;
     }
@@ -130,3 +130,26 @@
         padding: 0.75rem;
     }
 }
+
+@media (max-width: 600px) {
+    .table {
+        font-size: 0.8rem;
+    }
+
+    .table thead th {
+        font-size: 0.75rem;
+    }
+
+    .table th,
+    .table td {
+        padding: 0.65rem 0.5rem;
+    }
+
+    .table th:first-child {
+        white-space: normal;
+        min-width: 100px;
+        max-width: 120px;
+        overflow-wrap: anywhere;
+    }
+}
+
