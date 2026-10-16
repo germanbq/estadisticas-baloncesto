@@ -14,3 +14,17 @@
 .initButtons:hover {
     color: var(--color-text-primary);
 }
+
+@media (max-width: 600px) {
+    .container {
+        margin-right: 0;
+        min-width: 0;
+    }
+
+    .initButtons {
+        max-width: 65px;
+        min-height: 44px;
+        font-size: 0.85rem;
+        text-align: center;
+    }
+}

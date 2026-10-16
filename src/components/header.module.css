@@ -23,8 +23,8 @@
 }
 
 .icon {
-    height: 32;
-    width: 32;
+    height: 32px;
+    width: 32px;
 }
 
 .icon:not(.active):hover {
@@ -38,4 +38,34 @@
 
 .active {
     color: var(--color-orange)
+}
+
+@media (max-width: 600px) {
+    .header {
+        grid-template-columns: 40px minmax(0, 1fr) auto;
+        gap: 0.25rem;
+        padding: 0.5rem;
+    }
+
+    .logo {
+        margin-left: 0;
+    }
+
+    .icons {
+        min-width: 0;
+    }
+
+    .icons > a,
+    .icons > button {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        min-height: 44px;
+        flex: 1;
+    }
+
+    .icon {
+        width: 24px;
+        height: 24px;
+    }
 }

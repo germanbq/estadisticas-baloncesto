@@ -13,8 +13,8 @@
 }
 
 .card {
-    width: 65%;
-    padding: 1.5rem 1rem;
+    width: 100%;
+    padding: 1rem;
     border-radius: 10px;
     background: var(--color-components);
 }
@@ -110,8 +110,64 @@
     }
 }
 
+@media (max-width: 1023px) {
+    .favorites .card {
+        width: 85%;
+    }
+}
+
 @media (max-width: 600px) {
+    .games {
+        margin-top: 1.5rem;
+        gap: 1rem;
+        padding-inline: 0.5rem;
+    }
+
+    .favorites {
+        margin-top: 0;
+        gap: 2rem;
+        padding-inline: 0;
+    }
+
+    .card,
+    .favorites .card {
+        width: 100%;
+        padding: 0.75rem;
+    }
+
+    .header {
+        grid-template-columns: minmax(0, 1fr) 44px;
+        gap: 0.25rem 0.5rem;
+    }
+
     .stadium {
-        width: 80px;
+        grid-row: 2;
+        grid-column: 1 / -1;
+        width: min(100%, 130px);
+        justify-self: center;
+    }
+
+    .favorite {
+        grid-row: 1;
+        grid-column: 2;
+        margin: 10px;
+    }
+
+    .logo {
+        width: 48px;
+        height: 48px;
+    }
+
+    .name {
+        height: 3.45rem;
+    }
+
+    .teams {
+        gap: 3rem;
+        margin-top: 1rem;
+    }
+
+    .team {
+        gap: 0.5rem;
     }
 }

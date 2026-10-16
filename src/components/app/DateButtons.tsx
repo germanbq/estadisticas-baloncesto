@@ -86,7 +86,7 @@ export default function DateButtons({date, setDate, getDateString}:
     if (loading) return <DateButtonsSkeleton />;
 
     return (
-        <section className={styles.buttonsContainer}>
+        <section className={styles.buttonsContainer} aria-label="Seleccionar fecha de los partidos" tabIndex={0}>
                 {!loading ?  <ChevronLeft className={styles.chevron} onClick={() => { const auxDate = addDays(referenceDate, -5); setReferenceDate(getDateString(auxDate)); setDate(auxDate)}}/> : ""}
                 {numberGames.map((number, index) => 
                     <DateButton key={index} date={new Date(`${number.date}T00:00:00`)} gamesNumber={number.gamesNumber} day={date} setDay={setDate}/>

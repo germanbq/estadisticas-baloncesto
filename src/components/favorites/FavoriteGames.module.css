@@ -9,3 +9,15 @@
     width: 100%;
 }
 
+@media (max-width: 1023px) {
+    .gameLink {
+        width: 85%;
+    }
+}
+
+@media (max-width: 600px) {
+    .gameLink {
+        width: 100%;
+    }
+}
+

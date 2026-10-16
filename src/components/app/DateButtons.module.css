@@ -65,3 +65,34 @@
 @media (prefers-reduced-motion: reduce) {
     .placeholder { animation: none; }
 }
+
+@media (max-width: 1023px) {
+    .buttonsContainer {
+        width: 90%;
+    }
+}
+
+@media (max-width: 600px) {
+    .buttonsContainer {
+        width: 100%;
+        max-width: 100%;
+        grid-template-columns: 40px repeat(5, minmax(72px, 1fr)) 40px;
+        overflow-x: auto;
+        padding: 0.5rem;
+    }
+
+    .chevron {
+        width: 40px;
+        height: 40px;
+    }
+
+    .button {
+        min-width: 0;
+        padding: 0.65rem 0.4rem;
+        font-size: 0.8rem;
+    }
+
+    .date {
+        font-size: 2rem;
+    }
+}

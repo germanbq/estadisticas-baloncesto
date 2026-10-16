@@ -66,7 +66,7 @@ export default function GameCard(props: GameProps) {
                     <span className={`${styles.teamScore} ${(props.homeScore && props.awayScore) && props.homeScore < props.awayScore ? styles.green : ''}`}>{props.awayScore}</span>
                 </div>
             </div>
-            {props.children}
+            {props.children && <div className={styles.details}>{props.children}</div>}
         </article>
     )
 }

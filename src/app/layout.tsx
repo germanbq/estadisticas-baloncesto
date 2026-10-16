@@ -19,7 +19,7 @@ export default function RootLayout({ children }: LayoutProps<"/">) {
       <body className="min-h-full flex flex-col">
         <ClerkProvider localization={esES}>
             <Header />
-            {children}
+            <div className="flex-1 min-w-0">{children}</div>
             <Footer />
         </ClerkProvider>
       </body>
