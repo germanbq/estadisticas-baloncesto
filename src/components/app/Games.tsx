@@ -5,7 +5,7 @@ import { usePathname, useRouter, useSearchParams } from "next/navigation";
 import { Game } from "@/src/backend/entities/gamesEntities";
 import DateButtons from "./DateButtons";
 import GameCard from "../GameCard";
-import GamesSkeleton from './GamesSkeleton';
+import GamesSkeleton from '../skeletons/GamesSkeleton';
 import Link from "next/link";
 
 export default function Games() {

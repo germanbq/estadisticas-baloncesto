@@ -1,4 +1,4 @@
-import styles from './DateButtons.module.css';
+import styles from '../app/DateButtons.module.css';
 
 export default function DateButtonsSkeleton() {
     return (

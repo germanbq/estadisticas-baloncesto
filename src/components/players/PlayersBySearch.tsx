@@ -1,7 +1,7 @@
 import { SearchedPlayer } from "@/src/backend/entities/playersEntities";
 import styles from "./PlayersBySearch.module.css";
 import { UserSearch } from "lucide-react";
-import PlayersBySearchSkeleton from "./PlayersBySearchSkeleton";
+import PlayersBySearchSkeleton from "../skeletons/PlayersBySearchSkeleton";
 import HorizontalPlayerCard from "../HorizontalPlayerCard";
 
 export default function PlayersBySearch({players, loading = false}: {players: SearchedPlayer[]; loading?: boolean}) {

@@ -3,7 +3,7 @@ import GameCard from "../GameCard"
 import { useEffect, useState } from "react";
 import { Game } from "@/src/backend/entities/gamesEntities";
 import Link from "next/link";
-import GamesSkeleton from "../app/GamesSkeleton";
+import GamesSkeleton from "../skeletons/GamesSkeleton";
 
 export default function FavoriteGames({onFavoriteChange, disabled}: 
                                 {onFavoriteChange: (fav: boolean) => void, disabled: boolean}) {

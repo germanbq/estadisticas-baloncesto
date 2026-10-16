@@ -9,7 +9,7 @@ import FilterButton  from "../FilterButton"
 import Image from "next/image";
 import { LeaderPlayer } from "@/src/backend/entities/playersEntities";
 import Link from "next/link";
-import StatsLeadersSkeleton from "./StatsLeadersSkeleton";
+import StatsLeadersSkeleton from "../skeletons/StatsLeadersSkeleton";
 
 type PlayerCardProps = {
     id: number;

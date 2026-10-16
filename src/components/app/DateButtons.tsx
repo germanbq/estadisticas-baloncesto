@@ -5,7 +5,7 @@ import styles from "./DateButtons.module.css";
 import { ChevronRight, ChevronLeft } from "lucide-react";
 import { GamesNum } from "@/src/backend/entities/gamesEntities";
 import { usePathname, useRouter, useSearchParams } from "next/navigation";
-import DateButtonsSkeleton from './DateButtonsSkeleton';
+import DateButtonsSkeleton from '../skeletons/DateButtonsSkeleton';
 
 type DateButtonProps = {
     date: Date;

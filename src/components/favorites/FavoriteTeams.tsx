@@ -6,7 +6,7 @@ import { useEffect, useState } from "react";
 import { FavoriteTeam } from "@/src/backend/entities/favoritesEntities";
 import Link from "next/link";
 import { ArrowRight } from "lucide-react";
-import FavoriteTeamsSkeleton from "./FavoriteTeamsSkeleton";
+import FavoriteTeamsSkeleton from "../skeletons/FavoriteTeamsSkeleton";
 
 type TeamCardProps = {
     team: FavoriteTeam;

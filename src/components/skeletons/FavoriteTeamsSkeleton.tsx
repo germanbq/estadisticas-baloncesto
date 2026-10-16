@@ -1,4 +1,4 @@
-import cardStyles from "./FavoriteTeams.module.css";
+import cardStyles from "../favorites/FavoriteTeams.module.css";
 import statStyles from "../SingleStat.module.css";
 import styles from "./FavoriteTeamsSkeleton.module.css";
 

@@ -2,7 +2,7 @@ import styles from "../players/PlayersBySearch.module.css";
 import { useEffect, useState } from "react";
 import { SearchedPlayer } from "@/src/backend/entities/playersEntities";
 import HorizontalPlayerCard from "../HorizontalPlayerCard";
-import PlayersBySearchSkeleton from "../players/PlayersBySearchSkeleton";
+import PlayersBySearchSkeleton from "../skeletons/PlayersBySearchSkeleton";
 
 export default function FavoritePlayers({onFavoriteChange, disabled}: 
                                 {onFavoriteChange: (fav: boolean) => void, disabled: boolean}) {

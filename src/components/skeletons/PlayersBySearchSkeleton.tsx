@@ -1,5 +1,5 @@
 import cardStyles from "../HorizontalPlayerCard.module.css";
-import listStyles from "./PlayersBySearch.module.css";
+import listStyles from "../players/PlayersBySearch.module.css";
 import statStyles from "../SingleStat.module.css";
 import styles from "./PlayersBySearchSkeleton.module.css";
 
