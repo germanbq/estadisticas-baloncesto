@@ -85,3 +85,75 @@
     top: 1rem;
     right: 1rem;
 }
+
+@media (max-width: 1023px) {
+    .card {
+        width: 100%;
+        min-width: 0;
+        padding: 1rem;
+    }
+
+    .labels {
+        flex-wrap: wrap;
+        justify-content: center;
+    }
+
+    .nameAndCountry {
+        max-width: 100%;
+        text-align: center;
+    }
+
+    .name {
+        overflow-wrap: anywhere;
+    }
+
+    .dataContainer {
+        width: 100%;
+        justify-content: center;
+        flex-wrap: wrap;
+        gap: 1rem;
+    }
+
+}
+
+@media (max-width: 600px) {
+    .name {
+        font-size: 1.7rem;
+        line-height: 1.15;
+    }
+
+    .labels {
+        gap: 0.5rem;
+        text-align: center;
+    }
+
+    .team {
+        font-size: 0.8rem;
+        overflow-wrap: anywhere;
+    }
+
+    .dataContainer {
+        display: grid;
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+        gap: 0.5rem;
+    }
+
+    .data {
+        min-width: 0;
+        text-align: center;
+    }
+
+    .favorite {
+        top: 0.5rem;
+        right: 0.5rem;
+    }
+
+    .favorite button {
+        width: 44px;
+        height: 44px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+    }
+
+}

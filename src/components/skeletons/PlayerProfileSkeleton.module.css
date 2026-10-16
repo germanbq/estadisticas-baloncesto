@@ -193,3 +193,82 @@
     animation: none;
   }
 }
+
+@media (max-width: 1023px) {
+    .profileCard,
+    .statsSection,
+    .tableSection {
+        width: 100%;
+    }
+
+    .playerDetails {
+        width: 100%;
+        grid-template-columns: repeat(4, minmax(0, 1fr));
+        gap: 1rem;
+    }
+
+    .statsGrid {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+
+    .statNumber {
+        max-width: 100%;
+    }
+
+}
+
+@media (max-width: 600px) {
+    .profileCard {
+        padding: 1rem;
+    }
+
+    .badges {
+        width: 100%;
+        justify-content: center;
+        flex-wrap: wrap;
+        gap: 0.5rem;
+    }
+
+    .teamBadge {
+        width: 150px;
+        max-width: 100%;
+    }
+
+    .playerName {
+        width: 220px;
+        max-width: 100%;
+        height: 30px;
+    }
+
+    .playerDetails {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+        gap: 0.75rem;
+    }
+
+    .statCard {
+        min-width: 0;
+        min-height: 110px;
+        padding: 0.75rem;
+    }
+
+    .statHeader {
+        flex-wrap: wrap;
+        gap: 0.25rem;
+    }
+
+    .statNumber {
+        width: 65px;
+        height: 35px;
+        margin-top: 1rem;
+    }
+
+    .statIcon {
+        width: 20px;
+        height: 20px;
+    }
+
+    .percentageCard {
+        grid-column: span 1;
+    }
+
+}

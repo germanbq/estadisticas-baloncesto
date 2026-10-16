@@ -24,7 +24,7 @@ function Game({game}: {game: PlayerGames}) {
             <div className={styles.articleHeader}>
                 <span className={styles.dot} style={{ backgroundColor: game.victory ? "#22c55e" : "#ef4444" }}/>
                 {game.home ? <span>{`VS ${game.rival}`}</span> : <span>{`@ ${game.rival}`}</span>}
-                {game.victory ? <span>{`(W ${game.homeScore}-${game.awayScore})`}</span> : <span>{`(L ${game.homeScore}-${game.awayScore}))`}</span>}
+                {game.victory ? <span>{`(W ${game.homeScore}-${game.awayScore})`}</span> : <span>{`(L ${game.homeScore}-${game.awayScore})`}</span>}
                 <span className={styles.date}>{`${date} · ${minutes}:${String(seconds).padStart(2, "0")} MINS`}</span>
                 <span className={styles.stadium}>{game.stadium}</span>
             </div>
