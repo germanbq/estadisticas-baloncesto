@@ -19,3 +19,32 @@
     background-color: var(--color-orange);
     color: white;
 }
+
+@media (max-width: 1023px) {
+    .buttonSection {
+        gap: 1rem;
+    }
+
+    .button {
+        width: auto;
+        min-width: 130px;
+    }
+}
+
+@media (max-width: 600px) {
+    .buttonSection {
+        display: grid;
+        grid-template-columns: repeat(3, minmax(0, 1fr));
+        gap: 0.35rem;
+    }
+
+    .button {
+        width: 100%;
+        min-width: 0;
+        height: auto;
+        min-height: 44px;
+        padding: 0.5rem 0.25rem;
+        font-size: 0.75rem;
+        overflow-wrap: anywhere;
+    }
+}

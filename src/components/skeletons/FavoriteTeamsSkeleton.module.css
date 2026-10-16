@@ -66,3 +66,45 @@
         animation: none;
     }
 }
+
+@media (max-width: 1023px) {
+    .name,
+    .profileLink {
+        max-width: 100%;
+    }
+}
+
+@media (max-width: 600px) {
+    .logo {
+        width: 56px;
+        height: 56px;
+    }
+
+    .name {
+        width: 125px;
+        height: 1.1rem;
+    }
+
+    .record {
+        width: 70px;
+        height: 1.5rem;
+    }
+
+    .streak {
+        width: 35px;
+        height: 1.5rem;
+    }
+
+    .profileLink {
+        align-self: center;
+        margin-block: 0.75rem;
+    }
+
+    .value {
+        height: 1.2rem;
+    }
+
+    .favorite {
+        margin: 10px;
+    }
+}
