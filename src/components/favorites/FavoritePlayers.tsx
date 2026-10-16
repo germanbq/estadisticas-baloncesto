@@ -2,11 +2,13 @@ import styles from "../players/PlayersBySearch.module.css";
 import { useEffect, useState } from "react";
 import { SearchedPlayer } from "@/src/backend/entities/playersEntities";
 import HorizontalPlayerCard from "../HorizontalPlayerCard";
+import PlayersBySearchSkeleton from "../players/PlayersBySearchSkeleton";
 
 export default function FavoritePlayers({onFavoriteChange, disabled}: 
                                 {onFavoriteChange: (fav: boolean) => void, disabled: boolean}) {
     
     const [players, setPlayers] = useState<SearchedPlayer[]>([])
+    const [loading, setLoading] = useState(true);
     
     useEffect(() => {
         const controller = new AbortController();
@@ -26,6 +28,8 @@ export default function FavoritePlayers({onFavoriteChange, disabled}:
             catch(error) {
                 if (controller.signal.aborted) return;
                 console.error(error);
+            } finally {
+                if (!controller.signal.aborted) setLoading(false);
             }
         }
     
@@ -33,6 +37,8 @@ export default function FavoritePlayers({onFavoriteChange, disabled}:
         return () => controller.abort();
     }, []);
     
+    if (loading) return <PlayersBySearchSkeleton />;
+
     return (
         <section className={styles.section}>
             {players.map((player) => (

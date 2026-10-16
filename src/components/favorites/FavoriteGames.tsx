@@ -3,10 +3,12 @@ import GameCard from "../GameCard"
 import { useEffect, useState } from "react";
 import { Game } from "@/src/backend/entities/gamesEntities";
 import Link from "next/link";
+import GamesSkeleton from "../app/GamesSkeleton";
 
 export default function FavoriteGames({onFavoriteChange, disabled}: 
                                 {onFavoriteChange: (fav: boolean) => void, disabled: boolean}) {
     const [games, setGames] = useState<Game[]>([])
+    const [loading, setLoading] = useState(true);
     
     useEffect(() => {
         const controller = new AbortController();
@@ -26,6 +28,8 @@ export default function FavoriteGames({onFavoriteChange, disabled}:
             catch(error) {
                 if (controller.signal.aborted) return;
                 console.error(error);
+            } finally {
+                if (!controller.signal.aborted) setLoading(false);
             }
         }
     
@@ -33,6 +37,8 @@ export default function FavoriteGames({onFavoriteChange, disabled}:
         return () => controller.abort();
     }, []);
     
+    if (loading) return <GamesSkeleton variant="favorites" />;
+
     return (
         <section style={{ display: "flex", flexDirection: "column", alignItems: "center", gap: "2rem" }}>
             {games.map((game) => (

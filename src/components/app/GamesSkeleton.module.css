@@ -19,6 +19,15 @@
     background: var(--color-components);
 }
 
+.favorites {
+    margin-top: 0;
+}
+
+.favorites .card {
+    width: 65%;
+    padding: 1rem;
+}
+
 .header {
     display: grid;
     grid-template-columns: 1fr auto 1fr;

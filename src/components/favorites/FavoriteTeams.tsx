@@ -1,4 +1,3 @@
-import { Team } from "@/src/backend/entities/teamsEntities";
 import styles from "./FavoriteTeams.module.css";
 import Image from "next/image";
 import FavoriteButton from "../FavoriteButton";
@@ -7,6 +6,7 @@ import { useEffect, useState } from "react";
 import { FavoriteTeam } from "@/src/backend/entities/favoritesEntities";
 import Link from "next/link";
 import { ArrowRight } from "lucide-react";
+import FavoriteTeamsSkeleton from "./FavoriteTeamsSkeleton";
 
 type TeamCardProps = {
     team: FavoriteTeam;
@@ -57,6 +57,7 @@ export default function FavoriteTeams({onFavoriteChange, disabled}:
                                 {onFavoriteChange: (fav: boolean) => void, disabled: boolean}) {
 
     const [teams, setTeams] = useState<FavoriteTeam[]>([])
+    const [loading, setLoading] = useState(true);
         
     useEffect(() => {
         const controller = new AbortController();
@@ -76,6 +77,8 @@ export default function FavoriteTeams({onFavoriteChange, disabled}:
             catch(error) {
                 if (controller.signal.aborted) return;
                 console.error(error);
+            } finally {
+                if (!controller.signal.aborted) setLoading(false);
             }
         }
         
@@ -83,6 +86,8 @@ export default function FavoriteTeams({onFavoriteChange, disabled}:
         return () => controller.abort();
     }, []);
     
+    if (loading) return <FavoriteTeamsSkeleton />;
+
     return (
         <section className={styles.section}>
             {teams.map((team) => (

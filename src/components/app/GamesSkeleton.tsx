@@ -1,11 +1,14 @@
 import styles from './GamesSkeleton.module.css';
 import DateButtonsSkeleton from './DateButtonsSkeleton';
 
-export default function GamesSkeleton({showDates = false}: {showDates?: boolean}) {
+export default function GamesSkeleton({showDates = false, variant = "default"}: {
+    showDates?: boolean;
+    variant?: "default" | "favorites";
+}) {
     return (
         <div role="status" aria-label="Cargando partidos" aria-busy="true">
             {showDates && <DateButtonsSkeleton />}
-            <div className={styles.games} aria-hidden="true">
+            <div className={`${styles.games} ${variant === "favorites" ? styles.favorites : ""}`} aria-hidden="true">
                 {Array.from({length: 3}, (_, index) => (
                     <div className={styles.card} key={index}>
                         <div className={styles.header}>
