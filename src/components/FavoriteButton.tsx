@@ -2,6 +2,7 @@
 
 import { useClerk, useUser } from "@clerk/nextjs";
 import { useEffect, useRef, useState } from "react";
+import type { MouseEvent } from "react";
 import { Star } from "lucide-react";
 
 export default function FavoriteButton({type, itemId, isFavorite, onFavoriteChange, disabled}: 
@@ -18,7 +19,10 @@ export default function FavoriteButton({type, itemId, isFavorite, onFavoriteChan
         return () => controllerRef.current?.abort();
     }, []);
 
-    async function handleClick() {
+    async function handleClick(event: MouseEvent<HTMLButtonElement>) {
+        event.preventDefault();
+        event.stopPropagation();
+
         if(!isLoaded) return;
         if(!isSignedIn) {
             openSignIn();
