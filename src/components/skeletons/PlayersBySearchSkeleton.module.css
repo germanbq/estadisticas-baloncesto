@@ -58,3 +58,31 @@
         animation: none;
     }
 }
+
+@media (max-width: 1023px) {
+    .name,
+    .team,
+    .profileLink {
+        max-width: 100%;
+    }
+}
+
+@media (max-width: 600px) {
+    .photo {
+        width: 56px;
+        height: 56px;
+    }
+    .name {
+        width: 140px;
+    }
+    .team {
+        width: 110px;
+    }
+    .profileLink {
+        align-self: center;
+        margin-block: 0.75rem;
+    }
+    .value {
+        height: 1.3rem;
+    }
+}

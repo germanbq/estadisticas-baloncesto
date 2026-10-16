@@ -61,9 +61,15 @@
     max-width: 100%; 
 }
 
-@keyframes pulse { 50% { opacity: 0.45; } }
+@keyframes pulse {
+    50% {
+        opacity: 0.45;
+    }
+}
 @media (prefers-reduced-motion: reduce) {
-    .placeholder { animation: none; }
+    .placeholder {
+        animation: none;
+    }
 }
 
 @media (max-width: 1023px) {

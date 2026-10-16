@@ -128,3 +128,48 @@
     animation: none;
   }
 }
+
+@media (max-width: 1023px) {
+  .podium {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    grid-template-areas: "pos2 pos1 pos3";
+    grid-auto-rows: auto;
+    align-items: start;
+    padding-inline: 0;
+    gap: 0.75rem;
+  }
+  .card {
+      width: 100%;
+      min-width: 0;
+      padding: 0.75rem;
+  }
+  .position2,
+  .position3 {
+      margin-top: 2rem;
+  }
+  .photo {
+      max-width: 100%;
+  }
+  .metric {
+      padding: 0.75rem;
+  }
+}
+
+@media (max-width: 600px) {
+  .podium {
+    grid-template-columns: minmax(0, 1fr);
+    grid-template-areas: "pos1" "pos2" "pos3";
+  }
+  .card {
+      max-width: 360px;
+      justify-self: center;
+  }
+  .position2,
+  .position3 {
+      margin-top: 0;
+  }
+  .photo {
+      width: 100px;
+      height: 112px;
+  }
+}

@@ -71,3 +71,42 @@
     background-color: var(--color-orange);
     color: white;
 }
+
+@media (max-width: 1023px) {
+    .inputContainer {
+        width: 85%;
+    }
+    .filters {
+        gap: 1rem;
+    }
+}
+
+@media (max-width: 600px) {
+    .inputContainer {
+        width: 100%;
+        min-width: 0;
+    }
+    .input {
+        min-width: 0;
+        padding: 0.75rem 2.75rem;
+    }
+    .inputIcon {
+        left: 0.75rem;
+    }
+    .inputCross {
+        right: 0.75rem;
+    }
+    .posFilters,
+    .confFilters {
+        gap: 0.35rem;
+    }
+    .button {
+        font-size: 0.75rem;
+        min-height: 44px;
+    }
+    .confLabel {
+        width: 100%;
+        text-align: center;
+        font-size: 0.8rem;
+    }
+}

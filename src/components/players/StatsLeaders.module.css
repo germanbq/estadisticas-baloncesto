@@ -44,7 +44,7 @@
     cursor: pointer;
 }
 
-button:not(.active):hover {
+.button:not(.active):hover {
     color: white;
 }
 
@@ -161,4 +161,89 @@ button:not(.active):hover {
 
 .numberOne {
     background-color: #3A2418;
+}
+
+@media (max-width: 1023px) {
+    .filters {
+        grid-template-columns: minmax(0, 1fr);
+        gap: 0.75rem;
+    }
+    .filtersIcon {
+        justify-content: center;
+    }
+    .buttons {
+        flex-wrap: wrap;
+    }
+    .button {
+        padding: 0.75rem;
+        font-size: 1.1rem;
+        min-height: 44px;
+    }
+    .playerCardsContainer {
+        grid-template-columns: repeat(3, minmax(0, 1fr));
+        grid-template-areas: "pos2 pos1 pos3";
+        grid-auto-rows: auto;
+        align-items: start;
+        padding-inline: 0;
+        gap: 0.75rem;
+    }
+    .playerCard {
+        width: 100%;
+        min-width: 0;
+        padding: 0.75rem;
+    }
+    .position2,
+    .position3 {
+        margin-top: 2rem;
+    }
+    .playerName {
+        font-size: 1.3rem;
+        overflow-wrap: anywhere;
+    }
+    .teamAndJersey {
+        flex-wrap: wrap;
+    }
+    .image {
+        max-width: 100%;
+        height: auto;
+    }
+    .metric {
+        font-size: 2rem;
+        padding: 0.75rem;
+    }
+}
+
+@media (max-width: 600px) {
+    .title {
+        font-size: 1.4rem;
+        text-align: center;
+    }
+    .filters {
+        padding-inline: 0;
+    }
+    .filtersIcon {
+        font-size: 0.9rem;
+    }
+    .button {
+        font-size: 0.85rem;
+        padding: 0.5rem;
+    }
+    .playerCardsContainer {
+        grid-template-columns: minmax(0, 1fr);
+        grid-template-areas: "pos1" "pos2" "pos3";
+    }
+    .playerCard {
+        max-width: 360px;
+        justify-self: center;
+    }
+    .position2,
+    .position3 {
+        margin-top: 0;
+    }
+    .image {
+        width: 100px;
+    }
+    .playerName {
+        min-height: 0;
+    }
 }
