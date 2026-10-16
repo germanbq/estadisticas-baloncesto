@@ -1,0 +1,56 @@
+.skeleton {
+    background: var(--color-background-lighter);
+    border-radius: 6px;
+    animation: pulse 1.5s ease-in-out infinite;
+}
+
+.position {
+    width: 40px;
+    height: 40px;
+    margin-inline: auto;
+    border-radius: 50%;
+}
+
+.logo {
+    width: 2.25rem;
+    height: 2.25rem;
+    flex-shrink: 0;
+    border-radius: 50%;
+}
+
+.name {
+    width: 160px;
+    max-width: 100%;
+    height: 1.2rem;
+    margin-inline: auto;
+}
+
+.favorite {
+    width: 24px;
+    height: 24px;
+    flex-shrink: 0;
+}
+
+.division {
+    width: 85px;
+    height: 1.2rem;
+    margin-inline: auto;
+}
+
+.value {
+    width: 35px;
+    height: 1.2rem;
+    margin-inline: auto;
+}
+
+@keyframes pulse {
+    50% {
+        opacity: 0.45;
+    }
+}
+
+@media (prefers-reduced-motion: reduce) {
+    .skeleton {
+        animation: none;
+    }
+}

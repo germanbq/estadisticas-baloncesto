@@ -9,6 +9,7 @@ import { usePathname, useRouter, useSearchParams } from "next/navigation";
 import { Team } from "@/src/backend/entities/teamsEntities";
 import FavoriteButton from "../FavoriteButton";
 import Link from "next/link";
+import LeaderBoardSkeleton from "../skeletons/LeaderBoardSkeleton";
 
 type StandingLabelProps = {
     text: string;
@@ -32,6 +33,8 @@ export default function LeaderBoard({season}: {season: number}) {
 
     const [conf, setConf] = useState(() => searchParams.get("conf") === "West" ? "West" : "East");
     const [leaderBoard, setLeaderBoard] = useState<Team[]>([]);
+    const [loadedConf, setLoadedConf] = useState<string | null>(null);
+    const loading = loadedConf !== conf;
 
     useEffect(() => {
         if(searchParams.get("conf") === conf) return;
@@ -59,6 +62,9 @@ export default function LeaderBoard({season}: {season: number}) {
             catch(error) {
                 if (controller.signal.aborted) return;
                 console.error(error);
+                setLeaderBoard([]);
+            } finally {
+                if (!controller.signal.aborted) setLoadedConf(conf);
             }
         }
 
@@ -80,7 +86,8 @@ export default function LeaderBoard({season}: {season: number}) {
                     <StandingLabel text="Eliminación directa (11-15)" className="eliminated" />
                 </div>
 
-                <table className={styles.table} > 
+                {loading && <div role="status" aria-label="Cargando clasificación" />}
+                <table className={styles.table} aria-busy={loading}>
                     <thead>
                         <tr>
                             <th>Pos</th>
@@ -93,7 +100,7 @@ export default function LeaderBoard({season}: {season: number}) {
                             <th>Última racha</th>
                         </tr>
                     </thead>
-                    <tbody>
+                    {loading ? <LeaderBoardSkeleton /> : <tbody>
                         {leaderBoard.map((team, index) => (
                             <tr key={team.id}>
                                 <td><span className={styles.positionBadge}>{index+1}</span></td>
@@ -114,7 +121,7 @@ export default function LeaderBoard({season}: {season: number}) {
                                 <td className={team.streakVictory ? styles.positive : styles.negative}>{team.streakVictory ? "W" : "L"}{team.streakNumber}</td>
                             </tr>
                         ))}
-                    </tbody>
+                    </tbody>}
                 </table>
             </div>
         </section>
