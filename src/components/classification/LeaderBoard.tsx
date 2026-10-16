@@ -79,7 +79,7 @@ export default function LeaderBoard({season}: {season: number}) {
                 <FilterButton icon={<Sunrise />} value="CONFERENCIA ESTE" selected={conf} setSelected={setConf} className={styles.button} activeClassName={styles.active} selectedValue="East"/>
                 <FilterButton icon={<Sunset />} value="CONFERENCIA OESTE" selected={conf} setSelected={setConf} className={styles.button} activeClassName={styles.active} selectedValue="West"/>
             </div>
-            <div className={styles.table}>
+            <div className={styles.tablePanel}>
                 <div className={styles.labelsContainer}>
                     <StandingLabel text="Playoffs directos (1-6)" className="playoffs" />
                     <StandingLabel text="Play-in (7-10)" className="playin" />
@@ -87,6 +87,7 @@ export default function LeaderBoard({season}: {season: number}) {
                 </div>
 
                 {loading && <div role="status" aria-label="Cargando clasificación" />}
+                <div className={styles.tableScroll} role="region" aria-label="Clasificación por conferencia" tabIndex={0}>
                 <table className={styles.table} aria-busy={loading}>
                     <thead>
                         <tr>
@@ -123,6 +124,7 @@ export default function LeaderBoard({season}: {season: number}) {
                         ))}
                     </tbody>}
                 </table>
+                </div>
             </div>
         </section>
     )
