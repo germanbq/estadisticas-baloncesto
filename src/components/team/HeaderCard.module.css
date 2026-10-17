@@ -11,9 +11,22 @@
 
 .badges {
     display: flex;
+    align-items: center;
     flex-wrap: wrap;
     gap: 0.5rem;
     margin-bottom: 1.25rem;
+}
+
+.favorite {
+    margin-left: auto;
+}
+
+.favorite > button {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 44px;
+    height: 44px;
 }
 
 .recordBadge,

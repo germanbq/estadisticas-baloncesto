@@ -2,6 +2,7 @@ import Image from 'next/image';
 import { Flame } from 'lucide-react';
 import styles from './HeaderCard.module.css';
 import { TeamHeader } from '@/src/backend/entities/teamsEntities';
+import FavoriteButton from '../FavoriteButton';
 
 function RecordStat({label, wins, losses}: {label: string; wins: number; losses: number}) {
     const total = wins + losses;
@@ -31,6 +32,9 @@ export default function HeaderCard(team: TeamHeader) {
                     <Flame size={15} aria-hidden="true" />
                     Racha {team.streakVictory ? 'W' : 'L'}{team.streakNumber}
                 </span>
+                <div className={styles.favorite}>
+                    <FavoriteButton type="equipos" itemId={team.id} isFavorite={team.isFavorite} />
+                </div>
             </div>
 
             <div className={styles.identity}>

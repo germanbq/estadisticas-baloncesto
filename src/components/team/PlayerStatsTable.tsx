@@ -1,17 +1,18 @@
-import styles from "../player/StatsTable.module.css";
+import stylesTable from "../player/StatsTable.module.css";
+import styles from "./PlayerStatsTable.module.css";
 import { TableProperties } from 'lucide-react';
 import { teamPlayersStats } from "@/src/backend/entities/teamsEntities";
 import Link from "next/link";
 
 export default function PlayerStatsTable({players}: {players: teamPlayersStats[]}) {
     return (
-        <section className={styles.section}>
-            <span className={styles.title}>
+        <section className={stylesTable.section}>
+            <span className={stylesTable.title}>
                 <TableProperties size={25} strokeWidth={2} aria-hidden="true" />
                 Estadísticas de los jugadores
             </span>
-            <div className={styles.tableScroll} role="region" aria-label="Estadísticas completas por temporada" tabIndex={0}>
-            <table className={styles.table}>
+            <div className={stylesTable.tableScroll} role="region" aria-label="Estadísticas completas por temporada" tabIndex={0}>
+            <table className={stylesTable.table}>
                 <thead>
                     <tr>
                         <th>Temporada</th>
@@ -32,7 +33,7 @@ export default function PlayerStatsTable({players}: {players: teamPlayersStats[]
                 <tbody>
                     {players.map((player) => (
                         <tr key={player.playerId}>
-                            <th><Link href={`/jugadores/${player.playerId}`}>{player.playerName}</Link></th>
+                            <th><Link href={`/jugadores/${player.playerId}`} className={styles.name}>{player.playerName}</Link></th>
                             <th>{player.games}</th>
                             <th>{Number(player.points.toFixed(2))}</th>
                             <th>{Number(player.rebounds.toFixed(2))}</th>

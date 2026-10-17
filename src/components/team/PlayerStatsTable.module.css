@@ -1,0 +1,11 @@
+.name {
+    display: inline-block;
+}
+
+.name:hover,
+.name:focus-visible {
+    outline: none;
+    background-color: var(--color-background-lighter);
+    padding: 0.2rem;
+    border-radius: 12px;
+}
