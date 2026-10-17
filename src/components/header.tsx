@@ -32,16 +32,16 @@ export default function Header() {
                 <Image src="/logo.webp" alt="Logo de la aplicación" width={40} height={40}/>
             </Link>
             <div className={styles.icons}>
-                <Link href="/" aria-label="Partidos">
+                <Link className={styles.linkButton} href="/" aria-label="Partidos">
                     <CalendarDays className={`${styles.icon} ${pathname === "/" ? styles.active : ""}`}/>
                 </Link>
-                <Link href="/clasificacion" aria-label="Clasificación">
+                <Link className={styles.linkButton} href="/clasificacion" aria-label="Clasificación">
                     <ListOrdered className={`${styles.icon} ${pathname === "/clasificacion" ? styles.active : ""}`}/>
                 </Link>
-                <Link href="/jugadores" aria-label="Jugadores">
+                <Link className={styles.linkButton} href="/jugadores" aria-label="Jugadores">
                     <Users className={`${styles.icon} ${pathname === "/jugadores" ? styles.active : ""}`}/>
                 </Link>
-                <button aria-label="Favoritos" onClick={handleClick} style={{cursor:"pointer"}}>
+                <button className={styles.linkButton} aria-label="Favoritos" onClick={handleClick} style={{cursor:"pointer"}}>
                     <Star className={`${styles.icon} ${pathname === "/favoritos" ? styles.active : ""}`}/>
                 </button>
             </div>
