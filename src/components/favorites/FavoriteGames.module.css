@@ -1,22 +1,22 @@
-.gameLink {
+.cardContainer {
     display: flex;
     width: 65%;
     color: inherit;
     text-decoration: none;
 }
 
-.gameLink > article {
+.cardContainer > article {
     width: 100%;
 }
 
 @media (max-width: 1023px) {
-    .gameLink {
+    .cardContainer {
         width: 85%;
     }
 }
 
 @media (max-width: 600px) {
-    .gameLink {
+    .cardContainer {
         width: 100%;
     }
 }

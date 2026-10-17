@@ -12,7 +12,7 @@ export default function GamesSkeleton({showDates = false, variant = "default"}: 
             {showDates && <DateButtonsSkeleton />}
             <div className={variant === "favorites" ? `${styles.games} ${styles.favorites}` : listStyles.container} aria-hidden="true">
                 {Array.from({length: 3}, (_, index) => (
-                    <div className={variant === "favorites" ? favoriteStyles.gameLink : listStyles.gameLink} key={index}>
+                    <div className={variant === "favorites" ? favoriteStyles.cardContainer : listStyles.cardContainer} key={index}>
                         <div className={styles.card}>
                             <div className={styles.header}>
                                 <div className={`${styles.skeleton} ${styles.label}`} />

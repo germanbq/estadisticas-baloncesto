@@ -2,7 +2,6 @@ import styles from "./FavoriteGames.module.css"
 import GameCard from "../GameCard"
 import { useEffect, useState } from "react";
 import { Game } from "@/src/backend/entities/gamesEntities";
-import Link from "next/link";
 import GamesSkeleton from "../skeletons/GamesSkeleton";
 
 export default function FavoriteGames({onFavoriteChange, disabled}: 
@@ -42,8 +41,8 @@ export default function FavoriteGames({onFavoriteChange, disabled}:
     return (
         <section style={{ display: "flex", flexDirection: "column", alignItems: "center", gap: "2rem" }}>
             {games.map((game) => (
-                <Link href={`/partidos/${game.id}`} key={game.id} className={styles.gameLink}>
-                    <GameCard id={game.id} isFavorite={game.isFavorite} disabled={disabled}
+                <div key={game.id} className={styles.cardContainer}>
+                    <GameCard href={`/partidos/${game.id}`} id={game.id} isFavorite={game.isFavorite} disabled={disabled}
                         onFavoriteChange={onFavoriteChange} finalizado={game.finished}
                         homeTeam={game.homeTeamName} awayTeam={game.awayTeamName}
                         homeScore={game.homeTeamScore} awayScore={game.awayTeamScore}
@@ -51,7 +50,7 @@ export default function FavoriteGames({onFavoriteChange, disabled}:
                         homeLogo={game.homeTeamLogo} awayLogo={game.awayTeamLogo}
                         place={game.stadium} date={new Date(game.date)}
                         />
-                </Link>
+                </div>
             ))}
         </section>
     )

@@ -34,16 +34,26 @@ type GameProps = {
     date: Date;
     children?: ReactNode;
     featured?: boolean;
+    href?: string;
 } & LinkProps;
 
 export default function GameCard(props: GameProps) {
     return (
         <article className={`${styles.game} ${props.featured ? styles.featured : ''}`}>
+            {props.href && (
+                <Link
+                    href={props.href}
+                    className={styles.cardLink}
+                    aria-label={`Ver partido: ${props.homeTeam} contra ${props.awayTeam}`}
+                />
+            )}
             <div className={styles.gameLabels}>
                 {props.finalizado ? <span>Finalizado</span> 
                     : <span>{props.date.toLocaleDateString("es-ES", {day: "2-digit", month: "2-digit", year: "numeric", timeZone: "Europe/Madrid",})}</span>}
                 <span>{props.place}</span>
-                <FavoriteButton type="partidos" itemId={props.id} isFavorite={props.isFavorite} onFavoriteChange={props.onFavoriteChange} disabled={props.disabled}/>
+                <div className={styles.favorite}>
+                    <FavoriteButton type="partidos" itemId={props.id} isFavorite={props.isFavorite} onFavoriteChange={props.onFavoriteChange} disabled={props.disabled}/>
+                </div>
             </div>
             <div className={styles.gameTeams}>
                 <div className={styles.teamColumn}>
