@@ -99,11 +99,14 @@
    transition: transform 150ms ease;
 }
 
-.profileLink:hover {
+.profileLink:hover,
+.profileLink:focus-visible {
    color: #f59b8e;
+   outline: none;
 }
 
-.profileLink:hover svg {
+.profileLink:hover svg,
+.profileLink:focus-visible svg {
    transform: translateX(4px);
 }
 

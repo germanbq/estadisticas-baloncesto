@@ -15,6 +15,17 @@
     height: 60px;
 }
 
+.button:not(.active):hover {
+    background-color: var(--color-background-lighter);
+    color: white;
+}
+
+.button:focus-visible {
+    background-color: var(--color-background-lighter);
+    color: white;
+    outline: none;
+}
+
 .active {
     background-color: var(--color-orange);
     color: white;
