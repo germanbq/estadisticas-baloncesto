@@ -24,7 +24,6 @@
 }
 
 .favorites .card {
-    width: 65%;
     padding: 1rem;
 }
 
@@ -107,12 +106,6 @@
 @media (prefers-reduced-motion: reduce) {
     .skeleton {
         animation: none;
-    }
-}
-
-@media (max-width: 1023px) {
-    .favorites .card {
-        width: 85%;
     }
 }
 
