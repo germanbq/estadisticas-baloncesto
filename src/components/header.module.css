@@ -15,6 +15,13 @@
     margin-left: 2rem;
 }
 
+.logo:hover,
+.logo:focus-visible {
+    background-color: var(--color-background-lighter);
+    border-radius: 24px;
+    outline: none;
+}
+
 .icons {
     display: flex;
     flex-direction: row;
