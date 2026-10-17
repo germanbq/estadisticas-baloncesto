@@ -21,6 +21,11 @@
     color: var(--color-text-primary);
 }
 
+.container a:focus-visible{
+    color: var(--color-text-primary);
+    outline: none;
+}
+
 .links,
 .description {
     display: flex;
