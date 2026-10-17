@@ -49,7 +49,7 @@ export default function HeadToHeadGames({games, referenceTeamName}:{games: HeadT
                 </div>
             : 
                 <>
-                    {games.map((game, index) => (
+                    {games.map((game) => (
                         <HTHGameCard key={game.id} game={game} referenceTeamName={referenceTeamName}/>
                     ))}        
                 </>

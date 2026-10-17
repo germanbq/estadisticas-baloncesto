@@ -30,6 +30,12 @@
     gap: 2rem;
 }
 
+.game:hover,
+.game:focus-visible{
+    outline: none;
+    background-color: var(--color-background-lighter);
+}
+
 .date {
     display: flex;
     flex-direction: column;

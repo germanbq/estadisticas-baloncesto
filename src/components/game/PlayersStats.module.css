@@ -46,8 +46,11 @@
 }
 
 .tableScroll:focus-visible {
-    outline: 2px solid var(--team-color);
-    outline-offset: 3px;
+    outline: none;
+}
+
+.tableScroll:focus-visible .table tr{
+    background-color: var(--color-background-lighter);
 }
 
 .table {

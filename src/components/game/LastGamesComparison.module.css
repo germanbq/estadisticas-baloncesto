@@ -50,6 +50,12 @@
     font-weight: 600;
 }
 
+.articleGame:hover,
+.articleGame:focus-visible{
+    outline: none;
+    background-color: var(--color-background-lighter);
+}
+
 .data {
     display: flex;
     flex-direction: row;
