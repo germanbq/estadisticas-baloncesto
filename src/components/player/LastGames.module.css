@@ -25,6 +25,12 @@
     width: 100%;
 }   
 
+.article:hover,
+.article:focus-visible {
+    outline: none;
+    background-color: var(--color-background-lighter);
+}
+
 .articleHeader {
     display: flex;
     gap: 5%;

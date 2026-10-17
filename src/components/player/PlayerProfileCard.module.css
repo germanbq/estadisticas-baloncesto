@@ -42,6 +42,12 @@
     font-size: 0.95rem;
 }
 
+.team:hover,
+.team:focus-visible {
+    border: 1px solid white;
+    outline: none;
+}
+
 .nameAndCountry{
     display: flex;
     flex-direction: column;
