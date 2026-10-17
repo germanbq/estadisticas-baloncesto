@@ -20,10 +20,9 @@ function DateButton({date, gamesNumber, day, setDay}: DateButtonProps) {
     const weekDay = date.toLocaleDateString("es-ES", { weekday: "short",});
     const month = date.toLocaleDateString("es-ES", { month: "short" });
     const monthDate = month.charAt(0).toUpperCase() + month.slice(1);
+    const isActive = day.getDate() === date.getDate() && day.getMonth() === date.getMonth() && day.getFullYear() === date.getFullYear();     
     return(
-        <button className={`${styles.button} ${day.getDate() === date.getDate() && day.getMonth() === date.getMonth() && day.getFullYear() === date.getFullYear()     
-                            ? styles.active : ""}`}
-                onClick={() => setDay(date)}>
+        <button className={`${styles.button} ${ isActive ? styles.active : ""}`} onClick={() => setDay(date)} aria-label={`Cambiar a fecha ${monthDate}, ${date.getDate()} `} aria-pressed={isActive}>
             <span>{esHoy ? "Hoy" : `${monthDate}, ${weekDay}`}</span>
             <span className={styles.date}>{date.getDate()}</span>
             <span>{gamesNumber} {gamesNumber === 1 ? "partido" : "partidos"}</span>        
@@ -86,12 +85,16 @@ export default function DateButtons({date, setDate, getDateString}:
     if (loading) return <DateButtonsSkeleton />;
 
     return (
-        <section className={styles.buttonsContainer} aria-label="Seleccionar fecha de los partidos" tabIndex={0}>
-                {!loading ?  <ChevronLeft className={styles.chevron} onClick={() => { const auxDate = addDays(referenceDate, -5); setReferenceDate(getDateString(auxDate)); setDate(auxDate)}}/> : ""}
+        <section className={styles.buttonsContainer} aria-label="Seleccionar fecha de los partidos" >
+            <button className={styles.chevronButton} type="button"  onClick={() => { const auxDate = addDays(referenceDate, -5); setReferenceDate(getDateString(auxDate)); setDate(auxDate)}} aria-label="Cambiar a fechas anteriores">
+                {!loading ?  <ChevronLeft className={styles.chevron}/> : ""}
+            </button>
                 {numberGames.map((number, index) => 
                     <DateButton key={index} date={new Date(`${number.date}T00:00:00`)} gamesNumber={number.gamesNumber} day={date} setDay={setDate}/>
                 )}
-                {!loading ?  <ChevronRight className={styles.chevron} onClick={() => { const auxDate = addDays(referenceDate, 5); setReferenceDate(getDateString(auxDate)); setDate(auxDate)}}/> : ""}
+            <button className={styles.chevronButton} type="button" onClick={() => { const auxDate = addDays(referenceDate, 5); setReferenceDate(getDateString(auxDate)); setDate(auxDate)}} aria-label="Cambiar a fechas posteriores">
+                {!loading ? <ChevronRight className={styles.chevron}/> : ""}
+            </button>
         </section>
     )
 }

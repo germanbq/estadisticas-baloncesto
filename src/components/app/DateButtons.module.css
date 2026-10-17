@@ -17,6 +17,12 @@
 .chevron:hover {
     color: var(--color-text-primary);
 }
+
+.chevronButton:focus-visible {
+    color: var(--color-text-primary);
+    outline: none;
+}
+
 .button {
     display: flex;
     flex-direction: column;
@@ -35,6 +41,10 @@
     background-color: var(--color-background-lighter);
 }
 
+.button:not(.active):focus-visible {
+    background-color: var(--color-background-lighter);
+    outline: none;
+}
 
 .date {
     color: white;
