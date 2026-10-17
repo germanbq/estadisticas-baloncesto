@@ -42,6 +42,11 @@
     color: white;
 }
 
+.button:focus-visible {
+    color: white;
+    outline: none;
+}
+
 .active {
     color: var(--color-orange);
     background-color: var(--color-background-lighter);
@@ -146,6 +151,13 @@
     gap: 0.75rem;
 }
 
+.teamLink:focus-visible {
+    outline: none;
+    background-color: var(--color-background-lighter);
+    border-radius: 10px;
+    padding: 0.2rem;
+}
+
 .teamLogo {
     width: 2.25rem;
     height: 2.25rem;
@@ -195,9 +207,12 @@
     border-radius: 0 0 16px 16px;
 }
 
+.tableScroll:focus-visible .table {
+    background-color: var(--color-background-lighter);
+}
+
 .tableScroll:focus-visible {
-    outline: 2px solid var(--color-orange);
-    outline-offset: 2px;
+    outline: none;
 }
 
 @media (max-width: 1023px) {
