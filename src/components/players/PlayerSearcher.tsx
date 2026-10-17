@@ -32,9 +32,10 @@ export default function PlayerSearcher({search, setSearch}: Props) {
         <>
             <div className={styles.inputContainer}>
                     <input value={search} onChange={(event) => setSearch(event.target.value)} 
-                    placeholder="Buscar jugador..." className={styles.input} spellCheck={false}></input>
+                        placeholder="Buscar jugador..." className={styles.input} spellCheck={false}>
+                    </input>
                     <UserSearch className={styles.inputIcon} />
-                    <button type="button" onClick={() => setSearch("")} aria-label="Borrar búsqueda">
+                    <button className={styles.deleteButton} type="button" onClick={() => setSearch("")} aria-label="Borrar búsqueda">
                         <X aria-hidden="true" className={styles.inputCross}/>
                     </button>
             </div>

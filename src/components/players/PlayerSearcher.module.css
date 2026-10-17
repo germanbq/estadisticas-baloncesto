@@ -15,8 +15,10 @@
     text-align: left;
 }
 
-.input:focus {
+.input:focus-within {
     outline: none;
+    border-color: var(--color-orange);
+    box-shadow: 0 0 0 1px var(--color-orange);
 }
 
 .inputIcon {
@@ -25,6 +27,11 @@
     top: 50%;
     transform: translateY(-50%);
     pointer-events: none;
+}
+
+.deleteButton:hover,
+.deleteButton:focus-visible {
+    color: white;
 }
 
 .inputCross {
@@ -60,11 +67,15 @@
     cursor: pointer;
 }
 
+.button:not(.active):hover,
+.button:not(.active):focus-visible {
+    background-color: var(--color-background-lighter);
+    color: white;
+    outline: none;
+}
+
 .confLabel {
     color: var(--color-text-primary);
-}
-.button:not(.active):hover {
-  background-color: var(--color-background-lighter);
 }
 
 .active {

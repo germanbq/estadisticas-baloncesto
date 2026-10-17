@@ -48,6 +48,11 @@
     color: white;
 }
 
+.button:focus-visible {
+    outline: none;
+    color: white;
+}
+
 .active {
     color: var(--color-orange);
     background-color: var(--color-background-lighter);
@@ -91,6 +96,12 @@
     flex-direction: column;
     gap: 0.5rem;
     align-items: center;
+}
+
+.playerCard:hover,
+.playerCard:focus-visible {
+    outline: none;
+    background-color: var(--color-background-lighter);
 }
 
 .pos {
