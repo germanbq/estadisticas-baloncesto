@@ -1,0 +1,18 @@
+.button {
+    cursor: pointer;
+    background: transparent;
+    outline: none;
+}
+
+.star {
+    transition: fill 150ms ease;
+}
+
+.button:enabled:hover .star,
+.button:enabled:focus-visible .star {
+    fill: currentColor;
+}
+
+.button:enabled:focus-visible .star {
+    stroke-width: 3;
+}

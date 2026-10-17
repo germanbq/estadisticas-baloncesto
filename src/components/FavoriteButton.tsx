@@ -4,6 +4,7 @@ import { useClerk, useUser } from "@clerk/nextjs";
 import { useEffect, useRef, useState } from "react";
 import type { MouseEvent } from "react";
 import { Star } from "lucide-react";
+import styles from "./FavoriteButton.module.css";
 
 export default function FavoriteButton({type, itemId, isFavorite, onFavoriteChange, disabled}: 
                     {type: string, itemId: number, isFavorite: boolean, 
@@ -60,8 +61,8 @@ export default function FavoriteButton({type, itemId, isFavorite, onFavoriteChan
     }
 
     return (
-        <button type="button" onClick={handleClick} disabled={!isLoaded || loading || disabled} style={{ cursor: "pointer" }} aria-label="Cambiar estado de favorito">
-            <Star
+        <button type="button" onClick={handleClick} disabled={!isLoaded || loading || disabled} className={styles.button} aria-label="Cambiar estado de favorito">
+            <Star className={styles.star}
                 fill={showFavorite ? "#f59e0b" : "none"}
                 color={showFavorite ? "#f59e0b" : "currentColor"}
             />
