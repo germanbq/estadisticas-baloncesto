@@ -92,6 +92,13 @@
     text-wrap: balance;
 }
 
+.teamName:focus-visible,
+.teamName:hover {
+    outline: none;
+    background-color: var(--color-background-lighter);
+    border-radius: 12px;
+}
+
 .hour {
     font-size: 1.5rem;
     align-self: center;

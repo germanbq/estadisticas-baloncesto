@@ -116,6 +116,17 @@
     border-bottom: none;
 }
 
+.playerName:hover {
+    color: var(--color-text-primary);
+}
+
+.playerName:focus-visible {
+    outline: none;
+    background-color: var(--color-background-lighter);
+    padding: 0.3rem;
+    border-radius: 12px;
+}
+
 @media (max-width: 1023px) {
     .section {
         width: 100%;

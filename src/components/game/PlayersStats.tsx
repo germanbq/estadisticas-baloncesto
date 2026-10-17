@@ -38,7 +38,7 @@ export default function PlayersStats({homePlayers, awayPlayers, homeName, awayNa
                     <tbody>
                         {team.players.map((player) => (
                             <tr key={player.playerId}>
-                                <th scope="row"><Link href={`/jugadores/${player.playerId}`}>{player.name}</Link></th>
+                                <th scope="row"><Link href={`/jugadores/${player.playerId}`} className={styles.playerName}>{player.name}</Link></th>
                                 <td>{Math.floor(player.secondsPlayed / 60)}:{String(player.secondsPlayed % 60).padStart(2, '0')}</td>
                                 <td>{player.points}</td>
                                 <td>{player.rebounds}</td>
