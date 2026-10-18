@@ -2,8 +2,6 @@ import styles from "./PlayerProfileSkeleton.module.css";
 
 const mainStats = Array.from({ length: 4 });
 const percentageStats = Array.from({ length: 2 });
-const tableColumns = Array.from({ length: 9 });
-const tableRows = Array.from({ length: 4 });
 
 export default function PlayerProfileSkeleton() {
   return (
