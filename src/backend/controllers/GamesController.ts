@@ -11,9 +11,10 @@ export default class GamesController {
                 { status: 400 }
             );
         }
-        const { userId } = await auth();
             
         try {
+            const { userId } = await auth();
+            
             const data = await this.service.dayGames(date, userId);
             return Response.json({data});
         } catch(error) {

@@ -28,15 +28,15 @@ export default class GamesQueries implements IGamesQueries {
             FROM games AS g
             JOIN teams AS ht ON ht.id = g.home_team_id
             JOIN teams AS at ON at.id = g.away_team_id
-            JOIN team_season_stats AS hts ON hts.team_id = ht.id
+            LEFT JOIN team_season_stats AS hts ON hts.team_id = ht.id
                 AND hts.season_init_year = $2
-            JOIN team_season_stats AS ats ON ats.team_id = at.id
+            LEFT JOIN team_season_stats AS ats ON ats.team_id = at.id
                 AND ats.season_init_year = $2
             WHERE g.date >= (
-                $1::date::timestamp AT TIME ZONE 'Europe/Madrid'
+                ($1::date + TIME '10:00') AT TIME ZONE 'Europe/Madrid'
             )
             AND g.date < (
-                ($1::date + 1)::timestamp AT TIME ZONE 'Europe/Madrid'
+                (($1::date + 1) + TIME '10:00') AT TIME ZONE 'Europe/Madrid'
             )
             ORDER BY g.date ASC
             `,
