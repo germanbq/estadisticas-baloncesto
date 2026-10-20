@@ -81,13 +81,13 @@ export default class GamesQueries implements IGamesQueries {
                 g.id,
                 ht.name AS "homeTeamName",
                 ht.logo AS "homeTeamLogo",
-                hts.victorys AS "homeTeamVictorys",
-                hts.losses AS "homeTeamLosses",
+                COALESCE(hts.victorys, 0) AS "homeTeamVictorys",
+                COALESCE(hts.losses, 0) AS "homeTeamLosses",
                 g.home_score AS "homeTeamScore",
                 at.name AS "awayTeamName",
                 at.logo AS "awayTeamLogo",
-                ats.victorys AS "awayTeamVictorys",
-                ats.losses AS "awayTeamLosses",
+                COALESCE(ats.victorys, 0) AS "awayTeamVictorys",
+                COALESCE(ats.losses, 0) AS "awayTeamLosses",
                 g.away_score AS "awayTeamScore",
                 g.finished,
                 ht.stadium,
@@ -108,7 +108,7 @@ export default class GamesQueries implements IGamesQueries {
                     100.0 * hts.victorys / NULLIF(hts.victorys + hts.losses, 0), 
                     0
                 )::double precision AS "homeWinRate",
-               (
+                (
                     COALESCE(
                         100.0 * hts.total_points / NULLIF(hts.total_possessions, 0),
                         0
@@ -148,16 +148,16 @@ export default class GamesQueries implements IGamesQueries {
                     1.0 * ats.total_points_allowed / NULLIF(ats.victorys + ats.losses, 0),
                     0
                 )::double precision AS "awayPointsAllowedPerGame",
-                hts.streak_number AS "homeStreakNumber",
-                hts.streak_victory AS "homeStreakVictory",
-                ats.streak_number AS "awayStreakNumber",
-                ats.streak_victory AS "awayStreakVictory"
+                COALESCE(hts.streak_number, 0) AS "homeStreakNumber",
+                COALESCE(hts.streak_victory, TRUE) AS "homeStreakVictory",
+                COALESCE(ats.streak_number, 0) AS "awayStreakNumber",
+                COALESCE(ats.streak_victory, TRUE) AS "awayStreakVictory"
             FROM games AS g
             JOIN teams AS ht ON ht.id = g.home_team_id
             JOIN teams AS at ON at.id = g.away_team_id
-            JOIN team_season_stats AS hts ON hts.team_id = ht.id
+            LEFT JOIN team_season_stats AS hts ON hts.team_id = ht.id
                 AND hts.season_init_year = g.season_init_year
-            JOIN team_season_stats AS ats ON ats.team_id = at.id
+            LEFT JOIN team_season_stats AS ats ON ats.team_id = at.id
                 AND ats.season_init_year = g.season_init_year
             WHERE g.id = $1
             `,

@@ -224,7 +224,6 @@ describe("GamesController.dayGames", () => {
 
 });
 
-
 describe("GamesController.gamesNumber", () => {
   test("devuelve 400 cuando la fecha es null", async ({db, expect}) => {
     const controller = createController(db);
@@ -277,3 +276,85 @@ describe("GamesController.gamesNumber", () => {
     ]);
   })
 });
+
+describe("GamesController.gameById", () => {
+  test.for([NaN, Infinity, 1.5, Number.MAX_SAFE_INTEGER + 1])(
+    "devuelve 400 cuando el ID no es un entero seguro: %s", async (id, { db, expect }) => {
+      const controller = createController(db);
+      const response = await controller.gameById(id);
+
+      expect(response.status).toBe(400);
+      expect(await response.json()).toStrictEqual({
+        error: expect.any(String),
+      });
+      expect(authMock).not.toHaveBeenCalled();
+    },
+  );
+
+  test.for([-2, 0])(
+    "devuelve 400 cuando el ID es menor de 1", async (id, { db, expect }) => {
+      const controller = createController(db);
+      const response = await controller.gameById(id);
+
+      expect(response.status).toBe(400);
+      expect(await response.json()).toStrictEqual({
+        error: expect.any(String),
+      });
+      expect(authMock).not.toHaveBeenCalled();
+    },
+  );
+
+   test("devuelve 500 cuando falla el servicio", async ({ db, expect }) => {
+    const serviceSpy = vi
+      .spyOn(GamesService.prototype, "gameById")
+      .mockRejectedValue(new Error("Fallo simulado"));
+
+    const consoleSpy = vi
+      .spyOn(console, "error")
+      .mockImplementation(() => {});
+
+    try {
+      const controller = createController(db);
+      const response = await controller.gameById(SEED_GAME_ID_A);
+
+      expect(response.status).toBe(500);
+      expect(await response.json()).toMatchObject({
+        error: expect.any(String),
+      });
+    } finally {
+      serviceSpy.mockRestore();
+      consoleSpy.mockRestore();
+    }
+  });
+
+  test("devuelve 404 cuando recibe un ID inválido", async ({db, expect}) => {
+    const controller = createController(db);
+    const response = await controller.gameById(9999);
+
+    expect(response.status).toBe(404);
+    expect(await response.json()).toStrictEqual({
+      error: expect.any(String),
+    });
+  });
+
+  test("devuelve los datos de un partido cuando recibe un ID válido", async ({db, expect}) => {
+    const controller = createController(db);
+    const response = await controller.gameById(SEED_GAME_ID_A);
+
+    expect(response.status).toBe(200);
+    expect(await response.json()).toMatchObject({
+      data: {
+        id: SEED_GAME_ID_A,
+        homeTeamName: "Boston Celtics",
+        awayTeamName: "Denver Nuggets",
+        finished: false,
+        stadium: "TD Garden",
+        date: "2026-10-18T07:59:59.999Z",
+        homeTeamId: 1,
+        awayTeamId: 2,
+        homeShortName: "BOS",
+        awayShortName: "DEN",
+      },
+    });
+  });
+})

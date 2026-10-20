@@ -46,14 +46,16 @@ export default class GamesController {
     }
 
     async gameById(id: number): Promise<Response> {
-        if(!Number.isSafeInteger(id)) {
+        if(!Number.isSafeInteger(id) || id <= 0) {
             return Response.json(
                 { error: "ID no válido para conseguir los datos del partido" },
                 { status: 400 }
             );
         }
-        const { userId } = await auth();
+
         try{
+            const { userId } = await auth();
+
             const data = await this.service.gameById(id, userId);
             if(data === null) {
                 return Response.json(
