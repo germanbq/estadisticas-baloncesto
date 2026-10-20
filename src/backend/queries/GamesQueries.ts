@@ -61,10 +61,10 @@ export default class GamesQueries implements IGamesQueries {
             FROM days AS d
             LEFT JOIN games AS g
                 ON g.date >= (
-                    d.day::timestamp AT TIME ZONE 'Europe/Madrid'
+                    (d.day + TIME '10:00') AT TIME ZONE 'Europe/Madrid'
                 )
                 AND g.date < (
-                    (d.day + 1)::timestamp AT TIME ZONE 'Europe/Madrid'
+                    ((d.day + 1) + TIME '10:00') AT TIME ZONE 'Europe/Madrid'
                 )
             GROUP BY d.day
             ORDER BY d.day;

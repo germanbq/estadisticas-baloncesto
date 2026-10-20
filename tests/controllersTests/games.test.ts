@@ -12,7 +12,7 @@ import GamesRepository from "../../src/backend/repositories/GamesRepository";
 import GamesQueries from "../../src/backend/queries/GamesQueries";
 import { PostgresQueryExecutor } from "../../src/backend/shared/PostgresQueryExecutor";
 
-import type { Game } from "../../src/backend/entities/gamesEntities";
+import type { Game, GamesNum } from "../../src/backend/entities/gamesEntities";
 
 vi.mock("@clerk/nextjs/server", () => ({
     auth: vi.fn(),
@@ -28,11 +28,11 @@ type DayGamesBody = {
     data: GameJson[];
 };
 
-const SEED_DATE_A = "2026-10-17";
-const SEED_DATE_B = "2026-10-18";
-const SEED_GAME_ID_A = 1;
-const SEED_GAME_ID_B= 2;
-const SEED_GAME_ID_C= 3;
+const SEED_DATE_A = "2026-10-17"; //fecha con un partido
+const SEED_DATE_B = "2026-10-18"; //fecha con dos partidos en horas límite
+const SEED_GAME_ID_A = 1;         //partido de SEED_DATE_A
+const SEED_GAME_ID_B= 2;          //partido de SEED_DATE_B
+const SEED_GAME_ID_C= 3;          //partido de SEED_DATE_B
 const USER_A = "usuario_prueba_A";
 const USER_B = "usuario_prueba_B";
 
@@ -222,4 +222,58 @@ describe("GamesController.dayGames", () => {
     ]);
   });
 
+});
+
+
+describe("GamesController.gamesNumber", () => {
+  test("devuelve 400 cuando la fecha es null", async ({db, expect}) => {
+    const controller = createController(db);
+    const response = await controller.gamesNumber(null);
+
+    expect(response.status).toBe(400);
+    expect(await response.json()).toMatchObject({
+      error: expect.any(String),
+    })
+    expect(authMock).not.toHaveBeenCalled();
+  });
+  
+  test("devuelve 500 cuando falla el servicio", async ({ db, expect }) => {
+    const serviceSpy = vi
+      .spyOn(GamesService.prototype, "gamesNumber")
+      .mockRejectedValue(new Error("Fallo simulado"));
+
+    const consoleSpy = vi
+      .spyOn(console, "error")
+      .mockImplementation(() => {});
+
+    try {
+      const controller = createController(db);
+      const response = await controller.gamesNumber(SEED_DATE_A);
+
+      expect(response.status).toBe(500);
+      expect(await response.json()).toMatchObject({
+        error: expect.any(String),
+      });
+    } finally {
+      serviceSpy.mockRestore();
+      consoleSpy.mockRestore();
+    }
+  });
+
+  test("devuelve cinco jornadas ordenadas con su número de partidos, incluyendo las jornadas vacías", async ({db, expect}) => {
+    const controller = createController(db);
+    const response = await controller.gamesNumber(SEED_DATE_B);
+
+    expect(response.status).toBe(200);
+
+    const result: {data: GamesNum[]} = await response.json(); 
+
+    expect(result.data).toStrictEqual([
+      { date: "2026-10-16", gamesNumber: 0 },
+      { date: "2026-10-17", gamesNumber: 1 },
+      { date: "2026-10-18", gamesNumber: 2 },
+      { date: "2026-10-19", gamesNumber: 1 },
+      { date: "2026-10-20", gamesNumber: 0 },
+    ]);
+  })
 });
