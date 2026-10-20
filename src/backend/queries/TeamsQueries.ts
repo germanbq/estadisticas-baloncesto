@@ -9,8 +9,8 @@ export class TeamsQueries implements ITeamsQueries {
                 t.logo,
                 t.name,
                 t.division,
-                tss.victorys,
-                tss.losses,
+                COALESCE(tss.victorys, 0) AS victorys,
+                COALESCE(tss.losses, 0) AS losses,
                 COALESCE(
                     100.0 * tss.victorys / NULLIF(tss.victorys + tss.losses, 0), 
                     0
@@ -20,8 +20,8 @@ export class TeamsQueries implements ITeamsQueries {
                         / NULLIF(tss.victorys + tss.losses, 0),
                     0
                 )::double precision AS difference,
-                tss.streak_number AS "streakNumber",
-                tss.streak_victory AS "streakVictory",
+                COALESCE(tss.streak_number, 0) AS "streakNumber",
+                COALESCE(tss.streak_victory, TRUE) AS "streakVictory",
                 EXISTS (
                     SELECT 1
                     FROM favorite_teams as ft
@@ -29,9 +29,9 @@ export class TeamsQueries implements ITeamsQueries {
                         AND ft.user_id = $2
                 ) AS "isFavorite"
             FROM teams AS t
-            JOIN team_season_stats as tss ON tss.team_id = t.id
-            WHERE t.conference = $1
+            LEFT JOIN team_season_stats AS tss ON tss.team_id = t.id
                 AND tss.season_init_year = $3
+            WHERE t.conference = $1
             ORDER BY "winRate" DESC
             `,
             values: [
@@ -54,8 +54,8 @@ export class TeamsQueries implements ITeamsQueries {
                     t.division,
                     t.stadium,
                     t.coach,
-                    tss.victorys,
-                    tss.losses,
+                    COALESCE(tss.victorys, 0) AS victorys,
+                    COALESCE(tss.losses, 0) AS losses,
                     COALESCE(
                         100.0 * tss.victorys / NULLIF(tss.victorys + tss.losses, 0),
                         0
@@ -65,12 +65,12 @@ export class TeamsQueries implements ITeamsQueries {
                             / NULLIF(tss.victorys + tss.losses, 0),
                         0
                     )::double precision AS difference,
-                    tss.streak_number AS "streakNumber",
-                    tss.streak_victory AS "streakVictory",
-                    tss.home_victory AS "homeVictorys",
-                    tss.home_losses AS "homeLosses",
-                    tss.victorys - tss.home_victory AS "awayVictorys",
-                    tss.losses - tss.home_losses AS "awayLosses",
+                    COALESCE(tss.streak_number, 0) AS "streakNumber",
+                    COALESCE(tss.streak_victory, TRUE) AS "streakVictory",
+                    COALESCE(tss.home_victory, 0) AS "homeVictorys",
+                    COALESCE(tss.home_losses, 0) AS "homeLosses",
+                    COALESCE(tss.victorys - tss.home_victory, 0) AS "awayVictorys",
+                    COALESCE(tss.losses - tss.home_losses, 0) AS "awayLosses",
                     (RANK() OVER (
                         PARTITION BY t.conference
                         ORDER BY COALESCE(
@@ -79,8 +79,8 @@ export class TeamsQueries implements ITeamsQueries {
                         ) DESC
                     ))::integer AS rank
                 FROM teams AS t
-                JOIN team_season_stats AS tss ON tss.team_id = t.id
-                WHERE tss.season_init_year = $3
+                LEFT JOIN team_season_stats AS tss ON tss.team_id = t.id
+                    AND tss.season_init_year = $3
             )
             SELECT
                 rt.*,

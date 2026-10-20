@@ -33,13 +33,13 @@ export class FavoritesQueries implements IFavoritesQueries {
                 g.id,
                 ht.name AS "homeTeamName",
                 ht.logo AS "homeTeamLogo",
-                hts.victorys AS "homeTeamVictorys",
-                hts.losses AS "homeTeamLosses",
+                COALESCE(hts.victorys, 0) AS "homeTeamVictorys",
+                COALESCE(hts.losses, 0) AS "homeTeamLosses",
                 g.home_score AS "homeTeamScore",
                 at.name AS "awayTeamName",
                 at.logo AS "awayTeamLogo",
-                ats.victorys AS "awayTeamVictorys",
-                ats.losses AS "awayTeamLosses",
+                COALESCE(ats.victorys, 0) AS "awayTeamVictorys",
+                COALESCE(ats.losses, 0) AS "awayTeamLosses",
                 g.away_score AS "awayTeamScore",
                 g.finished,
                 ht.stadium,
@@ -117,7 +117,17 @@ export class FavoritesQueries implements IFavoritesQueries {
         return {
             text: `WITH standings AS (
                 SELECT
-                    tss.*,
+                    t.id AS team_id,
+                    tss.victorys,
+                    tss.losses,
+                    tss.streak_number,
+                    tss.streak_victory,
+                    tss.total_points,
+                    tss.total_points_allowed,
+                    tss.total_possessions,
+                    tss.total_opponent_possessions,
+                    tss.home_victory,
+                    tss.home_losses,
                     (ROW_NUMBER() OVER (
                         PARTITION BY t.conference
                         ORDER BY
@@ -125,22 +135,22 @@ export class FavoritesQueries implements IFavoritesQueries {
                                 1.0 * tss.victorys / NULLIF(tss.victorys + tss.losses, 0),
                                 0
                             ) DESC,
-                            tss.victorys DESC,
+                            COALESCE(tss.victorys, 0) DESC,
                             t.id
                     ))::integer AS position
-                FROM team_season_stats AS tss
-                JOIN teams AS t ON t.id = tss.team_id
-                WHERE tss.season_init_year = $2
+                FROM teams AS t
+                LEFT JOIN team_season_stats AS tss ON tss.team_id = t.id
+                    AND tss.season_init_year = $2
             )
             SELECT
                 t.id,
                 t.logo,
                 t.name,
                 t.division,
-                tss.victorys,
-                tss.losses,
-                tss.streak_number AS "streakNumber",
-                tss.streak_victory AS "streakVictory",
+                COALESCE(tss.victorys, 0) AS victorys,
+                COALESCE(tss.losses, 0) AS losses,
+                COALESCE(tss.streak_number, 0) AS "streakNumber",
+                COALESCE(tss.streak_victory, TRUE) AS "streakVictory",
                 TRUE AS "isFavorite",
                 (
                     COALESCE(
@@ -163,8 +173,8 @@ export class FavoritesQueries implements IFavoritesQueries {
                     1.0 * tss.total_points_allowed / NULLIF(tss.victorys + tss.losses, 0),
                     0
                 )::double precision AS "pointsAllowedPerGame",
-                tss.home_victory AS "homeVictorys",
-                tss.home_losses AS "homeLosses"
+                COALESCE(tss.home_victory, 0) AS "homeVictorys",
+                COALESCE(tss.home_losses, 0) AS "homeLosses"
             FROM favorite_teams AS ft
             JOIN teams AS t ON t.id = ft.team_id
             JOIN standings AS tss ON tss.team_id = t.id
