@@ -53,10 +53,41 @@ beforeEach(() => {
 });
 
 describe("GamesController.dayGames", () => {
-  test("devuelve los partidos ordenados de la fecha solicitada usando horas límite", async ({
-    db,
-    expect,
-  }) => {
+  test("devuelve 400 cuando la fecha es null", async ({ db, expect }) => {
+    const controller = createController(db);
+    const response = await controller.dayGames(null);
+
+    expect(response.status).toBe(400);
+    expect(await response.json()).toMatchObject({
+        error: expect.any(String),
+    });
+    expect(authMock).not.toHaveBeenCalled();
+  });
+
+  test("devuelve 500 cuando falla el servicio", async ({ db, expect }) => {
+    const serviceSpy = vi
+      .spyOn(GamesService.prototype, "dayGames")
+      .mockRejectedValue(new Error("Fallo simulado"));
+
+    const consoleSpy = vi
+      .spyOn(console, "error")
+      .mockImplementation(() => {});
+
+    try {
+      const controller = createController(db);
+      const response = await controller.dayGames(SEED_DATE_A);
+
+      expect(response.status).toBe(500);
+      expect(await response.json()).toMatchObject({
+        error: expect.any(String),
+      });
+    } finally {
+      serviceSpy.mockRestore();
+      consoleSpy.mockRestore();
+    }
+  });
+
+  test("devuelve los partidos ordenados de la fecha solicitada usando horas límite", async ({ db, expect }) => {
     const controller = createController(db);
     const response = await controller.dayGames(SEED_DATE_B);
 
@@ -85,10 +116,7 @@ describe("GamesController.dayGames", () => {
     });
   });
 
-  test("devuelve una lista vacía cuando no hay partidos", async ({
-    db,
-    expect,
-  }) => {
+  test("devuelve una lista vacía cuando no hay partidos", async ({ db, expect }) => {
     const controller = createController(db);
     const response = await controller.dayGames("2026-12-01");
 
@@ -98,24 +126,8 @@ describe("GamesController.dayGames", () => {
     });
   });
 
-  test("devuelve 400 cuando la fecha es null", async ({
-    db,
-    expect,
-  }) => {
-    const controller = createController(db);
-    const response = await controller.dayGames(null);
 
-    expect(response.status).toBe(400);
-    expect(await response.json()).toMatchObject({
-        error: expect.any(String),
-    });
-    expect(authMock).not.toHaveBeenCalled();
-  });
-
-  test("marca como favorito el partido guardado por el usuario", async ({
-    db,
-    expect,
-  }) => {
+  test("marca como favorito el partido guardado por el usuario", async ({ db, expect }) => {
     await db.query(
       `
         INSERT INTO favorite_games (user_id, game_id)
@@ -144,10 +156,7 @@ describe("GamesController.dayGames", () => {
     ]);
   });
 
-  test("no muestra como propio el favorito de otro usuario", async ({
-    db,
-    expect,
-  }) => {
+  test("no muestra como propio el favorito de otro usuario", async ({ db, expect }) => {
     await db.query(
       `
         INSERT INTO favorite_games (user_id, game_id)
@@ -180,10 +189,7 @@ describe("GamesController.dayGames", () => {
     ]);
   });
 
-  test("permite consultar partidos sin sesión y no marca favoritos", async ({
-    db,
-    expect,
-  }) => {
+  test("permite consultar partidos sin sesión y no marca favoritos", async ({ db, expect }) => {
     await db.query(
       `
         INSERT INTO favorite_games (user_id, game_id)
@@ -215,4 +221,5 @@ describe("GamesController.dayGames", () => {
         },
     ]);
   });
+
 });
