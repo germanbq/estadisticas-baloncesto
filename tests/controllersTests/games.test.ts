@@ -31,8 +31,10 @@ type DayGamesBody = {
 const SEED_DATE_A = "2026-10-17"; //fecha con un partido
 const SEED_DATE_B = "2026-10-18"; //fecha con dos partidos en horas límite
 const SEED_GAME_ID_A = 1;         //partido de SEED_DATE_A
-const SEED_GAME_ID_B= 2;          //partido de SEED_DATE_B
-const SEED_GAME_ID_C= 3;          //partido de SEED_DATE_B
+const SEED_GAME_ID_B = 2;          //partido de SEED_DATE_B
+const SEED_GAME_ID_C = 3;          //partido de SEED_DATE_B
+const SEED_TEAM_ID_A = 1;         //equipo con partidos
+const SEED_TEAM_ID_B = 3;         //equipo sin partidos
 const USER_A = "usuario_prueba_A";
 const USER_B = "usuario_prueba_B";
 
@@ -355,6 +357,134 @@ describe("GamesController.gameById", () => {
         homeShortName: "BOS",
         awayShortName: "DEN",
       },
+    });
+  });
+})
+
+describe("GamesController.lastTeamGames", () => {
+  test.for([NaN, Infinity, 1.5, Number.MAX_SAFE_INTEGER + 1])(
+    "devuelve 400 cuando el ID no es un entero seguro: %s", async (id, { db, expect }) => {
+      const controller = createController(db);
+      const response = await controller.lastTeamGames(id);
+
+      expect(response.status).toBe(400);
+      expect(await response.json()).toStrictEqual({
+        error: expect.any(String),
+      });
+      expect(authMock).not.toHaveBeenCalled();
+    },
+  );
+
+  test.for([-2, 0])(
+    "devuelve 400 cuando el ID es menor de 1", async (id, { db, expect }) => {
+      const controller = createController(db);
+      const response = await controller.lastTeamGames(id);
+
+      expect(response.status).toBe(400);
+      expect(await response.json()).toStrictEqual({
+        error: expect.any(String),
+      });
+      expect(authMock).not.toHaveBeenCalled();
+    },
+  );
+
+  test("devuelve 500 cuando falla el servicio", async ({ db, expect }) => {
+    const serviceSpy = vi
+      .spyOn(GamesService.prototype, "lastTeamGames")
+      .mockRejectedValue(new Error("Fallo simulado"));
+
+    const consoleSpy = vi
+      .spyOn(console, "error")
+      .mockImplementation(() => {});
+
+    try {
+      const controller = createController(db);
+      const response = await controller.lastTeamGames(SEED_TEAM_ID_A);
+
+      expect(response.status).toBe(500);
+      expect(await response.json()).toMatchObject({
+        error: expect.any(String),
+      });
+    } finally {
+      serviceSpy.mockRestore();
+      consoleSpy.mockRestore();
+    }
+  });
+
+  test("devuelve una lista vacía si el equipo no tiene partidos finalizados", async ({db, expect}) => {
+    const controller = createController(db);
+    const response = await controller.lastTeamGames(SEED_TEAM_ID_B);
+
+    expect(response.status).toBe(200);
+    expect(await response.json()).toStrictEqual({
+      data: [],
+    });
+  });
+
+  test("devuelve los últimos cinco partidos finalizados del equipo ordenados del más reciente al más antiguo", async ({db, expect}) => {
+    const controller = createController(db);
+    const response = await controller.lastTeamGames(SEED_TEAM_ID_A);
+
+    expect(response.status).toBe(200);
+    expect(await response.json()).toStrictEqual({
+      data: [
+        {
+          id: SEED_GAME_ID_B,
+          rivalName: "Denver Nuggets",
+          home: true,
+          stadium: "TD Garden",
+          score: 112,
+          rivalScore: 100,
+        },
+        {
+          id: SEED_GAME_ID_A,
+          rivalName: "Denver Nuggets",
+          home: true,
+          stadium: "TD Garden",
+          score: 104,
+          rivalScore: 107,
+        },
+        {
+          id: 7,
+          rivalName: "Denver Nuggets",
+          home: true,
+          stadium: "TD Garden",
+          score: 116,
+          rivalScore: 110,
+        },
+        {
+          id: 5,
+          rivalName: "Denver Nuggets",
+          home: true,
+          stadium: "TD Garden",
+          score: 108,
+          rivalScore: 102,
+        },
+        {
+          id: 8,
+          rivalName: "Denver Nuggets",
+          home: true,
+          stadium: "TD Garden",
+          score: 101,
+          rivalScore: 109,
+        },
+      ],
+    });
+  });
+
+  test("devuelve los partidos desde la perspectiva del equipo visitante", async ({ db, expect }) => {
+    const controller = createController(db);
+    const response = await controller.lastTeamGames(2);
+
+    expect(response.status).toBe(200);
+    expect(await response.json()).toStrictEqual({
+      data: [
+        { id: SEED_GAME_ID_B, rivalName: "Boston Celtics", home: false, stadium: "TD Garden", score: 100, rivalScore: 112 },
+        { id: SEED_GAME_ID_A, rivalName: "Boston Celtics", home: false, stadium: "TD Garden", score: 107, rivalScore: 104 },
+        { id: 7, rivalName: "Boston Celtics", home: false, stadium: "TD Garden", score: 110, rivalScore: 116 },
+        { id: 5, rivalName: "Boston Celtics", home: false, stadium: "TD Garden", score: 102, rivalScore: 108 },
+        { id: 8, rivalName: "Boston Celtics", home: false, stadium: "TD Garden", score: 109, rivalScore: 101 },
+      ],
     });
   });
 })

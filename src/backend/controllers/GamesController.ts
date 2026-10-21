@@ -74,7 +74,7 @@ export default class GamesController {
     }
 
     async lastTeamGames(id: number): Promise<Response> {
-        if(!Number.isSafeInteger(id)) {
+        if(!Number.isSafeInteger(id) || id <= 0) {
             return Response.json(
                 { error: "ID no válido para conseguir los últimos partidos del equipo" },
                 { status: 400 }
