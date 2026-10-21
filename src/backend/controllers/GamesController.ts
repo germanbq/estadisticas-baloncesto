@@ -93,7 +93,7 @@ export default class GamesController {
     }
 
     async headToHeadGames(homeId: number, awayId: number) {
-        if(!Number.isSafeInteger(homeId) || !Number.isSafeInteger(awayId)) {
+        if(!Number.isSafeInteger(homeId) || homeId <= 0 || !Number.isSafeInteger(awayId) || awayId <= 0) {
             return Response.json(
                 { error: "ID no válido de los equipos para conseguir sus enfrentamientos" },
                 { status: 400 }

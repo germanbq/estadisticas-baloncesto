@@ -488,3 +488,123 @@ describe("GamesController.lastTeamGames", () => {
     });
   });
 })
+
+describe("GamesController.headToHeadGames", () => {
+  test.for([NaN, Infinity, 1.5, Number.MAX_SAFE_INTEGER + 1])(
+    "devuelve 400 cuando el ID local no es un entero seguro: %s", async (id, { db, expect }) => {
+      const controller = createController(db);
+      const response = await controller.headToHeadGames(id, 2);
+
+      expect(response.status).toBe(400);
+      expect(await response.json()).toStrictEqual({ error: expect.any(String) });
+      expect(authMock).not.toHaveBeenCalled();
+    },
+  );
+
+  test.for([NaN, Infinity, 1.5, Number.MAX_SAFE_INTEGER + 1])(
+    "devuelve 400 cuando el ID visitante no es un entero seguro: %s", async (id, { db, expect }) => {
+      const controller = createController(db);
+      const response = await controller.headToHeadGames(SEED_TEAM_ID_A, id);
+
+      expect(response.status).toBe(400);
+      expect(await response.json()).toStrictEqual({ error: expect.any(String) });
+      expect(authMock).not.toHaveBeenCalled();
+    },
+  );
+
+  test.for([-2, 0])(
+    "devuelve 400 cuando el ID local es menor de 1: %s", async (id, { db, expect }) => {
+      const controller = createController(db);
+      const response = await controller.headToHeadGames(id, 2);
+
+      expect(response.status).toBe(400);
+      expect(await response.json()).toStrictEqual({ error: expect.any(String) });
+      expect(authMock).not.toHaveBeenCalled();
+    },
+  );
+
+  test.for([-2, 0])(
+    "devuelve 400 cuando el ID visitante es menor de 1: %s", async (id, { db, expect }) => {
+      const controller = createController(db);
+      const response = await controller.headToHeadGames(SEED_TEAM_ID_A, id);
+
+      expect(response.status).toBe(400);
+      expect(await response.json()).toStrictEqual({ error: expect.any(String) });
+      expect(authMock).not.toHaveBeenCalled();
+    },
+  );
+
+  test("devuelve 500 cuando falla el servicio", async ({ db, expect }) => {
+    const serviceSpy = vi
+      .spyOn(GamesService.prototype, "headToHeadGames")
+      .mockRejectedValue(new Error("Fallo simulado"));
+    const consoleSpy = vi.spyOn(console, "error").mockImplementation(() => {});
+
+    try {
+      const controller = createController(db);
+      const response = await controller.headToHeadGames(SEED_TEAM_ID_A, SEED_TEAM_ID_B);
+
+      expect(response.status).toBe(500);
+      expect(await response.json()).toMatchObject({ error: expect.any(String) });
+    } finally {
+      serviceSpy.mockRestore();
+      consoleSpy.mockRestore();
+    }
+  });
+
+  test("devuelve una lista vacía cuando los equipos no tienen enfrentamientos finalizados", async ({ db, expect }) => {
+    const controller = createController(db);
+    const response = await controller.headToHeadGames(SEED_TEAM_ID_A, SEED_TEAM_ID_B);
+
+    expect(response.status).toBe(200);
+    expect(await response.json()).toStrictEqual({ data: [] });
+  });
+
+  test("devuelve los enfrentamientos finalizados ordenados del más reciente al más antiguo", async ({ db, expect }) => {
+    const controller = createController(db);
+    const response = await controller.headToHeadGames(SEED_TEAM_ID_A, 2);
+
+    expect(response.status).toBe(200);
+    expect(await response.json()).toStrictEqual({
+      data: [
+        { id: SEED_GAME_ID_B, date: "2026-10-18T08:00:00.000Z", homeScore: 112, awayScore: 100, stadium: "TD Garden", homeName: "Boston Celtics", awayName: "Denver Nuggets" },
+        { id: SEED_GAME_ID_A, date: "2026-10-18T07:59:59.999Z", homeScore: 104, awayScore: 107, stadium: "TD Garden", homeName: "Boston Celtics", awayName: "Denver Nuggets" },
+        { id: 7, date: "2026-10-15T20:00:00.000Z", homeScore: 116, awayScore: 110, stadium: "TD Garden", homeName: "Boston Celtics", awayName: "Denver Nuggets" },
+        { id: 5, date: "2026-10-14T20:00:00.000Z", homeScore: 108, awayScore: 102, stadium: "TD Garden", homeName: "Boston Celtics", awayName: "Denver Nuggets" },
+        { id: 8, date: "2026-10-13T20:00:00.000Z", homeScore: 101, awayScore: 109, stadium: "TD Garden", homeName: "Boston Celtics", awayName: "Denver Nuggets" },
+        { id: 6, date: "2026-10-11T20:00:00.000Z", homeScore: 99, awayScore: 105, stadium: "TD Garden", homeName: "Boston Celtics", awayName: "Denver Nuggets" },
+      ],
+    });
+  });
+
+  test("devuelve los mismos enfrentamientos al invertir los IDs de los equipos", async ({ db, expect }) => {
+    const controller = createController(db);
+    const response = await controller.headToHeadGames(SEED_TEAM_ID_A, 2);
+    const reversedResponse = await controller.headToHeadGames(2, SEED_TEAM_ID_A);
+
+    expect(response.status).toBe(200);
+    expect(reversedResponse.status).toBe(200);
+
+    const result = await response.json();
+    expect(result.data).toHaveLength(6);
+    expect(await reversedResponse.json()).toStrictEqual(result);
+  });
+
+  test("excluye los enfrentamientos finalizados de otras temporadas", async ({ db, expect }) => {
+    const previousSeason = await db.query(
+      "SELECT id FROM games WHERE home_team_id = $1 AND away_team_id = $2 AND season_init_year = $3 AND finished = TRUE",
+      [SEED_TEAM_ID_A, 2, 2025],
+    );
+    expect(previousSeason.rows).toHaveLength(1);
+
+    const controller = createController(db);
+    const response = await controller.headToHeadGames(SEED_TEAM_ID_A, 2);
+
+    expect(response.status).toBe(200);
+    const result: { data: { id: number }[] } = await response.json();
+    expect(result.data.map((game) => game.id)).toStrictEqual([
+      SEED_GAME_ID_B, SEED_GAME_ID_A, 7, 5, 8, 6,
+    ]);
+    expect(result.data.map((game) => game.id)).not.toContain(previousSeason.rows[0].id);
+  });
+});
