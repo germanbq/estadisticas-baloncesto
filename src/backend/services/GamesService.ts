@@ -18,7 +18,7 @@ export default class GamesService {
     }
 
     lastTeamGames(id: number): Promise<LastTeamGame[]> {
-        return this.repository.lastTeamGames(id);
+        return this.repository.lastTeamGames(id, ACTUAL_SEASON);
     }
 
     headToHeadGames(homeId: number, awayId: number): Promise<HeadToHeadGame[]> {

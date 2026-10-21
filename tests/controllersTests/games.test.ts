@@ -487,6 +487,29 @@ describe("GamesController.lastTeamGames", () => {
       ],
     });
   });
+  
+  test("excluye los partidos finalizados de temporadas anteriores aunque haya menos de cinco de la actual", async ({ db, expect }) => {
+    const previousSeason = await db.query(
+      "SELECT id FROM games WHERE home_team_id = $1 AND away_team_id = $2 AND season_init_year = $3 AND finished = TRUE",
+      [SEED_TEAM_ID_A, 2, 2025],
+    );
+    expect(previousSeason.rows).toHaveLength(1);
+
+    await db.query(
+      "UPDATE games SET finished = FALSE WHERE id = ANY($1::integer[])",
+      [[5, 6]],
+    );
+
+    const controller = createController(db);
+    const response = await controller.lastTeamGames(SEED_TEAM_ID_A);
+
+    expect(response.status).toBe(200);
+    const result: { data: { id: number }[] } = await response.json();
+    expect(result.data.map((game) => game.id)).toStrictEqual([
+      SEED_GAME_ID_B, SEED_GAME_ID_A, 7, 8,
+    ]);
+    expect(result.data.map((game) => game.id)).not.toContain(previousSeason.rows[0].id);
+  });
 })
 
 describe("GamesController.headToHeadGames", () => {

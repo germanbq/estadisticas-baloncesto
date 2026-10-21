@@ -168,7 +168,7 @@ export default class GamesQueries implements IGamesQueries {
         };
     }
 
-    lastTeamGames(id: number): SqlQuery {
+    lastTeamGames(id: number, season: number): SqlQuery {
         return {
             text: `SELECT
                 g.id,
@@ -190,12 +190,14 @@ export default class GamesQueries implements IGamesQueries {
             JOIN teams AS ht ON ht.id = g.home_team_id
             JOIN teams AS at ON at.id = g.away_team_id
             WHERE (g.home_team_id = $1 OR g.away_team_id = $1)
+                AND g.season_init_year = $2
                 AND g.finished = TRUE
             ORDER BY g.date DESC
             LIMIT 5
             `,
             values: [
-                id
+                id,
+                season
             ],
         };
     }
