@@ -10,7 +10,7 @@ import StatsLeadersComparison from "@/src/components/game/StatsLeadersComparison
 import FinishedTeamStatsComparison from "@/src/components/game/FinishedTeamStatsComparison";
 import MVPCard from "@/src/components/game/MVPCard";
 import PlayersStats from "@/src/components/game/PlayersStats";
-import NoDataCard from "@/src/components/game/NoDataCard";
+import NoDataCard from "@/src/components/general/NoDataCard";
 import { CalendarDays, ChartBar, CircleStar, Swords } from "lucide-react";
 
 
