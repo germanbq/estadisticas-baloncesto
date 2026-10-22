@@ -181,7 +181,7 @@ export default class GamesController {
     }
 
     async playersStats(gameId: number, teamId: number): Promise<Response> {
-        if(!Number.isSafeInteger(gameId) || !Number.isSafeInteger(teamId)) {
+        if(!Number.isSafeInteger(gameId) || gameId <= 0 || !Number.isSafeInteger(teamId) || teamId <= 0) {
             return Response.json(
                 { error: "ID de equipo o partido no válido para conseguir las estadísticas de los jugadores" },
                 { status: 400 }
@@ -189,6 +189,12 @@ export default class GamesController {
         }
         try{
             const data = await this.service.playersStats(gameId, teamId);
+            if (data.length === 0) {
+                return Response.json(
+                    { error: "No existen estadísticas de jugadores para ese partido" },
+                    { status: 404 },
+                );
+            }
             return Response.json({data});
         } catch(error) {
             console.error(error);

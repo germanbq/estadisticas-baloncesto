@@ -965,3 +965,115 @@ describe("GamesController.gameMVP", () => {
     });
   });
 });
+
+describe("GamesController.playersStats", () => {
+  test.for([NaN, Infinity, 1.5, Number.MAX_SAFE_INTEGER + 1])(
+    "devuelve 400 cuando el ID del partido no es un entero seguro: %s", async (id, { db, expect }) => {
+      const controller = createController(db);
+      const response = await controller.playersStats(id, SEED_TEAM_ID_A);
+
+      expect(response.status).toBe(400);
+      expect(await response.json()).toStrictEqual({ error: expect.any(String) });
+      expect(authMock).not.toHaveBeenCalled();
+    },
+  );
+
+  test.for([NaN, Infinity, 1.5, Number.MAX_SAFE_INTEGER + 1])(
+    "devuelve 400 cuando el ID del equipo no es un entero seguro: %s", async (id, { db, expect }) => {
+      const controller = createController(db);
+      const response = await controller.playersStats(SEED_GAME_ID_A, id);
+
+      expect(response.status).toBe(400);
+      expect(await response.json()).toStrictEqual({ error: expect.any(String) });
+      expect(authMock).not.toHaveBeenCalled();
+    },
+  );
+
+  test.for([-2, 0])(
+    "devuelve 400 cuando el ID del partido es menor de 1: %s", async (id, { db, expect }) => {
+      const controller = createController(db);
+      const response = await controller.playersStats(id, SEED_TEAM_ID_A);
+
+      expect(response.status).toBe(400);
+      expect(await response.json()).toStrictEqual({ error: expect.any(String) });
+      expect(authMock).not.toHaveBeenCalled();
+    },
+  );
+
+  test.for([-2, 0])(
+    "devuelve 400 cuando el ID del equipo es menor de 1: %s", async (id, { db, expect }) => {
+      const controller = createController(db);
+      const response = await controller.playersStats(SEED_GAME_ID_A, id);
+
+      expect(response.status).toBe(400);
+      expect(await response.json()).toStrictEqual({ error: expect.any(String) });
+      expect(authMock).not.toHaveBeenCalled();
+    },
+  );
+  test("devuelve 500 cuando falla el servicio", async ({ db, expect }) => {
+    const serviceSpy = vi
+      .spyOn(GamesService.prototype, "playersStats")
+      .mockRejectedValue(new Error("Fallo simulado"));
+    const consoleSpy = vi.spyOn(console, "error").mockImplementation(() => {});
+
+    try {
+      const controller = createController(db);
+      const response = await controller.playersStats(SEED_GAME_ID_A, SEED_TEAM_ID_A);
+
+      expect(response.status).toBe(500);
+      expect(await response.json()).toMatchObject({ error: expect.any(String) });
+    } finally {
+      serviceSpy.mockRestore();
+      consoleSpy.mockRestore();
+    }
+  });
+
+  test("devuelve 404 cuando el equipo no tiene estadísticas de jugadores en el partido", async ({ db, expect }) => {
+    const controller = createController(db);
+    const response = await controller.playersStats(SEED_GAME_ID_C, SEED_TEAM_ID_A);
+
+    expect(response.status).toBe(404);
+    expect(await response.json()).toStrictEqual({ error: expect.any(String) });
+  });
+
+  test("devuelve las estadísticas de los jugadores ordenados por nombre descendente y no por ID", async ({ db, expect }) => {
+    const addedPlayer = await db.query(
+      `INSERT INTO players (name, height, weight, age, draft, team_id, country, jersey_number, position, image)
+       VALUES ('Aaron Test', 2.00, 100, 25, 2020, 2, 'USA', 99, 'SF', '/players/test.webp')
+       RETURNING id`,
+    );
+    const addedPlayerId: number = addedPlayer.rows[0].id;
+    await db.query(
+      `INSERT INTO player_game_stats (player_id, game_id, team_id, seconds_played, points, rebounds, ofe_rebounds, def_rebounds, assists, steals, blocks, turnovers, plusminus, fg_made, fg_attempted, three_made, three_attempted, ft_made, ft_attempted)
+       SELECT $1, game_id, team_id, seconds_played, points, rebounds, ofe_rebounds, def_rebounds, assists, steals, blocks, turnovers, plusminus, fg_made, fg_attempted, three_made, three_attempted, ft_made, ft_attempted
+       FROM player_game_stats WHERE player_id = 2 AND game_id = $2`,
+      [addedPlayerId, SEED_GAME_ID_A],
+    );
+
+    const controller = createController(db);
+    const response = await controller.playersStats(SEED_GAME_ID_A, 2);
+
+    expect(response.status).toBe(200);
+    const result = await response.json();
+    expect(result.data).toStrictEqual([
+      {
+        name: "Nikola Jokic", playerId: 2, secondsPlayed: 2280,
+        points: 28, rebounds: 12, ofeRebounds: 3, defRebounds: 9,
+        assists: 10, steals: 1, blocks: 2, turnovers: 4, plusMinus: 3,
+        fgPercentage: expect.closeTo(61.111111, 5), threePercentage: 50,
+      },
+      {
+        name: "Jamal Murray", playerId: 3, secondsPlayed: 2160,
+        points: 32, rebounds: 4, ofeRebounds: 1, defRebounds: 3,
+        assists: 6, steals: 2, blocks: 0, turnovers: 2, plusMinus: 3,
+        fgPercentage: expect.closeTo(54.545455, 5), threePercentage: 50,
+      },
+      {
+        name: "Aaron Test", playerId: addedPlayerId, secondsPlayed: 2280,
+        points: 28, rebounds: 12, ofeRebounds: 3, defRebounds: 9,
+        assists: 10, steals: 1, blocks: 2, turnovers: 4, plusMinus: 3,
+        fgPercentage: expect.closeTo(61.111111, 5), threePercentage: 50,
+      },
+    ]);
+  });
+});
