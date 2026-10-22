@@ -53,6 +53,7 @@ export default function StatsLeader() {
     const [metric, setMetric] = useState(() => searchParams.get("metric") || "points");
     const [leaders, setLeaders] = useState<LeaderPlayer[]>([]);
     const [loading, setLoading] = useState(true);
+    const [error, setError] = useState(false);
 
     useEffect(() => {
         if(searchParams.get("metric") === metric) return;
@@ -76,9 +77,11 @@ export default function StatsLeader() {
                     throw new Error(result.error ??`Error ${response.status}`);
                 }   
                 
+                setError(false);
                 setLeaders(result.data);
             } catch(error){
                 if (controller.signal.aborted) return;
+                setError(true);
                 console.error(error);
             } finally {
                 if (!controller.signal.aborted) {
@@ -109,7 +112,11 @@ export default function StatsLeader() {
                     <FilterButton value="3P%" selected={metric} setSelected={setMetric} className={styles.button} activeClassName={styles.active} selectedValue="three_percentage"/>
                 </div>
             </section>
-            {loading ? <StatsLeadersSkeleton /> : leaders.length === 0 ? (
+            {loading ? <StatsLeadersSkeleton /> : error ? (
+                <div className={styles.noDataContainer}>
+                    <NoDataCard text="No se pudieron cargar los líderes de la liga. Inténtalo de nuevo." />
+                </div>
+            ) : leaders.length === 0 ? (
                 <div className={styles.noDataContainer}>
                     <NoDataCard text="No hay estadísticas disponibles para mostrar los líderes de la liga en esta métrica" />
                 </div>
