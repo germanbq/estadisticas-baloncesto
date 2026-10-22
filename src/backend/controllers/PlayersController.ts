@@ -37,7 +37,7 @@ export class PlayersController {
             const { userId } = await auth();
 
             const data = await this.service.profileStats(id, userId);
-            if(data === null) {
+            if(data === undefined) {
                 return Response.json(
                     { error: "Jugador no encontrado" },
                     { status: 404 }

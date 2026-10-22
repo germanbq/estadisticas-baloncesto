@@ -11,7 +11,7 @@ export class PlayersService {
         return this.repository.leadersList(metric, MIN_GAMES_FOR_LEADERS, LIMIT_LEADER_PLAYERS, ACTUAL_SEASON);
     }
 
-    profileStats(id: number, userId: string | null): Promise<PlayerProfile | null> {
+    profileStats(id: number, userId: string | null): Promise<PlayerProfile | undefined> {
         return this.repository.profileStats(id, userId);
     }
     

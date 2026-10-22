@@ -10,7 +10,7 @@ export interface IPlayersQueries {
 
 export interface IPlayersRepository {
     leadersList(metric: string, minGames: number, playersLimit: number, season: number): Promise<LeaderPlayer[]>;
-    profileStats(id: number, userId: string | null): Promise<PlayerProfile | null>;
+    profileStats(id: number, userId: string | null): Promise<PlayerProfile | undefined>;
     lastGames(id: number, gamesLimit: number): Promise<PlayerGames[]>;
     searchPlayers(search: string, pos: string, conf: string, userId: string | null, season: number): Promise<SearchedPlayer[]>;
 }

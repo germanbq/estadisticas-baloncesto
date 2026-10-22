@@ -13,11 +13,11 @@ export class PlayersRepository implements IPlayersRepository {
         return result;
     }
 
-    async profileStats(id: number, userId: string | null): Promise<PlayerProfile | null> {
+    async profileStats(id: number, userId: string | null): Promise<PlayerProfile | undefined> {
         const query = this.queries.profileStats(id, userId);
         const result = await this.executor.query<PlayerProfile>(query.text, query.values);
 
-        return result[0] ?? null;
+        return result[0];
     }
 
     async lastGames(id: number, gamesLimit: number): Promise<PlayerGames[]> {

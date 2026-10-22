@@ -19,11 +19,11 @@ export default class GamesRepository implements IGamesRepository {
         return result;
     }
 
-    async gameById(id: number, userId: string | null): Promise<GameProfile  | null> {
+    async gameById(id: number, userId: string | null): Promise<GameProfile | undefined> {
         const query = this.queries.gameById(id, userId);
         const result = await this.executor.query<GameProfile>(query.text, query.values);
 
-        return result[0] ?? null;
+        return result[0];
     }
 
     async lastTeamGames(id: number, season: number): Promise<LastTeamGame[]> {

@@ -57,7 +57,7 @@ export default class GamesController {
             const { userId } = await auth();
 
             const data = await this.service.gameById(id, userId);
-            if(data === null) {
+            if(data === undefined) {
                 return Response.json(
                     { error: "Partido no encontrado" },
                     { status: 404 }

@@ -16,7 +16,7 @@ export interface IGamesQueries {
 export interface IGamesRepository {
     dayGames(date: string, userId: string | null, season: number): Promise<Game[]>;
     gamesNumber(date: string): Promise<GamesNum[]>;
-    gameById(id: number, userId: string | null): Promise<GameProfile | null>;
+    gameById(id: number, userId: string | null): Promise<GameProfile | undefined>;
     lastTeamGames(id: number, season: number): Promise<LastTeamGame[]>;
     headToHeadGames(homeId: number, awayId: number, season: number): Promise<HeadToHeadGame[]>;
     statsLeaders(teamId: number, season: number): Promise<StatLeader[]>;

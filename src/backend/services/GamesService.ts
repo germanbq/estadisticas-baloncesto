@@ -13,7 +13,7 @@ export default class GamesService {
         return this.repository.gamesNumber(date);
     }
 
-    gameById(id: number, userId: string | null): Promise<GameProfile  | null> {
+    gameById(id: number, userId: string | null): Promise<GameProfile | undefined> {
         return this.repository.gameById(id, userId);
     }
 
