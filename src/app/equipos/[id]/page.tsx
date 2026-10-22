@@ -2,6 +2,8 @@ import { teamsController } from '@/src/backend/containers/teamsContainer';
 import { TeamHeader, teamPlayersStats } from '@/src/backend/entities/teamsEntities';
 import HeaderCard from '@/src/components/team/HeaderCard';
 import PlayerStatsTable from '@/src/components/team/PlayerStatsTable';
+import NoDataCard from '@/src/components/general/NoDataCard';
+import { TableProperties } from 'lucide-react';
 import { notFound } from "next/navigation";
 
 export default async function TeamPage({params}: {params: Promise<{id : string}>;}) {
@@ -20,11 +22,8 @@ export default async function TeamPage({params}: {params: Promise<{id : string}>
     const team: TeamHeader = result.data;
 
     const playersResponse = await teamsController.playersSeasonStats(Number(id));
-    if (!playersResponse.ok) {
-        throw new Error("Error al obtener los datos de los jugadores del equipo");
-    }
     const playersResult = await playersResponse.json()
-    const players: teamPlayersStats[] = playersResult.data;
+    const players: teamPlayersStats[] = playersResponse.ok ? playersResult.data : [];
     return (
         <div className="playerPage">
                 <style>{`
@@ -38,7 +37,12 @@ export default async function TeamPage({params}: {params: Promise<{id : string}>
                     }
                 `}</style>
             <HeaderCard {...team} />
-            <PlayerStatsTable players={players} />
+            {!playersResponse.ok
+                ? <NoDataCard name="Estadísticas de los jugadores" icon={TableProperties} text="No se pudieron cargar las estadísticas de los jugadores" />
+                : players.length === 0
+                    ? <NoDataCard name="Estadísticas de los jugadores" icon={TableProperties} text="No hay estadísticas de jugadores disponibles esta temporada" />
+                    : <PlayerStatsTable players={players} />
+            }
         </div>
     )
 }
