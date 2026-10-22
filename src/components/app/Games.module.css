@@ -1,3 +1,9 @@
+.noDataContainer {
+    display: flex;
+    justify-content: center;
+    margin-top: 3%;
+}
+
 .container {
     margin-top: 3rem;
 

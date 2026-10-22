@@ -6,6 +6,7 @@ import { Game } from "@/src/backend/entities/gamesEntities";
 import DateButtons from "./DateButtons";
 import GameCard from "../GameCard";
 import GamesSkeleton from '../skeletons/GamesSkeleton';
+import NoDataCard from "../general/NoDataCard";
 
 export default function Games() {
     function getDateString(date: Date): string {
@@ -24,6 +25,7 @@ export default function Games() {
     const [games, setGames] = useState<Game[]>([])
     const [loadedDate, setLoadedDate] = useState<string | null>(null);
     const dateKey = getDateString(date);
+    const [error, setError] = useState(false);
 
     useEffect(() => {
         if(searchParams.get("date") === getDateString(date)) return;
@@ -42,13 +44,15 @@ export default function Games() {
                 { signal: controller.signal })
                 const result = await response.json();
 
-                if(!response.ok) {
-                    throw new Error(result.error ??`Error ${response.status}`);
-                } 
+                if (!response.ok) {
+                    throw new Error(result.error ?? `Error ${response.status}`);
+                }
 
+                setError(false);
                 setGames(result.data);
             } catch (error) {
                 if (controller.signal.aborted) return;
+                setError(true);
                 console.error(error);
             } finally {
                 if (!controller.signal.aborted) setLoadedDate(getDateString(date));
@@ -62,19 +66,29 @@ export default function Games() {
     return (
         <div>
             <DateButtons date={date} setDate={setDate} getDateString={getDateString}/>
-            {loadedDate !== dateKey ? <GamesSkeleton /> : <section className={styles.container}>
-                {games.map((game) => (
-                    <div key={game.id} className={styles.cardContainer}>
-                        <GameCard href={`/partidos/${game.id}`} id={game.id} isFavorite={game.isFavorite} finalizado={game.finished}
-                            homeTeam={game.homeTeamName} awayTeam={game.awayTeamName}
-                            homeScore={game.homeTeamScore} awayScore={game.awayTeamScore}
-                            homeRecord={`${game.homeTeamVictorys}-${game.homeTeamLosses}`} awayRecord={`${game.awayTeamVictorys}-${game.awayTeamLosses}`}
-                            homeLogo={game.homeTeamLogo} awayLogo={game.awayTeamLogo}
-                            place={game.stadium} date={new Date(game.date)}
-                        />
+            {loadedDate !== dateKey ? <GamesSkeleton /> : error ?
+                <div className={styles.noDataContainer}>
+                    <NoDataCard text="No se pudieron cargar los partidos. Inténtalo de nuevo." />
+                </div>
+                : games.length === 0 ?
+                    <div className={styles.noDataContainer}>
+                        <NoDataCard text="No hay partidos programados para esta fecha." />
                     </div>
-                ))}
-            </section>}
+                    : <section className={styles.container}>
+                        {games.map((game) => (
+                            <div key={game.id} className={styles.cardContainer}>
+                                <GameCard href={`/partidos/${game.id}`} id={game.id} isFavorite={game.isFavorite} finalizado={game.finished}
+                                    homeTeam={game.homeTeamName} awayTeam={game.awayTeamName}
+                                    homeScore={game.homeTeamScore} awayScore={game.awayTeamScore}
+                                    homeRecord={`${game.homeTeamVictorys}-${game.homeTeamLosses}`} awayRecord={`${game.awayTeamVictorys}-${game.awayTeamLosses}`}
+                                    homeLogo={game.homeTeamLogo} awayLogo={game.awayTeamLogo}
+                                    place={game.stadium} date={new Date(game.date)}
+                                />
+                            </div>
+                        ))}
+                    </section>
+                
+            }
         </div>
     ) 
 }
