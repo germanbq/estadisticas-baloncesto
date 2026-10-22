@@ -255,11 +255,11 @@ export default class GamesQueries implements IGamesQueries {
                         ON pss.player_id = p.id
                     CROSS JOIN LATERAL (
                         VALUES
-                            ('points',   1.0 * pss.total_points   / NULLIF(pss.games_played, 0)),
-                            ('rebounds', 1.0 * pss.total_rebounds / NULLIF(pss.games_played, 0)),
-                            ('assists',  1.0 * pss.total_assists  / NULLIF(pss.games_played, 0)),
-                            ('steals',   1.0 * pss.total_steals   / NULLIF(pss.games_played, 0)),
-                            ('blocks',   1.0 * pss.total_blocks   / NULLIF(pss.games_played, 0))
+                            ('points',   1.0 * pss.total_points   / pss.games_played),
+                            ('rebounds', 1.0 * pss.total_rebounds / pss.games_played),
+                            ('assists',  1.0 * pss.total_assists  / pss.games_played),
+                            ('steals',   1.0 * pss.total_steals   / pss.games_played),
+                            ('blocks',   1.0 * pss.total_blocks   / pss.games_played)
                     ) AS stats(metric, value)
                     WHERE p.team_id = $1
                         AND pss.season_init_year = $2

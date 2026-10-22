@@ -112,7 +112,7 @@ export default class GamesController {
     }
 
     async statsLeaders(teamId: number) {
-        if(!Number.isSafeInteger(teamId)) {
+        if(!Number.isSafeInteger(teamId) || teamId <= 0) {
             return Response.json(
                 { error: "ID de equipo no válido para conseguir los líderes estadísticos" },
                 { status: 400 }

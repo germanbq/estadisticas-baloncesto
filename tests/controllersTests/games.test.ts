@@ -631,3 +631,91 @@ describe("GamesController.headToHeadGames", () => {
     expect(result.data.map((game) => game.id)).not.toContain(previousSeason.rows[0].id);
   });
 });
+
+describe("GamesController.statsLeaders", () => {
+  test.for([NaN, Infinity, 1.5, Number.MAX_SAFE_INTEGER + 1])(
+    "devuelve 400 cuando el ID no es un entero seguro: %s", async (id, { db, expect }) => {
+      const controller = createController(db);
+      const response = await controller.statsLeaders(id);
+
+      expect(response.status).toBe(400);
+      expect(await response.json()).toStrictEqual({ error: expect.any(String) });
+      expect(authMock).not.toHaveBeenCalled();
+    },
+  );
+
+  test.for([-2, 0])(
+    "devuelve 400 cuando el ID es menor de 1: %s", async (id, { db, expect }) => {
+      const controller = createController(db);
+      const response = await controller.statsLeaders(id);
+
+      expect(response.status).toBe(400);
+      expect(await response.json()).toStrictEqual({ error: expect.any(String) });
+      expect(authMock).not.toHaveBeenCalled();
+    },
+  );
+
+  test("devuelve 500 cuando falla el servicio", async ({ db, expect }) => {
+    const serviceSpy = vi
+      .spyOn(GamesService.prototype, "statsLeaders")
+      .mockRejectedValue(new Error("Fallo simulado"));
+    const consoleSpy = vi.spyOn(console, "error").mockImplementation(() => {});
+
+    try {
+      const controller = createController(db);
+      const response = await controller.statsLeaders(SEED_TEAM_ID_A);
+
+      expect(response.status).toBe(500);
+      expect(await response.json()).toMatchObject({ error: expect.any(String) });
+    } finally {
+      serviceSpy.mockRestore();
+      consoleSpy.mockRestore();
+    }
+  });
+
+  test("devuelve una lista vacía cuando el equipo no tiene partidos finalizados ni estadísticas de jugadores", async ({ db, expect }) => {
+    const controller = createController(db);
+    const response = await controller.statsLeaders(SEED_TEAM_ID_B);
+
+    expect(response.status).toBe(200);
+    expect(await response.json()).toStrictEqual({ data: [] });
+  });
+
+  test("devuelve los líderes por promedio usando solo partidos de esta temporada desempatando por el menor ID de jugador", async ({ db, expect }) => {
+    const controller = createController(db);
+    const response = await controller.statsLeaders(2);
+
+    expect(response.status).toBe(200);
+    expect(await response.json()).toStrictEqual({
+      data: [
+        { metric: "Puntos", name: "Jamal Murray", jerseyNumber: 27, value: 28.5 },
+        { metric: "Rebotes", name: "Nikola Jokic", jerseyNumber: 15, value: 10.5 },
+        { metric: "Asistencias", name: "Nikola Jokic", jerseyNumber: 15, value: 8.5 },
+        { metric: "Robos", name: "Nikola Jokic", jerseyNumber: 15, value: 1.5 },
+        { metric: "Tapones", name: "Nikola Jokic", jerseyNumber: 15, value: 1.5 },
+      ],
+    });
+  });
+
+  test("excluye a los jugadores con cero partidos disputados sin provocar división por cero", async ({ db, expect }) => {
+    const updated = await db.query(
+      "UPDATE player_season_stats SET games_played = 0 WHERE player_id = $1 AND season_init_year = $2 RETURNING player_id",
+      [2, 2026],
+    );
+    expect(updated.rows).toHaveLength(1);
+
+    const controller = createController(db);
+    const response = await controller.statsLeaders(2);
+
+    expect(response.status).toBe(200);
+    expect(await response.json()).toStrictEqual({
+      data: [
+        { metric: "Puntos", name: "Jamal Murray", jerseyNumber: 27, value: 28.5 },
+        { metric: "Rebotes", name: "Jamal Murray", jerseyNumber: 27, value: 4.5 },
+        { metric: "Asistencias", name: "Jamal Murray", jerseyNumber: 27, value: 6.5 },
+        { metric: "Robos", name: "Jamal Murray", jerseyNumber: 27, value: 1.5 },
+        { metric: "Tapones", name: "Jamal Murray", jerseyNumber: 27, value: 0.5 },
+      ],
+    });
+  });
+});
