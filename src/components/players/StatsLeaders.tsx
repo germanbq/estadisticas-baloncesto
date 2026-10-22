@@ -10,6 +10,7 @@ import Image from "next/image";
 import { LeaderPlayer } from "@/src/backend/entities/playersEntities";
 import Link from "next/link";
 import StatsLeadersSkeleton from "../skeletons/StatsLeadersSkeleton";
+import NoDataCard from "../general/NoDataCard";
 
 type PlayerCardProps = {
     id: number;
@@ -51,7 +52,7 @@ export default function StatsLeader() {
 
     const [metric, setMetric] = useState(() => searchParams.get("metric") || "points");
     const [leaders, setLeaders] = useState<LeaderPlayer[]>([]);
-    const [loading, setLoading] = useState(false);
+    const [loading, setLoading] = useState(true);
 
     useEffect(() => {
         if(searchParams.get("metric") === metric) return;
@@ -105,22 +106,24 @@ export default function StatsLeader() {
                     <FilterButton value="STL" selected={metric} setSelected={setMetric} className={styles.button} activeClassName={styles.active} selectedValue="steals"/>
                     <FilterButton value="BLK" selected={metric} setSelected={setMetric} className={styles.button} activeClassName={styles.active} selectedValue="blocks"/>
                     <FilterButton value="FG%" selected={metric} setSelected={setMetric} className={styles.button} activeClassName={styles.active} selectedValue="fg_percentage"/>
-                    <FilterButton value="3P%" selected={metric} setSelected={setMetric} className={styles.button} activeClassName={styles.active} selectedValue="three_percentage"/>       
+                    <FilterButton value="3P%" selected={metric} setSelected={setMetric} className={styles.button} activeClassName={styles.active} selectedValue="three_percentage"/>
                 </div>
             </section>
-            {loading ? <StatsLeadersSkeleton /> 
-            :   <>
-                    <section className={styles.playerCardsContainer}>
-                        {leaders.map((player, index) => (
-                            <PlayerCard key={player.id} id={player.id}
-                                        className={`position${index+1}`} image={player.image}
-                                        name={player.name} pos={String(index+1)} team={player.team} 
-                                        jerseyNumber={player.jerseyNumber} metric={Number(player.value)} 
-                                        color={["#FF5A00", "#A5E7FF", "#C58A5A"][index]} position={player.position}/>
-                        ))}
-                    </section>
-                </>
-            }
+            {loading ? <StatsLeadersSkeleton /> : leaders.length === 0 ? (
+                <div className={styles.noDataContainer}>
+                    <NoDataCard text="No hay estadísticas disponibles para mostrar los líderes de la liga en esta métrica" />
+                </div>
+            ) : (
+                <section className={styles.playerCardsContainer}>
+                    {leaders.map((player, index) => (
+                        <PlayerCard key={player.id} id={player.id}
+                            className={`position${index+1}`} image={player.image}
+                            name={player.name} pos={String(index+1)} team={player.team}
+                            jerseyNumber={player.jerseyNumber} metric={Number(player.value)}
+                            color={["#FF5A00", "#A5E7FF", "#C58A5A"][index]} position={player.position}/>
+                    ))}
+                </section>
+            )}
         </section>
     )
 }
