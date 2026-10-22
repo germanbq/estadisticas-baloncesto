@@ -10,6 +10,8 @@ import StatsLeadersComparison from "@/src/components/game/StatsLeadersComparison
 import FinishedTeamStatsComparison from "@/src/components/game/FinishedTeamStatsComparison";
 import MVPCard from "@/src/components/game/MVPCard";
 import PlayersStats from "@/src/components/game/PlayersStats";
+import NoDataCard from "@/src/components/game/NoDataCard";
+import { CalendarDays, ChartBar, CircleStar, Swords } from "lucide-react";
 
 
 export default async function GamePage({params}: {params: Promise<{id : string}>;}) {
@@ -42,22 +44,6 @@ export default async function GamePage({params}: {params: Promise<{id : string}>
             homeLeadersResponse.json(),
             awayLeadersResponse.json(),
         ]);
-
-        if (!homeGamesResponse.ok) {
-            throw new Error(homeGamesResult.error);
-        }
-        if (!awayGamesResponse.ok) {
-            throw new Error(awayGamesResult.error);
-        }
-        if(!hthGamesResponse.ok){
-            throw new Error(hthGamesResult.error);
-        }
-        if (!homeLeadersResponse.ok) {
-            throw new Error(homeLeadersResult.error);
-        }
-        if(!awayLeadersResponse.ok){
-            throw new Error(awayLeadersResult.error);
-        }
        
         const homeGames = homeGamesResult.data;
         const awayGames = awayGamesResult.data;
@@ -72,9 +58,24 @@ export default async function GamePage({params}: {params: Promise<{id : string}>
                 awayVictorys={game.awayTeamVictorys} awayLosses={game.awayTeamLosses} awayWinRate={game.awayWinRate} awayPointsPerGame={game.awayPointsPerGame} 
                 awayPointsAllowedPerGame={game.awayPointsAllowedPerGame} awayNetRating={game.awayNetRating} awayStreakNumber={game.awayStreakNumber} awayStreakVictory={game.awayStreakVictory}
                 /> 
-                <HeadToHeadGames games={hthGames} referenceTeamName={game.homeTeamName}/>
-                <LastGamesComparison homeGames={homeGames} awayGames={awayGames} homeName={game.homeTeamName} awayName={game.awayTeamName}/>
-                <StatsLeadersComparison homeLeaders={homeLeaders} awayLeaders={awayLeaders} homeName={game.homeShortName} awayName={game.awayShortName} />
+                {!hthGamesResponse.ok ? <NoDataCard name="Enfrentamientos esta temporada" icon={Swords} text="No se pudieron cargar los enfrentamientos"/>                                   
+                                    : hthGames.length === 0 
+                                        ? <NoDataCard name="Enfrentamientos esta temporada" icon={Swords} text="No hay enfrentamientos finalizados esta temporada"/>                                   
+                                        : <HeadToHeadGames games={hthGames} referenceTeamName={game.homeTeamName}/>
+                }
+                
+                {!homeGamesResponse.ok || !awayGamesResponse.ok
+                    ? <NoDataCard name="Estado de forma" icon={CalendarDays} text="No se pudieron cargar los últimos partidos" />
+                    : homeGames.length === 0 && awayGames.length === 0
+                        ? <NoDataCard name="Estado de forma" icon={CalendarDays} text="No hay partidos finalizados disponibles esta temporada" />
+                        : <LastGamesComparison homeGames={homeGames} awayGames={awayGames} homeName={game.homeTeamName} awayName={game.awayTeamName}/>
+                }
+                {!homeLeadersResponse.ok || !awayLeadersResponse.ok
+                    ? <NoDataCard name="Líderes estadísticos" icon={CircleStar} text="No se pudieron cargar los líderes estadísticos" />
+                    : homeLeaders.length === 0 || awayLeaders.length === 0
+                        ? <NoDataCard name="Líderes estadísticos" icon={CircleStar} text="No hay estadísticas disponibles para comparar los líderes de ambos equipos" />
+                        : <StatsLeadersComparison homeLeaders={homeLeaders} awayLeaders={awayLeaders} homeName={game.homeShortName} awayName={game.awayShortName} />
+                }
             </>
         )
     } else {
@@ -94,33 +95,27 @@ export default async function GamePage({params}: {params: Promise<{id : string}>
             awayPlayersResponse.json(),
         ]);
 
-        if (!homeStatsResponse.ok) {
-            throw new Error(homeStatsResult.error);
-        }
-        if (!awayStatsResponse.ok) {
-            throw new Error(awayStatsResult.error);
-        }
-        if (!MVPResponse.ok) {
-            throw new Error(MVPResult.error);
-        }
-        if (!homePlayersResponse.ok) {
-            throw new Error(homePlayersResult.error);
-        }
-        if (!awayPlayersResponse.ok) {
-            throw new Error(awayPlayersResult.error);
-        }
+        
 
-        const homeStats = homeStatsResult.data;
-        const awayStats = awayStatsResult.data;
-        const gameMVP = MVPResult.data;
-        const homePlayers = homePlayersResult.data;
-        const awayPlayers = awayPlayersResult.data;
+        const homeStats = homeStatsResponse.ok ? homeStatsResult.data : undefined;
+        const awayStats = awayStatsResponse.ok ? awayStatsResult.data : undefined;
+        const gameMVP = MVPResponse.ok ? MVPResult.data: undefined;
+        const homePlayers = homePlayersResponse.ok ? homePlayersResult.data : [];
+        const awayPlayers = awayPlayersResponse.ok ? awayPlayersResult.data : [];
 
         content = (
             <>
-                <MVPCard player={gameMVP} home={gameMVP.teamId === game.homeTeamId}/>
-                <FinishedTeamStatsComparison homeStats={homeStats} awayStats={awayStats} homeName={game.homeTeamName} awayName={game.awayTeamName}/>
-                <PlayersStats homePlayers={homePlayers} awayPlayers={awayPlayers} homeName={game.homeTeamName} awayName={game.awayTeamName}/>
+                {gameMVP ? <MVPCard player={gameMVP} home={gameMVP.teamId === game.homeTeamId}/>
+                         : <NoDataCard name="MVP del partido" icon={CircleStar} text="No hay estadísticas disponibles para decidir el MVP del partido"/>
+                }
+                {homeStats || awayStats 
+                        ? <FinishedTeamStatsComparison homeStats={homeStats} awayStats={awayStats} homeName={game.homeTeamName} awayName={game.awayTeamName}/>
+                        : <NoDataCard name="Comparativa de equipos" icon={ChartBar} text="No hay estadísticas disponibles de los equipos"/>                                   
+                }
+                {homePlayers.length > 0 || awayPlayers.length > 0
+                        ? <PlayersStats homePlayers={homePlayers} awayPlayers={awayPlayers} homeName={game.homeTeamName} awayName={game.awayTeamName}/>
+                         : <NoDataCard name="Comparativa de equipos" icon={ChartBar} text="No hay estadísticas disponibles sobre los jugadores"/>
+                }
             </>
         )
     }
