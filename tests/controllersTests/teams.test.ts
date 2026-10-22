@@ -345,3 +345,162 @@ describe("TeamsController.teamProfile", () => {
     });
   });
 });
+
+describe("TeamsController.playersSeasonStats", () => {
+  test.for([NaN, Infinity, 1.5, Number.MAX_SAFE_INTEGER + 1])(
+    "devuelve 400 cuando el ID no es un entero seguro: %s", async (id, { db, expect }) => {
+      const controller = createController(db);
+      const response = await controller.playersSeasonStats(id);
+
+      expect(response.status).toBe(400);
+      expect(await response.json()).toStrictEqual({ error: expect.any(String) });
+      expect(authMock).not.toHaveBeenCalled();
+    },
+  );
+
+  test.for([-2, 0])(
+    "devuelve 400 cuando el ID es menor de 1: %s", async (id, { db, expect }) => {
+      const controller = createController(db);
+      const response = await controller.playersSeasonStats(id);
+
+      expect(response.status).toBe(400);
+      expect(await response.json()).toStrictEqual({ error: expect.any(String) });
+      expect(authMock).not.toHaveBeenCalled();
+    },
+  );
+  
+  test("devuelve 500 cuando falla el servicio", async ({ db, expect }) => {
+    const serviceSpy = vi
+      .spyOn(TeamsService.prototype, "playersSeasonStats")
+      .mockRejectedValue(new Error("Fallo simulado"));
+    const consoleSpy = vi.spyOn(console, "error").mockImplementation(() => {});
+
+    try {
+      const controller = createController(db);
+      const response = await controller.playersSeasonStats(SEED_TEAM_ID_A);
+
+      expect(response.status).toBe(500);
+      expect(await response.json()).toMatchObject({ error: expect.any(String) });
+    } finally {
+      serviceSpy.mockRestore();
+      consoleSpy.mockRestore();
+    }
+  });
+
+  test("devuelve correctamente los promedios y porcentajes de los jugadores del equipo", async ({ db, expect }) => {
+    const controller = createController(db);
+    const response = await controller.playersSeasonStats(SEED_TEAM_ID_B);
+
+    expect(response.status).toBe(200);
+    expect(await response.json()).toStrictEqual({
+      data: [
+        {
+          playerName: "Jamal Murray", playerId: SEED_PLAYER_ID_C,
+          points: 28.5, rebounds: 4.5, ofeRebounds: 1, defRebounds: 3.5,
+          assists: 6.5, steals: 1.5, blocks: 0.5, turnovers: 2, plusMinus: -4.5,
+          fgPercentage: expect.closeTo(51.219512, 5),
+          threePercentage: expect.closeTo(46.666667, 5), games: 2,
+        },
+        {
+          playerName: "Nikola Jokic", playerId: SEED_PLAYER_ID_B,
+          points: 24.5, rebounds: 10.5, ofeRebounds: 2.5, defRebounds: 8,
+          assists: 8.5, steals: 1.5, blocks: 1.5, turnovers: 3.5, plusMinus: -4.5,
+          fgPercentage: expect.closeTo(55.882353, 5),
+          threePercentage: expect.closeTo(42.857143, 5), games: 2,
+        },
+      ],
+    });
+  });
+
+  test("ordena los jugadores por nombre ascendente aunque cambien sus nombres", async ({ db, expect }) => {
+    await db.query("UPDATE players SET name = $1 WHERE id = $2", ["Zamal Test", SEED_PLAYER_ID_C]);
+
+    const controller = createController(db);
+    const response = await controller.playersSeasonStats(SEED_TEAM_ID_B);
+
+    expect(response.status).toBe(200);
+    expect(await response.json()).toMatchObject({
+      data: [
+        { playerId: SEED_PLAYER_ID_B, playerName: "Nikola Jokic" },
+        { playerId: SEED_PLAYER_ID_C, playerName: "Zamal Test" },
+      ],
+    });
+  });
+
+  test("las estadísticas de otra temporada no modifican los promedios de la actual", async ({ db, expect }) => {
+    const controller = createController(db);
+    const beforeResponse = await controller.playersSeasonStats(SEED_TEAM_ID_B);
+
+    expect(beforeResponse.status).toBe(200);
+    const beforeResult = await beforeResponse.json();
+    expect(beforeResult).toMatchObject({
+      data: [
+        { playerId: SEED_PLAYER_ID_C, points: 28.5, games: 2 },
+        { playerId: SEED_PLAYER_ID_B, points: 24.5, games: 2 },
+      ],
+    });
+
+    await db.query(
+      `INSERT INTO player_game_stats (player_id, game_id, team_id, seconds_played, points, rebounds, ofe_rebounds, def_rebounds, assists, steals, blocks, turnovers, plusminus, fg_made, fg_attempted, three_made, three_attempted, ft_made, ft_attempted)
+       VALUES ($1, $2, $3, 2400, 60, 10, 2, 8, 12, 4, 2, 1, 20, 20, 30, 10, 15, 10, 12)`,
+      [SEED_PLAYER_ID_C, SEED_GAME_ID_C, SEED_TEAM_ID_B],
+    );
+    const afterResponse = await controller.playersSeasonStats(SEED_TEAM_ID_B);
+
+    expect(afterResponse.status).toBe(200);
+    expect(await afterResponse.json()).toStrictEqual(beforeResult);
+  });
+
+  test("devuelve promedios a cero sin división por cero cuando el jugador no tiene partidos disputados", async ({ db, expect }) => {
+    const updated = await db.query(
+      "UPDATE player_season_stats SET games_played = 0 WHERE player_id = $1 AND season_init_year = 2026 RETURNING player_id",
+      [SEED_PLAYER_ID_B],
+    );
+    expect(updated.rows).toHaveLength(1);
+
+    const controller = createController(db);
+    const response = await controller.playersSeasonStats(SEED_TEAM_ID_B);
+
+    expect(response.status).toBe(200);
+    expect(await response.json()).toMatchObject({
+      data: [
+        { playerId: SEED_PLAYER_ID_C, points: 28.5, games: 2 },
+        {
+          playerId: SEED_PLAYER_ID_B,
+          points: 0, rebounds: 0, ofeRebounds: 0, defRebounds: 0,
+          assists: 0, steals: 0, blocks: 0, turnovers: 0, plusMinus: 0,
+          fgPercentage: expect.closeTo(55.882353, 5),
+          threePercentage: expect.closeTo(42.857143, 5),
+          games: 0,
+        },
+      ],
+    });
+  });
+
+  test("devuelve porcentajes a cero sin división por cero cuando el jugador no tiene intentos de tiro", async ({ db, expect }) => {
+    const updated = await db.query(
+      `UPDATE player_season_stats
+       SET total_fg_made = 0, total_fg_attempted = 0,
+           total_three_made = 0, total_three_attempted = 0
+       WHERE player_id = $1 AND season_init_year = 2026
+       RETURNING player_id`,
+      [SEED_PLAYER_ID_B],
+    );
+    expect(updated.rows).toHaveLength(1);
+
+    const controller = createController(db);
+    const response = await controller.playersSeasonStats(SEED_TEAM_ID_B);
+
+    expect(response.status).toBe(200);
+    expect(await response.json()).toMatchObject({
+      data: [
+        {
+          playerId: SEED_PLAYER_ID_C,
+          fgPercentage: expect.closeTo(51.219512, 5),
+          threePercentage: expect.closeTo(46.666667, 5),
+        },
+        { playerId: SEED_PLAYER_ID_B, fgPercentage: 0, threePercentage: 0, games: 2 },
+      ],
+    });
+  });
+});

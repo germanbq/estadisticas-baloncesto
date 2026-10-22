@@ -54,7 +54,7 @@ export class TeamsController {
     }
 
     async playersSeasonStats(teamId: number): Promise<Response> {
-        if(!Number.isSafeInteger(teamId)) {
+        if(!Number.isSafeInteger(teamId) || teamId <= 0) {
             return Response.json(
                 { error: "ID de equipo no válido" },
                 { status: 400 }
