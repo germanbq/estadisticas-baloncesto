@@ -214,11 +214,11 @@ export class PlayersQueries implements IPlayersQueries {
                 ) AS "isFavorite"
             FROM players AS p
             JOIN teams AS t ON t.id = p.team_id
-            JOIN player_season_stats AS pss ON pss.player_id = p.id
+            LEFT JOIN player_season_stats AS pss ON pss.player_id = p.id
+                AND pss.season_init_year = $4
             WHERE p.name ILIKE '%' || $1 || '%'
                 AND ($2 = 'ALL' OR p.position = $2)
                 AND ($3 = 'BOTH' OR t.conference = $3)
-                AND pss.season_init_year = $4
             ORDER BY COALESCE(
                 (pss.total_points + pss.total_assists * 1.8 + pss.total_rebounds * 2)
                     / NULLIF(pss.games_played, 0),

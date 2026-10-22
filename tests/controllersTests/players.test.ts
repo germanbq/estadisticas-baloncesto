@@ -507,3 +507,181 @@ describe("PlayersController.lastGames", () => {
     expect(await response.json()).toStrictEqual({ data: [] });
   });
 });
+
+describe("PlayersController.searchPlayers", () => {
+  test.for([
+    { search: null, pos: "ALL", conf: "BOTH" },
+    { search: "Tatum", pos: null, conf: "BOTH" },
+    { search: "Tatum", pos: "ALL", conf: null },
+    { search: null, pos: null, conf: "BOTH" },
+    { search: null, pos: "ALL", conf: null },
+    { search: "Tatum", pos: null, conf: null },
+    { search: null, pos: null, conf: null },
+  ])("devuelve 400 cuando algún parámetro es null: %j", async (params, { db, expect }) => {
+    const controller = createController(db);
+    const response = await controller.searchPlayers(params.search, params.pos, params.conf);
+
+    expect(response.status).toBe(400);
+    expect(await response.json()).toStrictEqual({ error: expect.any(String) });
+    expect(authMock).not.toHaveBeenCalled();
+  });
+
+  test("devuelve 400 cuando la posición es una palabra no admitida", async ({ db, expect }) => {
+    const controller = createController(db);
+    const response = await controller.searchPlayers("Tatum", "position", "BOTH");
+
+    expect(response.status).toBe(400);
+    expect(await response.json()).toStrictEqual({ error: expect.any(String) });
+    expect(authMock).not.toHaveBeenCalled();
+  });
+
+  test("devuelve 400 cuando la conferencia es una palabra no admitida", async ({ db, expect }) => {
+    const controller = createController(db);
+    const response = await controller.searchPlayers("Tatum", "ALL", "conference");
+
+    expect(response.status).toBe(400);
+    expect(await response.json()).toStrictEqual({ error: expect.any(String) });
+    expect(authMock).not.toHaveBeenCalled();
+  });
+
+  test("devuelve 500 cuando falla el servicio", async ({ db, expect }) => {
+    const error = new Error("Fallo simulado");
+    const serviceSpy = vi.spyOn(PlayersService.prototype, "searchPlayers").mockRejectedValue(error);
+    const consoleSpy = vi.spyOn(console, "error").mockImplementation(() => {});
+
+    try {
+      const controller = createController(db);
+      const response = await controller.searchPlayers("Tatum", "ALL", "BOTH");
+
+      expect(response.status).toBe(500);
+      expect(await response.json()).toStrictEqual({ error: "Error al conseguir los jugadores buscados" });
+      expect(serviceSpy).toHaveBeenCalledWith("Tatum", "ALL", "BOTH", USER_A);
+      expect(consoleSpy).toHaveBeenCalledWith(error);
+    } finally {
+      serviceSpy.mockRestore();
+      consoleSpy.mockRestore();
+    }
+  });
+
+  test("devuelve una lista vacía cuando la búsqueda no tiene resultados", async ({ db, expect }) => {
+    const controller = createController(db);
+    const response = await controller.searchPlayers("Jugador inexistente", "ALL", "BOTH");
+
+    expect(response.status).toBe(200);
+    expect(await response.json()).toStrictEqual({ data: [] });
+  });
+
+  test("devuelve los jugadores que coinciden con la búsqueda", async ({ db, expect }) => {
+    const controller = createController(db);
+    const response = await controller.searchPlayers("Tatum", "ALL", "BOTH");
+
+    expect(response.status).toBe(200);
+    expect(await response.json()).toStrictEqual({
+      data: [{
+        id: SEED_PLAYER_ID_A,
+        name: "Jayson Tatum",
+        image: "/players/Jayson_Tatum.webp",
+        team: "Boston Celtics",
+        jerseyNumber: 0,
+        position: "SF",
+        age: 28,
+        points: 30,
+        rebounds: 8,
+        assists: 5,
+        steals: 2,
+        blocks: 1,
+        isFavorite: false,
+      }],
+    });
+  });
+
+  test("devuelve los jugadores que coinciden con la búsqueda, posición y conferencia", async ({ db, expect }) => {
+    const controller = createController(db);
+    const response = await controller.searchPlayers("Tatum", "SF", "East");
+
+    expect(response.status).toBe(200);
+    expect(await response.json()).toStrictEqual({
+      data: [{
+        id: SEED_PLAYER_ID_A,
+        name: "Jayson Tatum",
+        image: "/players/Jayson_Tatum.webp",
+        team: "Boston Celtics",
+        jerseyNumber: 0,
+        position: "SF",
+        age: 28,
+        points: 30,
+        rebounds: 8,
+        assists: 5,
+        steals: 2,
+        blocks: 1,
+        isFavorite: false,
+      }],
+    });
+  });
+
+test.for([
+    { pos: "PG", conf: "East" },
+    { pos: "SF", conf: "West" },
+  ])("excluye al jugador si su posición o conferencia no coincide: %j", async (params, { db, expect }) => {
+    const controller = createController(db);
+    const response = await controller.searchPlayers("Tatum", params.pos, params.conf);
+
+    expect(response.status).toBe(200);
+    expect(await response.json()).toStrictEqual({ data: [] });
+  });
+
+  test("encuentra jugadores por nombre parcial sin distinguir mayúsculas", async ({ db, expect }) => {
+    const controller = createController(db);
+    const response = await controller.searchPlayers("tAt", "ALL", "BOTH");
+
+    expect(response.status).toBe(200);
+    const result = await response.json();
+    expect(result.data).toHaveLength(1);
+    expect(result.data[0]).toMatchObject({ id: SEED_PLAYER_ID_A, name: "Jayson Tatum" });
+  });
+
+  test("distingue los favoritos del usuario autenticado de los de otros usuarios", async ({ db, expect }) => {
+    await db.query("DELETE FROM favorite_players WHERE player_id = $1", [SEED_PLAYER_ID_A]);
+    await db.query("INSERT INTO favorite_players (user_id, player_id) VALUES ($1, $2)", [USER_A, SEED_PLAYER_ID_A]);
+    const controller = createController(db);
+    const response = await controller.searchPlayers("Tatum", "ALL", "BOTH");
+
+    expect(response.status).toBe(200);
+    const result = await response.json();
+    expect(result.data).toHaveLength(1);
+    expect(result.data[0]).toMatchObject({ id: SEED_PLAYER_ID_A, isFavorite: true });
+
+    authMock.mockResolvedValue({ userId: USER_B });
+    const otherResponse = await controller.searchPlayers("Tatum", "ALL", "BOTH");
+
+    expect(otherResponse.status).toBe(200);
+    const otherResult = await otherResponse.json();
+    expect(otherResult.data).toHaveLength(1);
+    expect(otherResult.data[0]).toMatchObject({ id: SEED_PLAYER_ID_A, isFavorite: false });
+  });
+
+  test("permite buscar sin sesión y no marca favoritos", async ({ db, expect }) => {
+    await db.query("INSERT INTO favorite_players (user_id, player_id) VALUES ($1, $2) ON CONFLICT DO NOTHING", [USER_A, SEED_PLAYER_ID_A]);
+    authMock.mockResolvedValue({ userId: null });
+    const controller = createController(db);
+    const response = await controller.searchPlayers("Tatum", "ALL", "BOTH");
+
+    expect(response.status).toBe(200);
+    const result = await response.json();
+    expect(result.data).toHaveLength(1);
+    expect(result.data[0]).toMatchObject({ id: SEED_PLAYER_ID_A, isFavorite: false });
+  });
+
+  test("ordena los jugadores por valoración descendente y no por puntos ni por ID", async ({ db, expect }) => {
+    const controller = createController(db);
+    const response = await controller.searchPlayers("", "ALL", "BOTH");
+
+    expect(response.status).toBe(200);
+    const result: { data: { id: number }[] } = await response.json();
+    expect(result.data.map((player) => player.id)).toStrictEqual([
+      SEED_PLAYER_ID_B,
+      SEED_PLAYER_ID_A,
+      SEED_PLAYER_ID_C,
+    ]);
+  });
+});
