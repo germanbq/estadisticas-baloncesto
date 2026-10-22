@@ -18,13 +18,14 @@ vi.mock("@clerk/nextjs/server", () => ({
 
 const authMock = vi.mocked(auth, { partial: true });
 
-const SEED_DATE_A = "2026-10-17"; //fecha con un partido
-const SEED_DATE_B = "2026-10-18"; //fecha con dos partidos en horas límite
-const SEED_GAME_ID_A = 1;         //partido de SEED_DATE_A
-const SEED_GAME_ID_B = 2;          //partido de SEED_DATE_B
-const SEED_GAME_ID_C = 3;          //partido de SEED_DATE_B
-const SEED_TEAM_ID_A = 1;         //equipo con partidos
-const SEED_TEAM_ID_B = 3;         //equipo sin partidos
+const SEED_PLAYER_ID_A = 1; // Jayson Tatum
+const SEED_PLAYER_ID_B = 2; // Nikola Jokic
+const SEED_PLAYER_ID_C = 3; // Jamal Murray
+const SEED_TEAM_ID_A = 1; // Boston Celtics
+const SEED_TEAM_ID_B = 2; // Denver Nuggets
+const SEED_GAME_ID_A = 1;
+const SEED_GAME_ID_B = 2;
+const SEED_GAME_ID_C = 9;
 const USER_A = "usuario_prueba_A";
 const USER_B = "usuario_prueba_B";
 
@@ -85,14 +86,14 @@ describe("PlayersController.leadersList", () => {
     const updated = await db.query(
       `UPDATE team_season_stats
        SET victorys = 1, losses = 0
-       WHERE team_id IN (1, 2) AND season_init_year = 2026
+       WHERE team_id IN (${SEED_TEAM_ID_A}, ${SEED_TEAM_ID_B}) AND season_init_year = 2026
        RETURNING team_id`,
     );
     expect(updated.rows).toHaveLength(2);
 
     const previousSeason = await db.query(
       "SELECT total_points, games_played FROM player_season_stats WHERE player_id = $1 AND season_init_year = $2",
-      [2, 2025],
+      [SEED_PLAYER_ID_B, 2025],
     );
     expect(previousSeason.rows).toStrictEqual([{ total_points: 50, games_played: 1 }]);
 
@@ -102,17 +103,17 @@ describe("PlayersController.leadersList", () => {
     expect(response.status).toBe(200);
     expect(await response.json()).toStrictEqual({
       data: [
-        { id: 1, name: "Jayson Tatum", image: "/players/Jayson_Tatum.webp", position: "SF", team: "BOS", jerseyNumber: 0, value: 30 },
-        { id: 3, name: "Jamal Murray", image: "/players/Jamal_Murray.webp", position: "PG", team: "DEN", jerseyNumber: 27, value: 28.5 },
-        { id: 2, name: "Nikola Jokic", image: "/players/Nikola_Jokic.webp", position: "C", team: "DEN", jerseyNumber: 15, value: 24.5 },
+        { id: SEED_PLAYER_ID_A, name: "Jayson Tatum", image: "/players/Jayson_Tatum.webp", position: "SF", team: "BOS", jerseyNumber: 0, value: 30 },
+        { id: SEED_PLAYER_ID_C, name: "Jamal Murray", image: "/players/Jamal_Murray.webp", position: "PG", team: "DEN", jerseyNumber: 27, value: 28.5 },
+        { id: SEED_PLAYER_ID_B, name: "Nikola Jokic", image: "/players/Nikola_Jokic.webp", position: "C", team: "DEN", jerseyNumber: 15, value: 24.5 },
       ],
     });
   });
 
   test("excluye al jugador que no alcanza el porcentaje mínimo de partidos y lo incluye cuando lo supera", async ({ db, expect }) => {
-    const playerId = 2;
+    const playerId = SEED_PLAYER_ID_B;
     const teamStats = await db.query(
-      "UPDATE team_season_stats SET victorys = 6, losses = 4 WHERE team_id = 2 AND season_init_year = 2026 RETURNING team_id",
+      `UPDATE team_season_stats SET victorys = 6, losses = 4 WHERE team_id = ${SEED_TEAM_ID_B} AND season_init_year = 2026 RETURNING team_id`,
     );
     expect(teamStats.rows).toHaveLength(1);
     const playerStats = await db.query(
@@ -141,11 +142,11 @@ describe("PlayersController.leadersList", () => {
 
   test("devuelve solo los tres mejores jugadores cuando hay más de tres elegibles", async ({ db, expect }) => {
     await db.query(
-      "UPDATE team_season_stats SET victorys = 1, losses = 0 WHERE team_id IN (1, 2) AND season_init_year = 2026",
+      `UPDATE team_season_stats SET victorys = 1, losses = 0 WHERE team_id IN (${SEED_TEAM_ID_A}, ${SEED_TEAM_ID_B}) AND season_init_year = 2026`,
     );
     const addedPlayer = await db.query(
       `INSERT INTO players (name, height, weight, age, draft, team_id, country, jersey_number, position, image)
-       VALUES ('Jugador límite', 2.00, 100, 25, 2020, 2, 'USA', 99, 'SF', '/players/test.webp')
+       VALUES ('Jugador límite', 2.00, 100, 25, 2020, ${SEED_TEAM_ID_B}, 'USA', 99, 'SF', '/players/test.webp')
        RETURNING id`,
     );
     const playerId: number = addedPlayer.rows[0].id;
@@ -163,18 +164,18 @@ describe("PlayersController.leadersList", () => {
     expect(result.data).toHaveLength(3);
     expect(result.data.map((player) => ({ id: player.id, value: player.value }))).toStrictEqual([
       { id: playerId, value: 40 },
-      { id: 1, value: 30 },
-      { id: 3, value: 28.5 },
+      { id: SEED_PLAYER_ID_A, value: 30 },
+      { id: SEED_PLAYER_ID_C, value: 28.5 },
     ]);
   });
 
   test("incluye al jugador al alcanzar exactamente el 77 % de partidos y lo excluye por debajo", async ({ db, expect }) => {
     const teamStats = await db.query(
-      "UPDATE team_season_stats SET victorys = 60, losses = 40 WHERE team_id = 2 AND season_init_year = 2026 RETURNING team_id",
+      `UPDATE team_season_stats SET victorys = 60, losses = 40 WHERE team_id = ${SEED_TEAM_ID_B} AND season_init_year = 2026 RETURNING team_id`,
     );
     expect(teamStats.rows).toHaveLength(1);
     const playerStats = await db.query(
-      "UPDATE player_season_stats SET games_played = 76 WHERE player_id = 2 AND season_init_year = 2026 RETURNING player_id",
+      `UPDATE player_season_stats SET games_played = 76 WHERE player_id = ${SEED_PLAYER_ID_B} AND season_init_year = 2026 RETURNING player_id`,
     );
     expect(playerStats.rows).toHaveLength(1);
 
@@ -183,53 +184,39 @@ describe("PlayersController.leadersList", () => {
 
     expect(belowResponse.status).toBe(200);
     const belowResult: { data: { id: number }[] } = await belowResponse.json();
-    expect(belowResult.data.map((player) => player.id)).not.toContain(2);
+    expect(belowResult.data.map((player) => player.id)).not.toContain(SEED_PLAYER_ID_B);
 
     await db.query(
-      "UPDATE player_season_stats SET games_played = 77 WHERE player_id = 2 AND season_init_year = 2026",
+      `UPDATE player_season_stats SET games_played = 77 WHERE player_id = ${SEED_PLAYER_ID_B} AND season_init_year = 2026`,
     );
     const thresholdResponse = await controller.leadersList("points");
 
     expect(thresholdResponse.status).toBe(200);
     const thresholdResult: { data: { id: number }[] } = await thresholdResponse.json();
-    expect(thresholdResult.data.map((player) => player.id)).toContain(2);
+    expect(thresholdResult.data.map((player) => player.id)).toContain(SEED_PLAYER_ID_B);
   });
 });
 
 describe("PlayersController.profileStats", () => {
-  test.for([0, 2])(
+  test.for([0, -2])(
     "devuelve 400 cuando el ID es menor o igual que cero: %s",
     async (id, { db, expect }) => {
-      const serviceSpy = vi.spyOn(PlayersService.prototype, "profileStats");
+      const response = await createController(db).profileStats(id);
 
-      try {
-        const response = await createController(db).profileStats(id);
-
-        expect(response.status).toBe(400);
-        expect(await response.json()).toStrictEqual({ error: "ID no válido" });
-        expect(authMock).not.toHaveBeenCalled();
-        expect(serviceSpy).not.toHaveBeenCalled();
-      } finally {
-        serviceSpy.mockRestore();
-      }
+      expect(response.status).toBe(400);
+      expect(await response.json()).toStrictEqual({ error: "ID no válido" });
+      expect(authMock).not.toHaveBeenCalled();
     },
   );
 
   test.for([NaN, Infinity, -Infinity, 1.5, Number.MAX_SAFE_INTEGER + 1, Number.MIN_SAFE_INTEGER - 1])(
     "devuelve 400 cuando el ID no es un entero seguro: %s",
     async (id, { db, expect }) => {
-      const serviceSpy = vi.spyOn(PlayersService.prototype, "profileStats");
+      const response = await createController(db).profileStats(id);
 
-      try {
-        const response = await createController(db).profileStats(id);
-
-        expect(response.status).toBe(400);
-        expect(await response.json()).toStrictEqual({ error: "ID no válido" });
-        expect(authMock).not.toHaveBeenCalled();
-        expect(serviceSpy).not.toHaveBeenCalled();
-      } finally {
-        serviceSpy.mockRestore();
-      }
+      expect(response.status).toBe(400);
+      expect(await response.json()).toStrictEqual({ error: "ID no válido" });
+      expect(authMock).not.toHaveBeenCalled();
     },
   );
 
@@ -239,11 +226,11 @@ describe("PlayersController.profileStats", () => {
     const consoleSpy = vi.spyOn(console, "error").mockImplementation(() => {});
 
     try {
-      const response = await createController(db).profileStats(1);
+      const response = await createController(db).profileStats(SEED_PLAYER_ID_A);
 
       expect(response.status).toBe(500);
       expect(await response.json()).toStrictEqual({ error: "Error al conseguir los datos del perfil" });
-      expect(serviceSpy).toHaveBeenCalledWith(1, USER_A);
+      expect(serviceSpy).toHaveBeenCalledWith(SEED_PLAYER_ID_A, USER_A);
       expect(consoleSpy).toHaveBeenCalledWith(error);
     } finally {
       serviceSpy.mockRestore();
@@ -265,12 +252,12 @@ describe("PlayersController.profileStats", () => {
 
   test("devuelve 200 con el perfil y los promedios del jugador", async ({ db, expect }) => {
     const controller = createController(db);
-    const response = await controller.profileStats(1);
+    const response = await controller.profileStats(SEED_PLAYER_ID_A);
 
     expect(response.status).toBe(200);
     expect(await response.json()).toStrictEqual({
       data: {
-        id: 1,
+        id: SEED_PLAYER_ID_A,
         name: "Jayson Tatum",
         image: "/players/Jayson_Tatum.webp",
         height: "2.03",
@@ -281,7 +268,7 @@ describe("PlayersController.profileStats", () => {
         age: 28,
         draft: 2017,
         team: "Boston Celtics",
-        teamId: 1,
+        teamId: SEED_TEAM_ID_A,
         isFavorite: false,
         seasons: [{
           season: 2026,
@@ -304,19 +291,19 @@ describe("PlayersController.profileStats", () => {
   });
 
   test("devuelve el perfil con seasons vacío cuando no hay estadísticas de temporada", async ({ db, expect }) => {
-    await db.query("DELETE FROM player_season_stats WHERE player_id = 1");
+    await db.query(`DELETE FROM player_season_stats WHERE player_id = ${SEED_PLAYER_ID_A}`);
 
-    const response = await createController(db).profileStats(1);
+    const response = await createController(db).profileStats(SEED_PLAYER_ID_A);
 
     expect(response.status).toBe(200);
     expect(await response.json()).toMatchObject({
-      data: { id: 1, name: "Jayson Tatum", teamId: 1, seasons: [] },
+      data: { id: SEED_PLAYER_ID_A, name: "Jayson Tatum", teamId: SEED_TEAM_ID_A, seasons: [] },
     });
   });
 
   test("ordena las temporadas de más reciente a más antigua", async ({ db, expect }) => {
     const controller = createController(db);
-    const response = await controller.profileStats(2);
+    const response = await controller.profileStats(SEED_PLAYER_ID_B);
 
     expect(response.status).toBe(200);
     const result = await response.json();
@@ -325,29 +312,29 @@ describe("PlayersController.profileStats", () => {
   });
 
   test("distingue los favoritos del usuario autenticado de los de otros usuarios", async ({ db, expect }) => {
-    await db.query("DELETE FROM favorite_players WHERE player_id = 1");
-    await db.query("INSERT INTO favorite_players (user_id, player_id) VALUES ($1, 1)", [USER_A]);
+    await db.query(`DELETE FROM favorite_players WHERE player_id = ${SEED_PLAYER_ID_A}`);
+    await db.query(`INSERT INTO favorite_players (user_id, player_id) VALUES ($1, ${SEED_PLAYER_ID_A})`, [USER_A]);
     const controller = createController(db);
 
-    const favoriteResponse = await controller.profileStats(1);
+    const favoriteResponse = await controller.profileStats(SEED_PLAYER_ID_A);
     expect(favoriteResponse.status).toBe(200);
-    expect(await favoriteResponse.json()).toMatchObject({ data: { id: 1, isFavorite: true } });
+    expect(await favoriteResponse.json()).toMatchObject({ data: { id: SEED_PLAYER_ID_A, isFavorite: true } });
 
     authMock.mockResolvedValue({ userId: USER_B });
-    const otherUserResponse = await controller.profileStats(1);
+    const otherUserResponse = await controller.profileStats(SEED_PLAYER_ID_A);
     expect(otherUserResponse.status).toBe(200);
-    expect(await otherUserResponse.json()).toMatchObject({ data: { id: 1, isFavorite: false } });
+    expect(await otherUserResponse.json()).toMatchObject({ data: { id: SEED_PLAYER_ID_A, isFavorite: false } });
   });
 
   test("devuelve el perfil sin sesión y con isFavorite false", async ({ db, expect }) => {
-    await db.query("INSERT INTO favorite_players (user_id, player_id) VALUES ($1, 1) ON CONFLICT DO NOTHING", [USER_A]);
+    await db.query(`INSERT INTO favorite_players (user_id, player_id) VALUES ($1, ${SEED_PLAYER_ID_A}) ON CONFLICT DO NOTHING`, [USER_A]);
     authMock.mockResolvedValue({ userId: null });
 
-    const response = await createController(db).profileStats(1);
+    const response = await createController(db).profileStats(SEED_PLAYER_ID_A);
 
     expect(response.status).toBe(200);
     expect(await response.json()).toMatchObject({
-      data: { id: 1, name: "Jayson Tatum", isFavorite: false },
+      data: { id: SEED_PLAYER_ID_A, name: "Jayson Tatum", isFavorite: false },
     });
   });
 
@@ -361,11 +348,11 @@ describe("PlayersController.profileStats", () => {
        SET games_played = $1, total_fg_attempted = $2, total_three_attempted = $3,
            total_fg_made = CASE WHEN $2 = 0 THEN 0 ELSE total_fg_made END,
            total_three_made = CASE WHEN $3 = 0 THEN 0 ELSE total_three_made END
-       WHERE player_id = 1`,
+       WHERE player_id = ${SEED_PLAYER_ID_A}`,
       [values.games, values.fgAttempts, values.threeAttempts],
     );
 
-    const response = await createController(db).profileStats(1);
+    const response = await createController(db).profileStats(SEED_PLAYER_ID_A);
 
     expect(response.status).toBe(200);
     const result = await response.json();
@@ -385,5 +372,138 @@ describe("PlayersController.profileStats", () => {
       threePercentage: values.threeAttempts === 0 ? 0 : 100 * 4 / 9,
       games: values.games,
     });
+  });
+});
+
+describe("PlayersController.lastGames", () => {
+  test.for([NaN, Infinity, -Infinity, 1.5, Number.MAX_SAFE_INTEGER + 1, Number.MIN_SAFE_INTEGER - 1])(
+    "devuelve 400 cuando el ID no es un entero seguro: %s",
+    async (id, { db, expect }) => {
+      const response = await createController(db).lastGames(id);
+
+      expect(response.status).toBe(400);
+      expect(await response.json()).toStrictEqual({ error: "ID no válido" });
+      expect(authMock).not.toHaveBeenCalled();
+    },
+  );
+
+  test("devuelve 500 cuando falla el servicio", async ({ db, expect }) => {
+    const error = new Error("Fallo simulado");
+    const serviceSpy = vi.spyOn(PlayersService.prototype, "lastGames").mockRejectedValue(error);
+    const consoleSpy = vi.spyOn(console, "error").mockImplementation(() => {});
+
+    try {
+      const response = await createController(db).lastGames(SEED_PLAYER_ID_A);
+
+      expect(response.status).toBe(500);
+      expect(await response.json()).toStrictEqual({ error: "Error al conseguir los últimos partidos" });
+      expect(serviceSpy).toHaveBeenCalledWith(SEED_PLAYER_ID_A);
+      expect(consoleSpy).toHaveBeenCalledWith(error);
+    } finally {
+      serviceSpy.mockRestore();
+      consoleSpy.mockRestore();
+    }
+  });
+
+  test.for([0, -2])(
+    "devuelve 400 cuando el ID es menor o igual que cero: %s",
+    async (id, { db, expect }) => {
+      const response = await createController(db).lastGames(id);
+
+      expect(response.status).toBe(400);
+      expect(await response.json()).toStrictEqual({ error: "ID no válido" });
+      expect(authMock).not.toHaveBeenCalled();
+    },
+  );
+
+  test("no devuelve partidos no finalizados", async ({ db, expect }) => {
+    const controller = createController(db);
+    const initialResponse = await controller.lastGames(SEED_PLAYER_ID_A);
+
+    expect(initialResponse.status).toBe(200);
+    const initialResult = await initialResponse.json();
+    expect(initialResult.data.length).toBeGreaterThan(0);
+
+    const updated = await db.query(
+      `UPDATE games SET finished = FALSE
+       WHERE id IN (SELECT game_id FROM player_game_stats WHERE player_id = $1)
+       RETURNING id`,
+      [SEED_PLAYER_ID_A],
+    );
+    expect(updated.rows.length).toBeGreaterThan(0);
+
+    const response = await controller.lastGames(SEED_PLAYER_ID_A);
+
+    expect(response.status).toBe(200);
+    expect(await response.json()).toStrictEqual({ data: [] });
+  });
+
+  test("devuelve los partidos del jugador con sus estadísticas ordenados del más reciente al más antiguo", async ({ db, expect }) => {
+    const controller = createController(db);
+    const response = await controller.lastGames(SEED_PLAYER_ID_B);
+
+    expect(response.status).toBe(200);
+    expect(await response.json()).toStrictEqual({
+      data: [
+        {
+          gameId: SEED_GAME_ID_B,
+          rival: "BOS",
+          homeScore: 112,
+          awayScore: 100,
+          date: "2026-10-18T08:00:00.000Z",
+          secondsPlayed: 2100,
+          stadium: "TD Garden",
+          points: 21,
+          rebounds: 9,
+          assists: 7,
+          fgMade: 8,
+          fgAttempted: 16,
+          victory: false,
+          home: false,
+        },
+        {
+          gameId: SEED_GAME_ID_A,
+          rival: "BOS",
+          homeScore: 104,
+          awayScore: 107,
+          date: "2026-10-18T07:59:59.999Z",
+          secondsPlayed: 2280,
+          stadium: "TD Garden",
+          points: 28,
+          rebounds: 12,
+          assists: 10,
+          fgMade: 11,
+          fgAttempted: 18,
+          victory: true,
+          home: false,
+        },
+        {
+          gameId: SEED_GAME_ID_C,
+          rival: "BOS",
+          homeScore: 110,
+          awayScore: 106,
+          date: "2025-10-18T20:00:00.000Z",
+          secondsPlayed: 2400,
+          stadium: "TD Garden",
+          points: 50,
+          rebounds: 20,
+          assists: 15,
+          fgMade: 20,
+          fgAttempted: 30,
+          victory: false,
+          home: false,
+        },
+      ],
+    });
+  });
+
+  test("devuelve una lista vacía si el jugador no tiene partidos", async ({ db, expect }) => {
+    await db.query("DELETE FROM player_game_stats WHERE player_id = $1", [SEED_PLAYER_ID_A]);
+
+    const controller = createController(db);
+    const response = await controller.lastGames(SEED_PLAYER_ID_A);
+
+    expect(response.status).toBe(200);
+    expect(await response.json()).toStrictEqual({ data: [] });
   });
 });

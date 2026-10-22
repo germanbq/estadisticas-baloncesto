@@ -35,7 +35,7 @@ export class PlayersController {
         }
         try{
             const { userId } = await auth();
-            
+
             const data = await this.service.profileStats(id, userId);
             if(data === null) {
                 return Response.json(
@@ -55,7 +55,7 @@ export class PlayersController {
 
     async lastGames(id: number): Promise<Response> {
         const idPlayer = Number(id)
-        if(!Number.isSafeInteger(idPlayer)) {
+        if(!Number.isSafeInteger(idPlayer) || id <= 0) {
             return Response.json(
                 { error: "ID no válido" },
                 { status: 400 }
