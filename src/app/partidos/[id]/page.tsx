@@ -97,24 +97,30 @@ export default async function GamePage({params}: {params: Promise<{id : string}>
 
         
 
-        const homeStats = homeStatsResponse.ok ? homeStatsResult.data : undefined;
-        const awayStats = awayStatsResponse.ok ? awayStatsResult.data : undefined;
-        const gameMVP = MVPResponse.ok ? MVPResult.data: undefined;
-        const homePlayers = homePlayersResponse.ok ? homePlayersResult.data : [];
-        const awayPlayers = awayPlayersResponse.ok ? awayPlayersResult.data : [];
+        const homeStats = homeStatsResult.data;
+        const awayStats = awayStatsResult.data;
+        const gameMVP = MVPResult.data;
+        const homePlayers = homePlayersResult.data;
+        const awayPlayers = awayPlayersResult.data;
 
         content = (
             <>
-                {gameMVP ? <MVPCard player={gameMVP} home={gameMVP.teamId === game.homeTeamId}/>
+                {!MVPResponse.ok
+                         ? <NoDataCard name="MVP del partido" icon={CircleStar} text="No se pudo cargar el MVP del partido"/>
+                         : gameMVP ? <MVPCard player={gameMVP} home={gameMVP.teamId === game.homeTeamId}/>
                          : <NoDataCard name="MVP del partido" icon={CircleStar} text="No hay estadísticas disponibles para decidir el MVP del partido"/>
                 }
-                {homeStats || awayStats 
+                {!homeStatsResponse.ok || !awayStatsResponse.ok
+                        ? <NoDataCard name="Comparativa de equipos" icon={ChartBar} text="No se pudieron cargar las estadísticas de los equipos"/>
+                        : homeStats || awayStats
                         ? <FinishedTeamStatsComparison homeStats={homeStats} awayStats={awayStats} homeName={game.homeTeamName} awayName={game.awayTeamName}/>
                         : <NoDataCard name="Comparativa de equipos" icon={ChartBar} text="No hay estadísticas disponibles de los equipos"/>                                   
                 }
-                {homePlayers.length > 0 || awayPlayers.length > 0
+                {!homePlayersResponse.ok || !awayPlayersResponse.ok
+                        ? <NoDataCard name="Estadísticas de jugadores" icon={ChartBar} text="No se pudieron cargar las estadísticas de los jugadores"/>
+                        : homePlayers.length > 0 || awayPlayers.length > 0
                         ? <PlayersStats homePlayers={homePlayers} awayPlayers={awayPlayers} homeName={game.homeTeamName} awayName={game.awayTeamName}/>
-                         : <NoDataCard name="Comparativa de equipos" icon={ChartBar} text="No hay estadísticas disponibles sobre los jugadores"/>
+                         : <NoDataCard name="Estadísticas de jugadores" icon={ChartBar} text="No hay estadísticas disponibles sobre los jugadores"/>
                 }
             </>
         )
