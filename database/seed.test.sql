@@ -31,3 +31,8 @@ VALUES
     (3, 1, 2, 2160, 32, 4, 1, 3, 6, 2, 0, 2, 3, 12, 22, 4, 8, 4, 5),
     (3, 2, 2, 2040, 25, 5, 1, 4, 7, 1, 1, 2, -12, 9, 19, 3, 7, 4, 4),
     (2, 9, 2, 2400, 50, 20, 5, 15, 15, 5, 4, 2, -4, 20, 30, 4, 8, 6, 7);
+
+INSERT INTO team_game_stats (team_id, game_id, possessions, fg_made, fg_attempted, three_made, three_attempted, ft_made, ft_attempted, paint_points, fastbreak_points, bench_points, second_chance_points, effective_field_goal_percentage, true_shooting_percentage, offensive_rating, defensive_rating, rebounds, assists, steals, tapones, turnovers, personal_fouls)
+VALUES
+    (1, 1, 100, 38, 80, 12, 32, 16, 20, 40, 12, 28, 10, 55.00, 58.56, 104, 107, 42, 25, 7, 5, 12, 18),
+    (2, 1, 100, 40, 82, 11, 30, 16, 20, 46, 14, 30, 12, 55.49, 58.92, 107, 104, 45, 28, 8, 4, 11, 19);

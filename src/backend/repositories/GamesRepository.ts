@@ -47,7 +47,7 @@ export default class GamesRepository implements IGamesRepository {
         return result;
     }
 
-    async gameTeamStats(teamId: number, gameId: number): Promise<GameTeamStats> {
+    async gameTeamStats(teamId: number, gameId: number): Promise<GameTeamStats | undefined> {
         const query = this.queries.gameTeamStats(teamId, gameId);
         const result = await this.executor.query<GameTeamStats>(query.text, query.values);
 

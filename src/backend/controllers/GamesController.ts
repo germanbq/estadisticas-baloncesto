@@ -92,7 +92,7 @@ export default class GamesController {
         }
     }
 
-    async headToHeadGames(homeId: number, awayId: number) {
+    async headToHeadGames(homeId: number, awayId: number): Promise<Response> {
         if(!Number.isSafeInteger(homeId) || homeId <= 0 || !Number.isSafeInteger(awayId) || awayId <= 0) {
             return Response.json(
                 { error: "ID no válido de los equipos para conseguir sus enfrentamientos" },
@@ -111,7 +111,7 @@ export default class GamesController {
         }
     }
 
-    async statsLeaders(teamId: number) {
+    async statsLeaders(teamId: number): Promise<Response> {
         if(!Number.isSafeInteger(teamId) || teamId <= 0) {
             return Response.json(
                 { error: "ID de equipo no válido para conseguir los líderes estadísticos" },
@@ -130,8 +130,8 @@ export default class GamesController {
         }
     }
 
-    async gameTeamStats(teamId: number, gameId: number) {
-        if(!Number.isSafeInteger(teamId) || !Number.isSafeInteger(gameId)) {
+    async gameTeamStats(teamId: number, gameId: number): Promise<Response> {
+        if(!Number.isSafeInteger(teamId)  || teamId <= 0 || !Number.isSafeInteger(gameId) || gameId <= 0) {
             return Response.json(
                 { error: "ID de equipo o partido no válido para conseguir las estadísticas del equipo" },
                 { status: 400 }
@@ -139,6 +139,12 @@ export default class GamesController {
         }
         try{
             const data = await this.service.gameTeamStats(teamId, gameId);
+            if (data === undefined) {
+                return Response.json(
+                    { error: "No existen estadísticas para ese equipo y partido" },
+                    { status: 404 },
+                );
+            }
             return Response.json({data});
         } catch(error) {
             console.error(error);
@@ -149,7 +155,7 @@ export default class GamesController {
         }
     }
 
-    async gameMVP(gameId: number) {
+    async gameMVP(gameId: number): Promise<Response> {
         if(!Number.isSafeInteger(gameId)) {
             return Response.json(
                 { error: "ID de partido no válido para conseguir el MVP" },
@@ -168,7 +174,7 @@ export default class GamesController {
         }
     }
 
-    async playersStats(gameId: number, teamId: number) {
+    async playersStats(gameId: number, teamId: number): Promise<Response> {
         if(!Number.isSafeInteger(gameId) || !Number.isSafeInteger(teamId)) {
             return Response.json(
                 { error: "ID de equipo o partido no válido para conseguir las estadísticas de los jugadores" },

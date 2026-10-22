@@ -104,7 +104,7 @@ describe("GamesController.dayGames", () => {
         homeTeamName: "Boston Celtics",
         awayTeamName: "Denver Nuggets",
         stadium: "TD Garden",
-        finished: false,
+        finished: true,
         date: "2026-10-18T08:00:00.000Z",
         isFavorite: false,
     });
@@ -349,7 +349,7 @@ describe("GamesController.gameById", () => {
         id: SEED_GAME_ID_A,
         homeTeamName: "Boston Celtics",
         awayTeamName: "Denver Nuggets",
-        finished: false,
+        finished: true,
         stadium: "TD Garden",
         date: "2026-10-18T07:59:59.999Z",
         homeTeamId: 1,
@@ -716,6 +716,110 @@ describe("GamesController.statsLeaders", () => {
         { metric: "Robos", name: "Jamal Murray", jerseyNumber: 27, value: 1.5 },
         { metric: "Tapones", name: "Jamal Murray", jerseyNumber: 27, value: 0.5 },
       ],
+    });
+  });
+});
+
+describe("GamesController.gameTeamStats", () => {
+  test.for([NaN, Infinity, 1.5, Number.MAX_SAFE_INTEGER + 1])(
+    "devuelve 400 cuando el ID del equipo no es un entero seguro: %s", async (id, { db, expect }) => {
+      const controller = createController(db);
+      const response = await controller.gameTeamStats(id, SEED_GAME_ID_A);
+
+      expect(response.status).toBe(400);
+      expect(await response.json()).toStrictEqual({ error: expect.any(String) });
+      expect(authMock).not.toHaveBeenCalled();
+    },
+  );
+
+  test.for([NaN, Infinity, 1.5, Number.MAX_SAFE_INTEGER + 1])(
+    "devuelve 400 cuando el ID del partido no es un entero seguro: %s", async (id, { db, expect }) => {
+      const controller = createController(db);
+      const response = await controller.gameTeamStats(SEED_TEAM_ID_A, id);
+
+      expect(response.status).toBe(400);
+      expect(await response.json()).toStrictEqual({ error: expect.any(String) });
+      expect(authMock).not.toHaveBeenCalled();
+    },
+  );
+
+  test.for([-2, 0])(
+    "devuelve 400 cuando el ID del equipo es menor de 1: %s", async (id, { db, expect }) => {
+      const controller = createController(db);
+      const response = await controller.gameTeamStats(id, SEED_GAME_ID_A);
+
+      expect(response.status).toBe(400);
+      expect(await response.json()).toStrictEqual({ error: expect.any(String) });
+      expect(authMock).not.toHaveBeenCalled();
+    },
+  );
+
+  test.for([-2, 0])(
+    "devuelve 400 cuando el ID del partido es menor de 1: %s", async (id, { db, expect }) => {
+      const controller = createController(db);
+      const response = await controller.gameTeamStats(SEED_TEAM_ID_A, id);
+
+      expect(response.status).toBe(400);
+      expect(await response.json()).toStrictEqual({ error: expect.any(String) });
+      expect(authMock).not.toHaveBeenCalled();
+    },
+  );
+  test("devuelve 500 cuando falla el servicio", async ({ db, expect }) => {
+    const serviceSpy = vi
+      .spyOn(GamesService.prototype, "gameTeamStats")
+      .mockRejectedValue(new Error("Fallo simulado"));
+    const consoleSpy = vi.spyOn(console, "error").mockImplementation(() => {});
+
+    try {
+      const controller = createController(db);
+      const response = await controller.gameTeamStats(SEED_TEAM_ID_A, SEED_GAME_ID_A);
+
+      expect(response.status).toBe(500);
+      expect(await response.json()).toMatchObject({ error: expect.any(String) });
+    } finally {
+      serviceSpy.mockRestore();
+      consoleSpy.mockRestore();
+    }
+  });
+
+  test("devuelve 404 para un partido pendiente sin estadísticas de equipo", async ({ db, expect }) => {
+    const controller = createController(db);
+    const response = await controller.gameTeamStats(SEED_TEAM_ID_A, SEED_GAME_ID_C);
+
+    expect(response.status).toBe(404);
+    expect(await response.json()).toStrictEqual({
+      error: expect.any(String),
+    });
+  });
+
+  test("devuelve las estadísticas del equipo en un partido finalizado", async ({ db, expect }) => {
+    const controller = createController(db);
+    const response = await controller.gameTeamStats(SEED_TEAM_ID_A, SEED_GAME_ID_A);
+
+    expect(response.status).toBe(200);
+    expect(await response.json()).toStrictEqual({
+      data: {
+        fgMade: 38,
+        fgAttempted: 80,
+        threeMade: 12,
+        threeAttempted: 32,
+        ftMade: 16,
+        ftAttempted: 20,
+        paintPoints: 40,
+        fastbreakPoints: 12,
+        benchPoints: 28,
+        secondChancePoints: 10,
+        effectiveFieldGoal: 55,
+        trueShooting: 58.56,
+        offensiveRating: 104,
+        defensiveRating: 107,
+        rebounds: 42,
+        assists: 25,
+        steals: 7,
+        tapones: 5,
+        turnovers: 12,
+        personalFouls: 18,
+      },
     });
   });
 });

@@ -20,7 +20,7 @@ export interface IGamesRepository {
     lastTeamGames(id: number, season: number): Promise<LastTeamGame[]>;
     headToHeadGames(homeId: number, awayId: number, season: number): Promise<HeadToHeadGame[]>;
     statsLeaders(teamId: number, season: number): Promise<StatLeader[]>;
-    gameTeamStats(teamId: number, gameId: number): Promise<GameTeamStats>;
+    gameTeamStats(teamId: number, gameId: number): Promise<GameTeamStats | undefined>;
     gameMVP(gameId: number): Promise<GameMVP>;
     playersStats(gameId: number, teamId: number): Promise<PlayerStats[]>;
 }

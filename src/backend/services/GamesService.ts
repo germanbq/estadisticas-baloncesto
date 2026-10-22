@@ -29,7 +29,7 @@ export default class GamesService {
         return this.repository.statsLeaders(teamId, ACTUAL_SEASON);
     }
 
-    gameTeamStats(teamId: number, gameId: number): Promise<GameTeamStats> {
+    gameTeamStats(teamId: number, gameId: number): Promise<GameTeamStats | undefined> {
         return this.repository.gameTeamStats(teamId, gameId);
     }
 
