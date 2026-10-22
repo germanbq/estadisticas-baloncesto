@@ -195,3 +195,195 @@ describe("PlayersController.leadersList", () => {
     expect(thresholdResult.data.map((player) => player.id)).toContain(2);
   });
 });
+
+describe("PlayersController.profileStats", () => {
+  test.for([0, -1, Number.MIN_SAFE_INTEGER])(
+    "devuelve 400 cuando el ID es menor o igual que cero: %s",
+    async (id, { db, expect }) => {
+      const serviceSpy = vi.spyOn(PlayersService.prototype, "profileStats");
+
+      try {
+        const response = await createController(db).profileStats(id);
+
+        expect(response.status).toBe(400);
+        expect(await response.json()).toStrictEqual({ error: "ID no válido" });
+        expect(authMock).not.toHaveBeenCalled();
+        expect(serviceSpy).not.toHaveBeenCalled();
+      } finally {
+        serviceSpy.mockRestore();
+      }
+    },
+  );
+
+  test.for([NaN, Infinity, -Infinity, 1.5, Number.MAX_SAFE_INTEGER + 1, Number.MIN_SAFE_INTEGER - 1])(
+    "devuelve 400 cuando el ID no es un entero seguro: %s",
+    async (id, { db, expect }) => {
+      const serviceSpy = vi.spyOn(PlayersService.prototype, "profileStats");
+
+      try {
+        const response = await createController(db).profileStats(id);
+
+        expect(response.status).toBe(400);
+        expect(await response.json()).toStrictEqual({ error: "ID no válido" });
+        expect(authMock).not.toHaveBeenCalled();
+        expect(serviceSpy).not.toHaveBeenCalled();
+      } finally {
+        serviceSpy.mockRestore();
+      }
+    },
+  );
+
+  test("devuelve 500 cuando falla el servicio", async ({ db, expect }) => {
+    const error = new Error("Fallo simulado");
+    const serviceSpy = vi.spyOn(PlayersService.prototype, "profileStats").mockRejectedValue(error);
+    const consoleSpy = vi.spyOn(console, "error").mockImplementation(() => {});
+
+    try {
+      const response = await createController(db).profileStats(1);
+
+      expect(response.status).toBe(500);
+      expect(await response.json()).toStrictEqual({ error: "Error al conseguir los datos del perfil" });
+      expect(serviceSpy).toHaveBeenCalledWith(1, USER_A);
+      expect(consoleSpy).toHaveBeenCalledWith(error);
+    } finally {
+      serviceSpy.mockRestore();
+      consoleSpy.mockRestore();
+    }
+  });
+
+  test("devuelve 404 cuando el jugador no existe", async ({ db, expect }) => {
+    const missingId = 2147483647;
+    const existing = await db.query("SELECT id FROM players WHERE id = $1", [missingId]);
+    expect(existing.rows).toHaveLength(0);
+
+    const response = await createController(db).profileStats(missingId);
+
+    expect(response.status).toBe(404);
+    expect(await response.json()).toStrictEqual({ error: "Jugador no encontrado" });
+    expect(authMock).toHaveBeenCalledOnce();
+  });
+
+  test("devuelve 200 con el perfil y los promedios del jugador", async ({ db, expect }) => {
+    const controller = createController(db);
+    const response = await controller.profileStats(1);
+
+    expect(response.status).toBe(200);
+    expect(await response.json()).toStrictEqual({
+      data: {
+        id: 1,
+        name: "Jayson Tatum",
+        image: "/players/Jayson_Tatum.webp",
+        height: "2.03",
+        weight: "95.00",
+        position: "SF",
+        jerseyNumber: 0,
+        country: "USA",
+        age: 28,
+        draft: 2017,
+        team: "Boston Celtics",
+        teamId: 1,
+        isFavorite: false,
+        seasons: [{
+          season: 2026,
+          points: 30,
+          rebounds: 8,
+          ofeRebounds: 2,
+          defRebounds: 6,
+          assists: 5,
+          steals: 2,
+          blocks: 1,
+          turnovers: 3,
+          plusMinus: -3,
+          fgPercentage: 50,
+          threePercentage: 100 * 4 / 9,
+          games: 1,
+        }],
+      },
+    });
+    expect(authMock).toHaveBeenCalledOnce();
+  });
+
+  test("devuelve el perfil con seasons vacío cuando no hay estadísticas de temporada", async ({ db, expect }) => {
+    await db.query("DELETE FROM player_season_stats WHERE player_id = 1");
+
+    const response = await createController(db).profileStats(1);
+
+    expect(response.status).toBe(200);
+    expect(await response.json()).toMatchObject({
+      data: { id: 1, name: "Jayson Tatum", teamId: 1, seasons: [] },
+    });
+  });
+
+  test("ordena las temporadas de más reciente a más antigua", async ({ db, expect }) => {
+    const controller = createController(db);
+    const response = await controller.profileStats(2);
+
+    expect(response.status).toBe(200);
+    const result = await response.json();
+    expect(result.data.seasons.map((season: { season: number }) => season.season)).toStrictEqual([2026, 2025]);
+    expect(result.data.seasons[1]).toMatchObject({ points: 50, games: 1 });
+  });
+
+  test("distingue los favoritos del usuario autenticado de los de otros usuarios", async ({ db, expect }) => {
+    await db.query("DELETE FROM favorite_players WHERE player_id = 1");
+    await db.query("INSERT INTO favorite_players (user_id, player_id) VALUES ($1, 1)", [USER_A]);
+    const controller = createController(db);
+
+    const favoriteResponse = await controller.profileStats(1);
+    expect(favoriteResponse.status).toBe(200);
+    expect(await favoriteResponse.json()).toMatchObject({ data: { id: 1, isFavorite: true } });
+
+    authMock.mockResolvedValue({ userId: USER_B });
+    const otherUserResponse = await controller.profileStats(1);
+    expect(otherUserResponse.status).toBe(200);
+    expect(await otherUserResponse.json()).toMatchObject({ data: { id: 1, isFavorite: false } });
+  });
+
+  test("devuelve el perfil sin sesión y con isFavorite false", async ({ db, expect }) => {
+    await db.query("INSERT INTO favorite_players (user_id, player_id) VALUES ($1, 1) ON CONFLICT DO NOTHING", [USER_A]);
+    authMock.mockResolvedValue({ userId: null });
+
+    const response = await createController(db).profileStats(1);
+
+    expect(response.status).toBe(200);
+    expect(await response.json()).toMatchObject({
+      data: { id: 1, name: "Jayson Tatum", isFavorite: false },
+    });
+  });
+
+  test.for([
+    { games: 0, fgAttempts: 20, threeAttempts: 9 },
+    { games: 1, fgAttempts: 0, threeAttempts: 0 },
+    { games: 0, fgAttempts: 0, threeAttempts: 0 },
+  ])("devuelve cero para las divisiones con denominador cero: %j", async (values, { db, expect }) => {
+    await db.query(
+      `UPDATE player_season_stats
+       SET games_played = $1, total_fg_attempted = $2, total_three_attempted = $3,
+           total_fg_made = CASE WHEN $2 = 0 THEN 0 ELSE total_fg_made END,
+           total_three_made = CASE WHEN $3 = 0 THEN 0 ELSE total_three_made END
+       WHERE player_id = 1`,
+      [values.games, values.fgAttempts, values.threeAttempts],
+    );
+
+    const response = await createController(db).profileStats(1);
+
+    expect(response.status).toBe(200);
+    const result = await response.json();
+    expect(result.data.seasons).toHaveLength(1);
+    expect(result.data.seasons[0]).toStrictEqual({
+      season: 2026,
+      points: values.games === 0 ? 0 : 30,
+      rebounds: values.games === 0 ? 0 : 8,
+      ofeRebounds: values.games === 0 ? 0 : 2,
+      defRebounds: values.games === 0 ? 0 : 6,
+      assists: values.games === 0 ? 0 : 5,
+      steals: values.games === 0 ? 0 : 2,
+      blocks: values.games === 0 ? 0 : 1,
+      turnovers: values.games === 0 ? 0 : 3,
+      plusMinus: values.games === 0 ? 0 : -3,
+      fgPercentage: values.fgAttempts === 0 ? 0 : 50,
+      threePercentage: values.threeAttempts === 0 ? 0 : 100 * 4 / 9,
+      games: values.games,
+    });
+  });
+});
