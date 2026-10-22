@@ -12,8 +12,9 @@ export class TeamsController {
                 { status: 400 }
             );
         }
-        const { userId } = await auth(); 
         try {
+            const { userId } = await auth(); 
+
             const data = await this.service.leaderBoard(conf, userId);
             return Response.json({data});
         } catch(error) {

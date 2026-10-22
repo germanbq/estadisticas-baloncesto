@@ -32,7 +32,7 @@ export class TeamsQueries implements ITeamsQueries {
             LEFT JOIN team_season_stats AS tss ON tss.team_id = t.id
                 AND tss.season_init_year = $3
             WHERE t.conference = $1
-            ORDER BY "winRate" DESC
+            ORDER BY "winRate" DESC, tss.victorys DESC, t.id ASC
             `,
             values: [
                 conf,
