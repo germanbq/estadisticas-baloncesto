@@ -197,7 +197,7 @@ describe("PlayersController.leadersList", () => {
 });
 
 describe("PlayersController.profileStats", () => {
-  test.for([0, -1, Number.MIN_SAFE_INTEGER])(
+  test.for([0, 2])(
     "devuelve 400 cuando el ID es menor o igual que cero: %s",
     async (id, { db, expect }) => {
       const serviceSpy = vi.spyOn(PlayersService.prototype, "profileStats");

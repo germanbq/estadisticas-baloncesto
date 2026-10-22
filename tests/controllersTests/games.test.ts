@@ -280,7 +280,7 @@ describe("GamesController.gamesNumber", () => {
 });
 
 describe("GamesController.gameById", () => {
-  test.for([NaN, Infinity, 1.5, Number.MAX_SAFE_INTEGER + 1])(
+  test.for([NaN, Infinity, -Infinity, 1.5, Number.MAX_SAFE_INTEGER + 1, Number.MIN_SAFE_INTEGER - 1])(
     "devuelve 400 cuando el ID no es un entero seguro: %s", async (id, { db, expect }) => {
       const controller = createController(db);
       const response = await controller.gameById(id);
@@ -362,7 +362,7 @@ describe("GamesController.gameById", () => {
 })
 
 describe("GamesController.lastTeamGames", () => {
-  test.for([NaN, Infinity, 1.5, Number.MAX_SAFE_INTEGER + 1])(
+  test.for([NaN, Infinity, -Infinity, 1.5, Number.MAX_SAFE_INTEGER + 1, Number.MIN_SAFE_INTEGER - 1])(
     "devuelve 400 cuando el ID no es un entero seguro: %s", async (id, { db, expect }) => {
       const controller = createController(db);
       const response = await controller.lastTeamGames(id);
@@ -513,7 +513,7 @@ describe("GamesController.lastTeamGames", () => {
 })
 
 describe("GamesController.headToHeadGames", () => {
-  test.for([NaN, Infinity, 1.5, Number.MAX_SAFE_INTEGER + 1])(
+  test.for([NaN, Infinity, -Infinity, 1.5, Number.MAX_SAFE_INTEGER + 1, Number.MIN_SAFE_INTEGER - 1])(
     "devuelve 400 cuando el ID local no es un entero seguro: %s", async (id, { db, expect }) => {
       const controller = createController(db);
       const response = await controller.headToHeadGames(id, 2);
@@ -524,7 +524,7 @@ describe("GamesController.headToHeadGames", () => {
     },
   );
 
-  test.for([NaN, Infinity, 1.5, Number.MAX_SAFE_INTEGER + 1])(
+  test.for([NaN, Infinity, -Infinity, 1.5, Number.MAX_SAFE_INTEGER + 1, Number.MIN_SAFE_INTEGER - 1])(
     "devuelve 400 cuando el ID visitante no es un entero seguro: %s", async (id, { db, expect }) => {
       const controller = createController(db);
       const response = await controller.headToHeadGames(SEED_TEAM_ID_A, id);
@@ -633,7 +633,7 @@ describe("GamesController.headToHeadGames", () => {
 });
 
 describe("GamesController.statsLeaders", () => {
-  test.for([NaN, Infinity, 1.5, Number.MAX_SAFE_INTEGER + 1])(
+  test.for([NaN, Infinity, -Infinity, 1.5, Number.MAX_SAFE_INTEGER + 1, Number.MIN_SAFE_INTEGER - 1])(
     "devuelve 400 cuando el ID no es un entero seguro: %s", async (id, { db, expect }) => {
       const controller = createController(db);
       const response = await controller.statsLeaders(id);
@@ -721,7 +721,7 @@ describe("GamesController.statsLeaders", () => {
 });
 
 describe("GamesController.gameTeamStats", () => {
-  test.for([NaN, Infinity, 1.5, Number.MAX_SAFE_INTEGER + 1])(
+  test.for([NaN, Infinity, -Infinity, 1.5, Number.MAX_SAFE_INTEGER + 1, Number.MIN_SAFE_INTEGER - 1])(
     "devuelve 400 cuando el ID del equipo no es un entero seguro: %s", async (id, { db, expect }) => {
       const controller = createController(db);
       const response = await controller.gameTeamStats(id, SEED_GAME_ID_A);
@@ -732,7 +732,7 @@ describe("GamesController.gameTeamStats", () => {
     },
   );
 
-  test.for([NaN, Infinity, 1.5, Number.MAX_SAFE_INTEGER + 1])(
+  test.for([NaN, Infinity, -Infinity, 1.5, Number.MAX_SAFE_INTEGER + 1, Number.MIN_SAFE_INTEGER - 1])(
     "devuelve 400 cuando el ID del partido no es un entero seguro: %s", async (id, { db, expect }) => {
       const controller = createController(db);
       const response = await controller.gameTeamStats(SEED_TEAM_ID_A, id);
@@ -825,7 +825,7 @@ describe("GamesController.gameTeamStats", () => {
 });
 
 describe("GamesController.gameMVP", () => {
-  test.for([NaN, Infinity, 1.5, Number.MAX_SAFE_INTEGER + 1])(
+  test.for([NaN, Infinity, -Infinity, 1.5, Number.MAX_SAFE_INTEGER + 1, Number.MIN_SAFE_INTEGER - 1])(
     "devuelve 400 cuando el ID no es un entero seguro: %s", async (id, { db, expect }) => {
       const controller = createController(db);
       const response = await controller.gameMVP(id);
@@ -967,7 +967,7 @@ describe("GamesController.gameMVP", () => {
 });
 
 describe("GamesController.playersStats", () => {
-  test.for([NaN, Infinity, 1.5, Number.MAX_SAFE_INTEGER + 1])(
+  test.for([NaN, Infinity, -Infinity, 1.5, Number.MAX_SAFE_INTEGER + 1, Number.MIN_SAFE_INTEGER - 1])(
     "devuelve 400 cuando el ID del partido no es un entero seguro: %s", async (id, { db, expect }) => {
       const controller = createController(db);
       const response = await controller.playersStats(id, SEED_TEAM_ID_A);
@@ -978,7 +978,7 @@ describe("GamesController.playersStats", () => {
     },
   );
 
-  test.for([NaN, Infinity, 1.5, Number.MAX_SAFE_INTEGER + 1])(
+  test.for([NaN, Infinity, -Infinity, 1.5, Number.MAX_SAFE_INTEGER + 1, Number.MIN_SAFE_INTEGER - 1])(
     "devuelve 400 cuando el ID del equipo no es un entero seguro: %s", async (id, { db, expect }) => {
       const controller = createController(db);
       const response = await controller.playersStats(SEED_GAME_ID_A, id);
