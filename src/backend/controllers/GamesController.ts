@@ -156,7 +156,7 @@ export default class GamesController {
     }
 
     async gameMVP(gameId: number): Promise<Response> {
-        if(!Number.isSafeInteger(gameId)) {
+        if(!Number.isSafeInteger(gameId) || gameId <= 0) {
             return Response.json(
                 { error: "ID de partido no válido para conseguir el MVP" },
                 { status: 400 }
@@ -164,6 +164,12 @@ export default class GamesController {
         }
         try{
             const data = await this.service.gameMVP(gameId);
+            if (data === undefined) {
+                return Response.json(
+                    { error: "No existen estadísticas para ese partido" },
+                    { status: 404 },
+                );
+            }
             return Response.json({data});
         } catch(error) {
             console.error(error);

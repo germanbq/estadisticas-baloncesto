@@ -823,3 +823,145 @@ describe("GamesController.gameTeamStats", () => {
     });
   });
 });
+
+describe("GamesController.gameMVP", () => {
+  test.for([NaN, Infinity, 1.5, Number.MAX_SAFE_INTEGER + 1])(
+    "devuelve 400 cuando el ID no es un entero seguro: %s", async (id, { db, expect }) => {
+      const controller = createController(db);
+      const response = await controller.gameMVP(id);
+
+      expect(response.status).toBe(400);
+      expect(await response.json()).toStrictEqual({ error: expect.any(String) });
+      expect(authMock).not.toHaveBeenCalled();
+    },
+  );
+
+  test.for([-2, 0])(
+    "devuelve 400 cuando el ID es menor de 1: %s", async (id, { db, expect }) => {
+      const controller = createController(db);
+      const response = await controller.gameMVP(id);
+
+      expect(response.status).toBe(400);
+      expect(await response.json()).toStrictEqual({ error: expect.any(String) });
+      expect(authMock).not.toHaveBeenCalled();
+    },
+  );
+
+  test("devuelve 500 cuando falla el servicio", async ({ db, expect }) => {
+    const serviceSpy = vi
+      .spyOn(GamesService.prototype, "gameMVP")
+      .mockRejectedValue(new Error("Fallo simulado"));
+    const consoleSpy = vi.spyOn(console, "error").mockImplementation(() => {});
+
+    try {
+      const controller = createController(db);
+      const response = await controller.gameMVP(SEED_GAME_ID_A);
+
+      expect(response.status).toBe(500);
+      expect(await response.json()).toMatchObject({ error: expect.any(String) });
+    } finally {
+      serviceSpy.mockRestore();
+      consoleSpy.mockRestore();
+    }
+  });
+
+  test("devuelve 404 cuando el partido no está finalizado", async ({ db, expect }) => {
+    const controller = createController(db);
+    const response = await controller.gameMVP(SEED_GAME_ID_C);
+
+    expect(response.status).toBe(404);
+    expect(await response.json()).toStrictEqual({ error: expect.any(String) });
+  });
+
+  test("devuelve el jugador con mayor valoración como MVP del partido", async ({ db, expect }) => {
+    const controller = createController(db);
+    const response = await controller.gameMVP(SEED_GAME_ID_A);
+
+    expect(response.status).toBe(200);
+    expect(await response.json()).toStrictEqual({
+      data: {
+        teamId: 2,
+        playerId: 2,
+        playerName: "Nikola Jokic",
+        teamShortName: "DEN",
+        jerseyNumber: 15,
+        position: "C",
+        points: 28,
+        rebounds: 12,
+        assists: 10,
+        steals: 1,
+        blocks: 2,
+        secondsPlayed: 2280,
+        plusMinus: 3,
+        fgMade: 11,
+        fgAttempted: 18,
+        threeMade: 2,
+        threeAttempted: 4,
+        ftMade: 4,
+        ftAttempted: 5,
+      },
+    });
+  });
+
+  test("excluye al jugador con mayor valoración si tiene cero segundos jugados", async ({ db, expect }) => {
+    const updated = await db.query(
+      "UPDATE player_game_stats SET seconds_played = 0 WHERE player_id = $1 AND game_id = $2 RETURNING player_id",
+      [2, SEED_GAME_ID_A],
+    );
+    expect(updated.rows).toHaveLength(1);
+
+    const controller = createController(db);
+    const response = await controller.gameMVP(SEED_GAME_ID_A);
+
+    expect(response.status).toBe(200);
+    expect(await response.json()).toMatchObject({
+      data: {
+        teamId: 2,
+        playerId: 3,
+        playerName: "Jamal Murray",
+        teamShortName: "DEN",
+        points: 32,
+        secondsPlayed: 2160,
+      },
+    });
+  });
+
+  test("desempata por el menor ID cuando los jugadores tienen las mismas estadísticas y puntos", async ({ db, expect }) => {
+    const updated = await db.query(
+      `UPDATE player_game_stats
+       SET seconds_played = 2160,
+           points = 30,
+           rebounds = 8,
+           ofe_rebounds = 2,
+           def_rebounds = 6,
+           assists = 5,
+           steals = 2,
+           blocks = 1,
+           turnovers = 3,
+           plusminus = 0,
+           fg_made = 10,
+           fg_attempted = 20,
+           three_made = 4,
+           three_attempted = 9,
+           ft_made = 6,
+           ft_attempted = 7
+       WHERE game_id = $1
+       RETURNING player_id`,
+      [SEED_GAME_ID_A],
+    );
+    expect(updated.rows.map((row) => row.player_id).sort((a, b) => a - b)).toStrictEqual([1, 2, 3]);
+
+    const controller = createController(db);
+    const response = await controller.gameMVP(SEED_GAME_ID_A);
+
+    expect(response.status).toBe(200);
+    expect(await response.json()).toMatchObject({
+      data: {
+        playerId: 1,
+        playerName: "Jayson Tatum",
+        teamId: SEED_TEAM_ID_A,
+        points: 30,
+      },
+    });
+  });
+});
