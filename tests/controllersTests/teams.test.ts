@@ -193,3 +193,155 @@ describe("TeamsController.leaderBoard", () => {
     expect(await afterResponse.json()).toStrictEqual(beforeResult);
   });
 });
+
+
+describe("TeamsController.teamProfile", () => {
+  test.for([NaN, Infinity, 1.5, Number.MAX_SAFE_INTEGER + 1])(
+    "devuelve 400 cuando el ID no es un entero seguro: %s", async (id, { db, expect }) => {
+      const controller = createController(db);
+      const response = await controller.teamProfile(id);
+
+      expect(response.status).toBe(400);
+      expect(await response.json()).toStrictEqual({ error: expect.any(String) });
+      expect(authMock).not.toHaveBeenCalled();
+    },
+  );
+
+  test.for([-2, 0])(
+    "devuelve 400 cuando el ID es menor de 1: %s", async (id, { db, expect }) => {
+      const controller = createController(db);
+      const response = await controller.teamProfile(id);
+
+      expect(response.status).toBe(400);
+      expect(await response.json()).toStrictEqual({ error: expect.any(String) });
+      expect(authMock).not.toHaveBeenCalled();
+    },
+  );
+  test("devuelve 500 cuando falla el servicio", async ({ db, expect }) => {
+    const serviceSpy = vi
+      .spyOn(TeamsService.prototype, "teamProfile")
+      .mockRejectedValue(new Error("Fallo simulado"));
+    const consoleSpy = vi.spyOn(console, "error").mockImplementation(() => {});
+
+    try {
+      const controller = createController(db);
+      const response = await controller.teamProfile(SEED_TEAM_ID_A);
+
+      expect(response.status).toBe(500);
+      expect(await response.json()).toMatchObject({ error: expect.any(String) });
+    } finally {
+      serviceSpy.mockRestore();
+      consoleSpy.mockRestore();
+    }
+  });
+
+  test("devuelve correctamente el perfil del equipo solicitado", async ({ db, expect }) => {
+    const controller = createController(db);
+    const response = await controller.teamProfile(SEED_TEAM_ID_A);
+
+    expect(response.status).toBe(200);
+    expect(await response.json()).toMatchObject({
+      data: {
+        id: SEED_TEAM_ID_A,
+        name: "Boston Celtics",
+        logo: "/logos/boston-celtics.webp",
+        shortName: "BOS",
+        conference: "East",
+        division: "Atlantic",
+        stadium: "TD Garden",
+        coach: "Joe Mazzulla",
+        victorys: 3,
+        losses: 3,
+        winRate: 50,
+        homeVictorys: 3,
+        homeLosses: 3,
+        awayVictorys: 0,
+        awayLosses: 0,
+        rank: 1,
+        isFavorite: false,
+      },
+    });
+  });
+
+  test("marca el perfil como favorito solo para el usuario que guardó el equipo", async ({ db, expect }) => {
+    await db.query(
+      "INSERT INTO favorite_teams (user_id, team_id) VALUES ($1, $2)",
+      [USER_A, SEED_TEAM_ID_A],
+    );
+
+    const controller = createController(db);
+    const ownerResponse = await controller.teamProfile(SEED_TEAM_ID_A);
+
+    expect(ownerResponse.status).toBe(200);
+    expect(await ownerResponse.json()).toMatchObject({
+      data: { id: SEED_TEAM_ID_A, isFavorite: true },
+    });
+
+    authMock.mockResolvedValue({ userId: USER_B });
+    const otherResponse = await controller.teamProfile(SEED_TEAM_ID_A);
+
+    expect(otherResponse.status).toBe(200);
+    expect(await otherResponse.json()).toMatchObject({
+      data: { id: SEED_TEAM_ID_A, isFavorite: false },
+    });
+  });
+
+  test("los partidos de temporadas anteriores no modifican las estadísticas del perfil actual", async ({ db, expect }) => {
+    const controller = createController(db);
+    const beforeResponse = await controller.teamProfile(SEED_TEAM_ID_A);
+
+    expect(beforeResponse.status).toBe(200);
+    const beforeResult = await beforeResponse.json();
+    expect(beforeResult).toMatchObject({
+      data: { id: SEED_TEAM_ID_A, victorys: 3, losses: 3, winRate: 50 },
+    });
+
+    await db.query(
+      `INSERT INTO games (home_team_id, away_team_id, date, season_init_year, finished, home_score, away_score, home_period_scores, away_period_scores)
+       VALUES
+         (1, 2, '2025-10-20 20:00:00+00', 2025, TRUE, 100, 90, ARRAY[25, 25, 25, 25]::SMALLINT[], ARRAY[20, 25, 20, 25]::SMALLINT[]),
+         (2, 1, '2025-10-21 20:00:00+00', 2025, TRUE, 95, 110, ARRAY[20, 25, 25, 25]::SMALLINT[], ARRAY[25, 30, 25, 30]::SMALLINT[])`,
+    );
+
+    const afterResponse = await controller.teamProfile(SEED_TEAM_ID_A);
+
+    expect(afterResponse.status).toBe(200);
+    expect(await afterResponse.json()).toStrictEqual(beforeResult);
+  });
+
+  test("devuelve 404 cuando el equipo no existe", async ({ db, expect }) => {
+    const controller = createController(db);
+    const response = await controller.teamProfile(9999);
+
+    expect(response.status).toBe(404);
+    expect(await response.json()).toStrictEqual({ error: expect.any(String) });
+  });
+
+  test("actualiza la posición en la conferencia cuando otro equipo tiene mejor porcentaje", async ({ db, expect }) => {
+    const controller = createController(db);
+    const beforeResponse = await controller.teamProfile(SEED_TEAM_ID_A);
+
+    expect(beforeResponse.status).toBe(200);
+    expect(await beforeResponse.json()).toMatchObject({
+      data: { id: SEED_TEAM_ID_A, winRate: 50, rank: 1 },
+    });
+
+    await db.query(
+      `INSERT INTO team_season_stats (team_id, season_init_year, victorys, losses)
+       VALUES (3, 2026, 2, 0)
+       ON CONFLICT (team_id, season_init_year)
+       DO UPDATE SET victorys = EXCLUDED.victorys, losses = EXCLUDED.losses`,
+    );
+    const bostonResponse = await controller.teamProfile(SEED_TEAM_ID_A);
+    const sixersResponse = await controller.teamProfile(3);
+
+    expect(bostonResponse.status).toBe(200);
+    expect(sixersResponse.status).toBe(200);
+    expect(await bostonResponse.json()).toMatchObject({
+      data: { id: SEED_TEAM_ID_A, winRate: 50, rank: 2 },
+    });
+    expect(await sixersResponse.json()).toMatchObject({
+      data: { id: 3, winRate: 100, rank: 1 },
+    });
+  });
+});

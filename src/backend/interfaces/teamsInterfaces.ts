@@ -9,6 +9,6 @@ export interface ITeamsQueries {
 
 export interface ITeamsRepository {
     leaderBoard(conf: string, userId: string | null, season: number): Promise<Team[]>;
-    teamProfile(teamId: number, userId: string | null, season: number): Promise<TeamHeader>;
+    teamProfile(teamId: number, userId: string | null, season: number): Promise<TeamHeader | undefined>;
     playersSeasonStats(teamId: number, season: number): Promise<teamPlayersStats[]>;
 }

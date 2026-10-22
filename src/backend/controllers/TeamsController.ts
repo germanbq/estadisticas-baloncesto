@@ -27,15 +27,22 @@ export class TeamsController {
     }
 
     async teamProfile(teamId: number): Promise<Response> {
-        if(!Number.isSafeInteger(teamId)) {
+        if(!Number.isSafeInteger(teamId) || teamId <= 0) {
             return Response.json(
                 { error: "ID de equipo no válido" },
                 { status: 400 }
             );
         }
-        const { userId } = await auth();
         try {
+            const { userId } = await auth();
+            
             const data = await this.service.teamProfile(teamId, userId);
+            if (data === undefined) {
+                return Response.json(
+                    { error: "Equipo no encontrado" },
+                    { status: 404 },
+                );
+            }
             return Response.json({data});
         } catch(error) {
             console.error(error);

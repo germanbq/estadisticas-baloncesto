@@ -9,7 +9,7 @@ export class TeamsService {
         return this.repository.leaderBoard(conf, userId, ACTUAL_SEASON)
     }
 
-    teamProfile(teamId: number, userId: string | null): Promise<TeamHeader> {
+    teamProfile(teamId: number, userId: string | null): Promise<TeamHeader | undefined> {
         return this.repository.teamProfile(teamId, userId, ACTUAL_SEASON);
     }
 

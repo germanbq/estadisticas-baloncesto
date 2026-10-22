@@ -12,7 +12,7 @@ export class TeamsRepository implements ITeamsRepository {
         return result;
     }
 
-    async teamProfile(teamId: number, userId: string | null, season: number): Promise<TeamHeader> {
+    async teamProfile(teamId: number, userId: string | null, season: number): Promise<TeamHeader | undefined> {
         const query = this.queries.teamProfile(teamId, userId, season);
         const result = await this.executor.query<TeamHeader>(query.text, query.values);
 
