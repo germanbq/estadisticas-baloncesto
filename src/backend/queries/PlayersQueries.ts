@@ -32,14 +32,15 @@ export class PlayersQueries implements IPlayersQueries {
             FROM players as p
             JOIN teams as t ON p.team_id = t.id
             JOIN player_season_stats AS pss ON pss.player_id = p.id
+            JOIN team_season_stats AS tss ON tss.team_id = p.team_id AND tss.season_init_year = $1
             WHERE pss.season_init_year = $1
-            AND pss.games_played >= $2
+                AND pss.games_played >= (tss.victorys + tss.losses) * $2::numeric
             ORDER BY value DESC
             LIMIT $3`,
             values: [
-            season,
-            minGames,
-            playersLimit,
+                season,
+                minGames,
+                playersLimit,
             ],
         };
     }
