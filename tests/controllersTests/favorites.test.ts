@@ -11,6 +11,7 @@ import { FavoritesService } from "../../src/backend/services/FavoritesService";
 import { FavoritesRepository } from "../../src/backend/repositories/FavoritesRepository";
 import { FavoritesQueries } from "../../src/backend/queries/FavoritesQueries";
 import { PostgresQueryExecutor } from "../../src/backend/shared/PostgresQueryExecutor";
+import { error } from "console";
 
 vi.mock("@clerk/nextjs/server", () => ({
     auth: vi.fn(),
@@ -541,5 +542,172 @@ describe("FavoritesController.favoriteTeams", () => {
         streakNumber: 0, streakVictory: true, nextMatch: null, nextMatchDate: null, isFavorite: true,
       },
     ] });
+  });
+});
+
+describe("FavoritesController.addFavoriteGame", () => {
+  test.for([NaN, Infinity, 1.5, Number.MAX_SAFE_INTEGER + 1])(
+    "devuelve 400 cuando el ID no es un entero seguro: %s", async (id, { db, expect }) => {
+      const controller = createController(db);
+      const response = await controller.addFavoriteGame(id);
+
+      expect(response.status).toBe(400);
+      expect(await response.json()).toStrictEqual({ error: expect.any(String) });
+      expect(authMock).not.toHaveBeenCalled();
+    },
+  );
+
+  test.for([-2, 0])(
+    "devuelve 400 cuando el ID es menor de 1: %s", async (id, { db, expect }) => {
+      const controller = createController(db);
+      const response = await controller.addFavoriteGame(id);
+
+      expect(response.status).toBe(400);
+      expect(await response.json()).toStrictEqual({ error: expect.any(String) });
+      expect(authMock).not.toHaveBeenCalled();
+    },
+  );
+    test("devuelve 401 cuando no hay un usuario autenticado", async ({db, expect}) => {
+        authMock.mockResolvedValue({userId: null});
+        const serviceSpy = vi.spyOn(FavoritesService.prototype, "addFavoriteGame");
+
+        try {
+            const controller = createController(db);
+            const response = await controller.addFavoriteGame(SEED_GAME_ID_A);
+
+            expect(response.status).toBe(401);
+            expect(await response.json()).toStrictEqual({error: expect.any(String) });
+            expect(serviceSpy).not.toHaveBeenCalled();
+        } finally {
+            serviceSpy.mockRestore();
+        }
+    });
+
+    test("devuelve 500 cuando falla el servicio", async ({db, expect}) => {
+        const serviceSpy = vi.spyOn(FavoritesService.prototype, "addFavoriteGame")
+                                .mockRejectedValue(new Error("Fallo simulado"));
+        const consoleSpy = vi.spyOn(console, "error").mockImplementation(() => {});
+
+        try {
+            const controller = createController(db);
+            const response = await controller.addFavoriteGame(SEED_GAME_ID_A);
+
+            expect(response.status).toBe(500);
+            expect(await response.json()).toStrictEqual({error: expect.any(String)});
+        } finally {
+            serviceSpy.mockRestore();
+            consoleSpy.mockRestore();
+        }
+    });
+
+  test("devuelve 500 cuando falla auth al añadir un partido favorito", async ({ db, expect }) => {
+    authMock.mockRejectedValue(new Error("Fallo simulado de autenticación"));
+    const serviceSpy = vi.spyOn(FavoritesService.prototype, "addFavoriteGame");
+    const consoleSpy = vi.spyOn(console, "error").mockImplementation(() => {});
+
+    try {
+      const controller = createController(db);
+      const response = await controller.addFavoriteGame(SEED_GAME_ID_A);
+
+      expect(response.status).toBe(500);
+      expect(await response.json()).toStrictEqual({ error: expect.any(String) });
+      expect(serviceSpy).not.toHaveBeenCalled();
+    } finally {
+      serviceSpy.mockRestore();
+      consoleSpy.mockRestore();
+    }
+  });
+
+  test("aumenta en uno el contador de partidos favoritos al añadir un partido", async ({ db, expect }) => {
+    const controller = createController(db);
+    const beforeResponse = await controller.favoriteCounts();
+
+    expect(beforeResponse.status).toBe(200);
+    expect(await beforeResponse.json()).toStrictEqual({
+      data: { numberGames: 0, numberPlayers: 0, numberTeams: 0 },
+    });
+
+    const addedResponse = await controller.addFavoriteGame(SEED_GAME_ID_A);
+    expect(addedResponse.status).toBe(204);
+    const afterResponse = await controller.favoriteCounts();
+
+    expect(afterResponse.status).toBe(200);
+    expect(await afterResponse.json()).toStrictEqual({
+      data: { numberGames: 1, numberPlayers: 0, numberTeams: 0 },
+    });
+  });
+
+  test("añadir un partido favorito a otro usuario no aumenta el contador del usuario original", async ({ db, expect }) => {
+    const controller = createController(db);
+    const beforeResponse = await controller.favoriteCounts();
+
+    expect(beforeResponse.status).toBe(200);
+    const beforeResult = await beforeResponse.json();
+    expect(beforeResult).toMatchObject({ data: { numberGames: 0 } });
+
+    authMock.mockResolvedValue({ userId: USER_B });
+    const addedResponse = await controller.addFavoriteGame(SEED_GAME_ID_A);
+    expect(addedResponse.status).toBe(204);
+    const otherResponse = await controller.favoriteCounts();
+    expect(otherResponse.status).toBe(200);
+    expect(await otherResponse.json()).toMatchObject({ data: { numberGames: 1 } });
+
+    authMock.mockResolvedValue({ userId: USER_A });
+    const afterResponse = await controller.favoriteCounts();
+    expect(afterResponse.status).toBe(200);
+    expect(await afterResponse.json()).toStrictEqual(beforeResult);
+  });
+
+  test("no duplica el favorito ni devuelve error cuando ya existe", async ({ db, expect }) => {
+    const controller = createController(db);
+    const firstResponse = await controller.addFavoriteGame(SEED_GAME_ID_A);
+    const repeatedResponse = await controller.addFavoriteGame(SEED_GAME_ID_A);
+
+    expect(firstResponse.status).toBe(204);
+    expect(repeatedResponse.status).toBe(204);
+
+    const stored = await db.query(
+      "SELECT COUNT(*)::integer AS count FROM favorite_games WHERE user_id = $1 AND game_id = $2",
+      [USER_A, SEED_GAME_ID_A],
+    );
+    expect(stored.rows).toStrictEqual([{ count: 1 }]);
+
+    const countsResponse = await controller.favoriteCounts();
+    expect(countsResponse.status).toBe(200);
+    expect(await countsResponse.json()).toMatchObject({ data: { numberGames: 1 } });
+  });
+
+  test("devuelve 500 cuando el partido no existe y la clave foránea rechaza el favorito", async ({ db, expect }) => {
+    const missing = await db.query("SELECT id FROM games WHERE id = $1", [9999]);
+    expect(missing.rows).toHaveLength(0);
+    const consoleSpy = vi.spyOn(console, "error").mockImplementation(() => {});
+    try {
+      const controller = createController(db);
+      const response = await controller.addFavoriteGame(9999);
+
+      expect(response.status).toBe(500);
+      expect(await response.json()).toStrictEqual({ error: expect.any(String) });
+    } finally {
+      consoleSpy.mockRestore();
+    }
+  });
+
+  test("permite guardar el mismo partido como favorito para dos usuarios distintos", async ({ db, expect }) => {
+    const controller = createController(db);
+    const firstResponse = await controller.addFavoriteGame(SEED_GAME_ID_A);
+    expect(firstResponse.status).toBe(204);
+
+    authMock.mockResolvedValue({ userId: USER_B });
+    const otherResponse = await controller.addFavoriteGame(SEED_GAME_ID_A);
+    expect(otherResponse.status).toBe(204);
+
+    const stored = await db.query(
+      "SELECT user_id, game_id FROM favorite_games WHERE game_id = $1 AND user_id IN ($2, $3) ORDER BY user_id",
+      [SEED_GAME_ID_A, USER_A, USER_B],
+    );
+    expect(stored.rows).toStrictEqual([
+      { user_id: USER_A, game_id: SEED_GAME_ID_A },
+      { user_id: USER_B, game_id: SEED_GAME_ID_A },
+    ]);
   });
 });
