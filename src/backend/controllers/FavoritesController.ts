@@ -5,14 +5,15 @@ export class FavoritesController {
     constructor(private readonly service: FavoritesService) {}
 
     async favoriteCounts(): Promise<Response> {
-        const { userId } = await auth();
-        if (!userId) {
-            return Response.json(
-            { error: "Debes iniciar sesión" },
-            { status: 401 }
-            );
-        }
         try {
+            const { userId } = await auth();
+            if (!userId) {
+                return Response.json(
+                { error: "Debes iniciar sesión" },
+                { status: 401 }
+                );
+            }
+            
             const data = await this.service.favoriteCounts(userId);
             return Response.json({data});
         } catch(error) {
