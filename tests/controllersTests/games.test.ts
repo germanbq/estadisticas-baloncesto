@@ -688,11 +688,11 @@ describe("GamesController.statsLeaders", () => {
     expect(response.status).toBe(200);
     expect(await response.json()).toStrictEqual({
       data: [
-        { metric: "Puntos", name: "Jamal Murray", jerseyNumber: 27, value: 28.5 },
-        { metric: "Rebotes", name: "Nikola Jokic", jerseyNumber: 15, value: 10.5 },
-        { metric: "Asistencias", name: "Nikola Jokic", jerseyNumber: 15, value: 8.5 },
-        { metric: "Robos", name: "Nikola Jokic", jerseyNumber: 15, value: 1.5 },
-        { metric: "Tapones", name: "Nikola Jokic", jerseyNumber: 15, value: 1.5 },
+        { metric: "Puntos", name: "Jamal Murray", jerseyNumber: "27", value: 28.5 },
+        { metric: "Rebotes", name: "Nikola Jokic", jerseyNumber: "15", value: 10.5 },
+        { metric: "Asistencias", name: "Nikola Jokic", jerseyNumber: "15", value: 8.5 },
+        { metric: "Robos", name: "Nikola Jokic", jerseyNumber: "15", value: 1.5 },
+        { metric: "Tapones", name: "Nikola Jokic", jerseyNumber: "15", value: 1.5 },
       ],
     });
   });
@@ -710,11 +710,11 @@ describe("GamesController.statsLeaders", () => {
     expect(response.status).toBe(200);
     expect(await response.json()).toStrictEqual({
       data: [
-        { metric: "Puntos", name: "Jamal Murray", jerseyNumber: 27, value: 28.5 },
-        { metric: "Rebotes", name: "Jamal Murray", jerseyNumber: 27, value: 4.5 },
-        { metric: "Asistencias", name: "Jamal Murray", jerseyNumber: 27, value: 6.5 },
-        { metric: "Robos", name: "Jamal Murray", jerseyNumber: 27, value: 1.5 },
-        { metric: "Tapones", name: "Jamal Murray", jerseyNumber: 27, value: 0.5 },
+        { metric: "Puntos", name: "Jamal Murray", jerseyNumber: "27", value: 28.5 },
+        { metric: "Rebotes", name: "Jamal Murray", jerseyNumber: "27", value: 4.5 },
+        { metric: "Asistencias", name: "Jamal Murray", jerseyNumber: "27", value: 6.5 },
+        { metric: "Robos", name: "Jamal Murray", jerseyNumber: "27", value: 1.5 },
+        { metric: "Tapones", name: "Jamal Murray", jerseyNumber: "27", value: 0.5 },
       ],
     });
   });
@@ -884,7 +884,7 @@ describe("GamesController.gameMVP", () => {
         playerId: 2,
         playerName: "Nikola Jokic",
         teamShortName: "DEN",
-        jerseyNumber: 15,
+        jerseyNumber: "15",
         position: "C",
         points: 28,
         rebounds: 12,
@@ -1038,8 +1038,8 @@ describe("GamesController.playersStats", () => {
 
   test("devuelve las estadísticas de los jugadores ordenados por nombre descendente y no por ID", async ({ db, expect }) => {
     const addedPlayer = await db.query(
-      `INSERT INTO players (name, height, weight, age, draft, team_id, country, jersey_number, position, image)
-       VALUES ('Aaron Test', 2.00, 100, 25, 2020, 2, 'USA', 99, 'SF', '/players/test.webp')
+      `INSERT INTO players (nba_id, name, height, weight, age, draft, team_id, country, jersey_number, position, image)
+       VALUES (1900000027, 'Aaron Test', 2.00, 100, 25, 2020, 2, 'USA', '99', 'SF', '/players/test.webp')
        RETURNING id`,
     );
     const addedPlayerId: number = addedPlayer.rows[0].id;

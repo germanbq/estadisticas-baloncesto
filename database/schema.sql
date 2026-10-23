@@ -12,6 +12,7 @@ DROP FUNCTION IF EXISTS sum_scores(SMALLINT[]) CASCADE;
 
 CREATE TABLE teams (
     id INTEGER GENERATED ALWAYS AS IDENTITY PRIMARY KEY,
+    nba_id INTEGER NOT NULL UNIQUE,
     name TEXT NOT NULL UNIQUE,
     short_name TEXT NOT NULL UNIQUE,
     logo TEXT NOT NULL,
@@ -40,6 +41,7 @@ CREATE TABLE team_season_stats (
 
 CREATE TABLE players (
     id INTEGER GENERATED ALWAYS AS IDENTITY PRIMARY KEY,
+    nba_id INTEGER NOT NULL UNIQUE,
     name TEXT NOT NULL,
     height NUMERIC(3,2) NOT NULL CHECK (height > 0),
     weight NUMERIC (5,2) NOT NULL CHECK (weight > 0),
@@ -47,7 +49,7 @@ CREATE TABLE players (
     draft INTEGER NOT NULL,
     team_id INTEGER REFERENCES teams(id),
     country TEXT NOT NULL,
-    jersey_number INTEGER NOT NULL CHECK (jersey_number >= 0),
+    jersey_number VARCHAR(2) NOT NULL CHECK (jersey_number ~ '^[0-9]{1,2}$'),
     position VARCHAR(2) NOT NULL,
     image TEXT NOT NULL,
 
@@ -94,6 +96,7 @@ CREATE TABLE games (
     id INTEGER GENERATED ALWAYS AS IDENTITY PRIMARY KEY,
     home_team_id INTEGER REFERENCES teams(id) NOT NULL,
     away_team_id INTEGER REFERENCES teams(id) NOT NULL,
+    nba_id INTEGER NOT NULL UNIQUE,
     date TIMESTAMPTZ NOT NULL,
     season_init_year INTEGER NOT NULL CHECK (season_init_year > 0),
     finished BOOLEAN NOT NULL,

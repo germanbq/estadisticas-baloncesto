@@ -217,7 +217,11 @@ export class PlayersQueries implements IPlayersQueries {
             LEFT JOIN player_season_stats AS pss ON pss.player_id = p.id
                 AND pss.season_init_year = $4
             WHERE p.name ILIKE '%' || $1 || '%'
-                AND ($2 = 'ALL' OR p.position = $2)
+                AND ($2 = 'ALL' 
+                    OR p.position = $2
+                    OR ($2 IN ('PG', 'SG') AND p.position = 'G')
+                    OR ($2 IN ('SF', 'PF') AND p.position = 'F')
+                )
                 AND ($3 = 'BOTH' OR t.conference = $3)
             ORDER BY COALESCE(
                 (pss.total_points + pss.total_assists * 1.8 + pss.total_rebounds * 2)

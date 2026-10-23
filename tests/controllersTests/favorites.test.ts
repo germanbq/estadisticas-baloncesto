@@ -414,9 +414,9 @@ describe("FavoritesController.favoritePlayers", () => {
     
     expect(response.status).toBe(200);
     expect(await response.json()).toMatchObject({ data: [
-      { id: SEED_PLAYER_ID_B, name: "Nikola Jokic", image: "/players/Nikola_Jokic.webp", team: "Denver Nuggets", jerseyNumber: 15, position: "C", age: 31, points: 24.5, rebounds: 10.5, assists: 8.5, steals: 1.5, blocks: 1.5, isFavorite: true },
-      { id: SEED_PLAYER_ID_A, name: "Jayson Tatum", image: "/players/Jayson_Tatum.webp", team: "Boston Celtics", jerseyNumber: 0, position: "SF", age: 28, points: 30, rebounds: 8, assists: 5, steals: 2, blocks: 1, isFavorite: true },
-      { id: SEED_PLAYER_ID_C, name: "Jamal Murray", image: "/players/Jamal_Murray.webp", team: "Denver Nuggets", jerseyNumber: 27, position: "PG", age: 29, points: 28.5, rebounds: 4.5, assists: 6.5, steals: 1.5, blocks: 0.5, isFavorite: true },
+      { id: SEED_PLAYER_ID_B, name: "Nikola Jokic", image: "/players/Nikola_Jokic.webp", team: "Denver Nuggets", jerseyNumber: "15", position: "C", age: 31, points: 24.5, rebounds: 10.5, assists: 8.5, steals: 1.5, blocks: 1.5, isFavorite: true },
+      { id: SEED_PLAYER_ID_A, name: "Jayson Tatum", image: "/players/Jayson_Tatum.webp", team: "Boston Celtics", jerseyNumber: "0", position: "SF", age: 28, points: 30, rebounds: 8, assists: 5, steals: 2, blocks: 1, isFavorite: true },
+      { id: SEED_PLAYER_ID_C, name: "Jamal Murray", image: "/players/Jamal_Murray.webp", team: "Denver Nuggets", jerseyNumber: "27", position: "PG", age: 29, points: 28.5, rebounds: 4.5, assists: 6.5, steals: 1.5, blocks: 0.5, isFavorite: true },
     ] });
   });
 });

@@ -1,27 +1,27 @@
-INSERT INTO teams (name, short_name, logo, conference, division, stadium, coach)
+INSERT INTO teams (nba_id, name, short_name, logo, conference, division, stadium, coach)
 OVERRIDING SYSTEM VALUE
 VALUES
-    ('Boston Celtics', 'BOS', '/logos/boston-celtics.webp', 'East', 'Atlantic', 'TD Garden', 'Joe Mazzulla'),
-    ('Denver Nuggets', 'DEN', '/logos/denver-nuggets.webp', 'West', 'Northwest', 'Ball Arena', 'David Adelman'),
-    ('Philadelphia 76ers', 'PHI', '/logos/philadelphia-76ers.webp', 'East', 'Atlantic', 'Xfinity Mobile Arena', 'Nick Nurse');
+    (6306828, 'Boston Celtics', 'BOS', '/logos/boston-celtics.webp', 'East', 'Atlantic', 'TD Garden', 'Joe Mazzulla'),
+    (2806837, 'Denver Nuggets', 'DEN', '/logos/denver-nuggets.webp', 'West', 'Northwest', 'Ball Arena', 'David Adelman'),
+    (7326287, 'Philadelphia 76ers', 'PHI', '/logos/philadelphia-76ers.webp', 'East', 'Atlantic', 'Xfinity Mobile Arena', 'Nick Nurse');
 
-INSERT INTO games (home_team_id, away_team_id, date, season_init_year, finished, home_score, away_score, home_period_scores, away_period_scores)
+INSERT INTO games (nba_id, home_team_id, away_team_id, date, season_init_year, finished, home_score, away_score, home_period_scores, away_period_scores)
 VALUES
-    (1, 2, '2026-10-18 07:59:59.999+00', 2026, TRUE, 104, 107, ARRAY[23, 28, 25, 28]::SMALLINT[], ARRAY[23, 28, 25, 31]::SMALLINT[]),
-    (1, 2, '2026-10-18 08:00:00+00', 2026, TRUE, 112, 100, ARRAY[28, 27, 30, 27]::SMALLINT[], ARRAY[25, 24, 26, 25]::SMALLINT[]),
-    (1, 2, '2026-10-19 07:59:59.999+00', 2026, FALSE, NULL, NULL, NULL, NULL),
-    (1, 2, '2026-10-19 08:00:00+00', 2026, FALSE, NULL, NULL, NULL, NULL),
-    (1, 2, '2026-10-14 20:00:00+00', 2026, TRUE, 108, 102, ARRAY[27, 26, 28, 27]::SMALLINT[], ARRAY[25, 26, 24, 27]::SMALLINT[]),
-    (1, 2, '2026-10-11 20:00:00+00', 2026, TRUE, 99, 105, ARRAY[24, 25, 26, 24]::SMALLINT[], ARRAY[26, 27, 25, 27]::SMALLINT[]),
-    (1, 2, '2026-10-15 20:00:00+00', 2026, TRUE, 116, 110, ARRAY[29, 28, 30, 29]::SMALLINT[], ARRAY[27, 28, 26, 29]::SMALLINT[]),
-    (1, 2, '2026-10-13 20:00:00+00', 2026, TRUE, 101, 109, ARRAY[25, 24, 27, 25]::SMALLINT[], ARRAY[27, 28, 26, 28]::SMALLINT[]),
-    (1, 2, '2025-10-18 20:00:00+00', 2025, TRUE, 110, 106, ARRAY[28, 27, 26, 29]::SMALLINT[], ARRAY[26, 25, 28, 27]::SMALLINT[]);
+    (2563669, 1, 2, '2026-10-18 07:59:59.999+00', 2026, TRUE, 104, 107, ARRAY[23, 28, 25, 28]::SMALLINT[], ARRAY[23, 28, 25, 31]::SMALLINT[]),
+    (4669734, 1, 2, '2026-10-18 08:00:00+00', 2026, TRUE, 112, 100, ARRAY[28, 27, 30, 27]::SMALLINT[], ARRAY[25, 24, 26, 25]::SMALLINT[]),
+    (7831345, 1, 2, '2026-10-19 07:59:59.999+00', 2026, FALSE, NULL, NULL, NULL, NULL),
+    (2386809, 1, 2, '2026-10-19 08:00:00+00', 2026, FALSE, NULL, NULL, NULL, NULL),
+    (4269507, 1, 2, '2026-10-14 20:00:00+00', 2026, TRUE, 108, 102, ARRAY[27, 26, 28, 27]::SMALLINT[], ARRAY[25, 26, 24, 27]::SMALLINT[]),
+    (4761195, 1, 2, '2026-10-11 20:00:00+00', 2026, TRUE, 99, 105, ARRAY[24, 25, 26, 24]::SMALLINT[], ARRAY[26, 27, 25, 27]::SMALLINT[]),
+    (7707718, 1, 2, '2026-10-15 20:00:00+00', 2026, TRUE, 116, 110, ARRAY[29, 28, 30, 29]::SMALLINT[], ARRAY[27, 28, 26, 29]::SMALLINT[]),
+    (2449486, 1, 2, '2026-10-13 20:00:00+00', 2026, TRUE, 101, 109, ARRAY[25, 24, 27, 25]::SMALLINT[], ARRAY[27, 28, 26, 28]::SMALLINT[]),
+    (4188396, 1, 2, '2025-10-18 20:00:00+00', 2025, TRUE, 110, 106, ARRAY[28, 27, 26, 29]::SMALLINT[], ARRAY[26, 25, 28, 27]::SMALLINT[]);
 
-INSERT INTO players (name, height, weight, age, draft, team_id, country, jersey_number, position, image)
+INSERT INTO players (nba_id, name, height, weight, age, draft, team_id, country, jersey_number, position, image)
 VALUES
-    ('Jayson Tatum', 2.03, 95.00, 28, 2017, 1, 'USA', 0, 'SF', '/players/Jayson_Tatum.webp'),
-    ('Nikola Jokic', 2.11, 129.00, 31, 2014, 2, 'Serbia', 15, 'C', '/players/Nikola_Jokic.webp'),
-    ('Jamal Murray', 1.93, 98.00, 29, 2016, 2, 'Canada', 27, 'PG', '/players/Jamal_Murray.webp');
+    (1211352, 'Jayson Tatum', 2.03, 95.00, 28, 2017, 1, 'USA', '0', 'SF', '/players/Jayson_Tatum.webp'),
+    (1201173, 'Nikola Jokic', 2.11, 129.00, 31, 2014, 2, 'Serbia', '15', 'C', '/players/Nikola_Jokic.webp'),
+    (1774454, 'Jamal Murray', 1.93, 98.00, 29, 2016, 2, 'Canada', '27', 'PG', '/players/Jamal_Murray.webp');
 
 INSERT INTO player_game_stats (player_id, game_id, team_id, seconds_played, points, rebounds, ofe_rebounds, def_rebounds, assists, steals, blocks, turnovers, plusminus, fg_made, fg_attempted, three_made, three_attempted, ft_made, ft_attempted)
 VALUES

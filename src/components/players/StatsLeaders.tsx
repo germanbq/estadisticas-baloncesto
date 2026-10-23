@@ -19,7 +19,7 @@ type PlayerCardProps = {
     name: string;
     pos: string;
     team: string;
-    jerseyNumber: number;
+    jerseyNumber: string;
     metric: number;
     color: string;
     position: string;
@@ -126,7 +126,7 @@ export default function StatsLeader() {
                         <PlayerCard key={player.id} id={player.id}
                             className={`position${index+1}`} image={player.image}
                             name={player.name} pos={String(index+1)} team={player.team}
-                            jerseyNumber={player.jerseyNumber} metric={Number(player.value)}
+                            jerseyNumber={player.jerseyNumber} metric={player.value}
                             color={["#FF5A00", "#A5E7FF", "#C58A5A"][index]} position={player.position}/>
                     ))}
                 </section>

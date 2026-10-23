@@ -2,7 +2,7 @@ export type Player = {
     name: string;
     image: string;
     team: string;
-    jerseyNumber: number;
+    jerseyNumber: string;
     position: string;
     id: number;
 }

@@ -96,7 +96,7 @@ export type GameMVP = {
     playerId: number,
     playerName: string,
     teamShortName: string;
-    jerseyNumber: number;
+    jerseyNumber: string;
     position: string;
     points: number;
     rebounds: number;

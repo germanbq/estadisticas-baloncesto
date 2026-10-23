@@ -86,10 +86,10 @@ describe("TeamsController.leaderBoard", () => {
 
   test("ordena la clasificación del Este por porcentaje de victorias tras dos victorias de los Sixers", async ({ db, expect }) => {
     await db.query(
-      `INSERT INTO games (home_team_id, away_team_id, date, season_init_year, finished, home_score, away_score, home_period_scores, away_period_scores)
+      `INSERT INTO games (nba_id, home_team_id, away_team_id, date, season_init_year, finished, home_score, away_score, home_period_scores, away_period_scores)
        VALUES
-         (3, 2, '2026-10-20 20:00:00+00', 2026, TRUE, 100, 90, ARRAY[25, 25, 25, 25]::SMALLINT[], ARRAY[20, 25, 20, 25]::SMALLINT[]),
-         (2, 3, '2026-10-21 20:00:00+00', 2026, TRUE, 95, 110, ARRAY[20, 25, 25, 25]::SMALLINT[], ARRAY[25, 30, 25, 30]::SMALLINT[])`,
+         (1900000001, 3, 2, '2026-10-20 20:00:00+00', 2026, TRUE, 100, 90, ARRAY[25, 25, 25, 25]::SMALLINT[], ARRAY[20, 25, 20, 25]::SMALLINT[]),
+         (1900000002, 2, 3, '2026-10-21 20:00:00+00', 2026, TRUE, 95, 110, ARRAY[20, 25, 25, 25]::SMALLINT[], ARRAY[25, 30, 25, 30]::SMALLINT[])`,
     );
 
     const controller = createController(db);
@@ -298,10 +298,10 @@ describe("TeamsController.teamProfile", () => {
     });
 
     await db.query(
-      `INSERT INTO games (home_team_id, away_team_id, date, season_init_year, finished, home_score, away_score, home_period_scores, away_period_scores)
+      `INSERT INTO games (nba_id, home_team_id, away_team_id, date, season_init_year, finished, home_score, away_score, home_period_scores, away_period_scores)
        VALUES
-         (1, 2, '2025-10-20 20:00:00+00', 2025, TRUE, 100, 90, ARRAY[25, 25, 25, 25]::SMALLINT[], ARRAY[20, 25, 20, 25]::SMALLINT[]),
-         (2, 1, '2025-10-21 20:00:00+00', 2025, TRUE, 95, 110, ARRAY[20, 25, 25, 25]::SMALLINT[], ARRAY[25, 30, 25, 30]::SMALLINT[])`,
+         (1900000003, 1, 2, '2025-10-20 20:00:00+00', 2025, TRUE, 100, 90, ARRAY[25, 25, 25, 25]::SMALLINT[], ARRAY[20, 25, 20, 25]::SMALLINT[]),
+         (1900000004, 2, 1, '2025-10-21 20:00:00+00', 2025, TRUE, 95, 110, ARRAY[20, 25, 25, 25]::SMALLINT[], ARRAY[25, 30, 25, 30]::SMALLINT[])`,
     );
 
     const afterResponse = await controller.teamProfile(SEED_TEAM_ID_A);
@@ -549,10 +549,10 @@ describe("TeamsController.upcomingTeamGames", () => {
 
   test("solo devuelve partidos posteriores al momento actual", async ({ db, expect }) => {
     const inserted = await db.query(
-      `INSERT INTO games (home_team_id, away_team_id, date, season_init_year, finished)
-       VALUES (3, $1, NOW() - INTERVAL '1 day', $2, FALSE),
-              (3, $1, NOW(), $2, FALSE),
-              (3, $1, NOW() + INTERVAL '1 day', $2, FALSE)
+      `INSERT INTO games (nba_id, home_team_id, away_team_id, date, season_init_year, finished)
+       VALUES (1900000005, 3, $1, NOW() - INTERVAL '1 day', $2, FALSE),
+              (1900000006, 3, $1, NOW(), $2, FALSE),
+              (1900000007, 3, $1, NOW() + INTERVAL '1 day', $2, FALSE)
        RETURNING id`,
       [SEED_TEAM_ID_A, ACTUAL_SEASON],
     );
@@ -567,9 +567,9 @@ describe("TeamsController.upcomingTeamGames", () => {
 
   test("solo devuelve partidos no finalizados aunque los finalizados tengan fecha futura", async ({ db, expect }) => {
     const inserted = await db.query(
-      `INSERT INTO games (home_team_id, away_team_id, date, season_init_year, finished, home_score, away_score, home_period_scores, away_period_scores)
-       VALUES (3, $1, NOW() + INTERVAL '1 day', $2, TRUE, 100, 90, ARRAY[25,25,25,25]::SMALLINT[], ARRAY[20,25,20,25]::SMALLINT[]),
-              (3, $1, NOW() + INTERVAL '2 days', $2, FALSE, NULL, NULL, NULL, NULL)
+      `INSERT INTO games (nba_id, home_team_id, away_team_id, date, season_init_year, finished, home_score, away_score, home_period_scores, away_period_scores)
+       VALUES (1900000008, 3, $1, NOW() + INTERVAL '1 day', $2, TRUE, 100, 90, ARRAY[25,25,25,25]::SMALLINT[], ARRAY[20,25,20,25]::SMALLINT[]),
+              (1900000009, 3, $1, NOW() + INTERVAL '2 days', $2, FALSE, NULL, NULL, NULL, NULL)
        RETURNING id`,
       [SEED_TEAM_ID_A, ACTUAL_SEASON],
     );
@@ -584,10 +584,10 @@ describe("TeamsController.upcomingTeamGames", () => {
 
   test("solo devuelve partidos de la temporada actual aunque haya partidos futuros de otras temporadas", async ({ db, expect }) => {
     const inserted = await db.query(
-      `INSERT INTO games (home_team_id, away_team_id, date, season_init_year, finished)
-       VALUES (3, $1, NOW() + INTERVAL '1 day', $2, FALSE),
-              (3, $1, NOW() + INTERVAL '2 days', $3, FALSE),
-              (3, $1, NOW() + INTERVAL '3 days', $4, FALSE)
+      `INSERT INTO games (nba_id, home_team_id, away_team_id, date, season_init_year, finished)
+       VALUES (1900000010, 3, $1, NOW() + INTERVAL '1 day', $2, FALSE),
+              (1900000011, 3, $1, NOW() + INTERVAL '2 days', $3, FALSE),
+              (1900000012, 3, $1, NOW() + INTERVAL '3 days', $4, FALSE)
        RETURNING id`,
       [SEED_TEAM_ID_A, ACTUAL_SEASON - 1, ACTUAL_SEASON, ACTUAL_SEASON + 1],
     );
@@ -602,10 +602,10 @@ describe("TeamsController.upcomingTeamGames", () => {
 
   test("ordena los próximos partidos por fecha ascendente aunque se inserten desordenados", async ({ db, expect }) => {
     const inserted = await db.query(
-      `INSERT INTO games (home_team_id, away_team_id, date, season_init_year, finished)
-       VALUES (3, $1, NOW() + INTERVAL '3 days', $2, FALSE),
-              (3, $1, NOW() + INTERVAL '1 day', $2, FALSE),
-              (3, $1, NOW() + INTERVAL '2 days', $2, FALSE)
+      `INSERT INTO games (nba_id, home_team_id, away_team_id, date, season_init_year, finished)
+       VALUES (1900000013, 3, $1, NOW() + INTERVAL '3 days', $2, FALSE),
+              (1900000014, 3, $1, NOW() + INTERVAL '1 day', $2, FALSE),
+              (1900000015, 3, $1, NOW() + INTERVAL '2 days', $2, FALSE)
        RETURNING id`,
       [SEED_TEAM_ID_A, ACTUAL_SEASON],
     );
@@ -624,8 +624,8 @@ describe("TeamsController.upcomingTeamGames", () => {
   });
   test("devuelve solo los cinco próximos partidos cuando hay más de cinco disponibles", async ({ db, expect }) => {
     const inserted = await db.query(
-      `INSERT INTO games (home_team_id, away_team_id, date, season_init_year, finished)
-       SELECT 3, $1, NOW() + day_offset * INTERVAL '1 day', $2, FALSE
+      `INSERT INTO games (nba_id, home_team_id, away_team_id, date, season_init_year, finished)
+       SELECT 1900000025 + day_offset, 3, $1, NOW() + day_offset * INTERVAL '1 day', $2, FALSE
        FROM generate_series(1, 6) AS days(day_offset)
        RETURNING id, date`,
       [SEED_TEAM_ID_A, ACTUAL_SEASON],

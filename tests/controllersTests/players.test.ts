@@ -103,9 +103,9 @@ describe("PlayersController.leadersList", () => {
     expect(response.status).toBe(200);
     expect(await response.json()).toStrictEqual({
       data: [
-        { id: SEED_PLAYER_ID_A, name: "Jayson Tatum", image: "/players/Jayson_Tatum.webp", position: "SF", team: "BOS", jerseyNumber: 0, value: 30 },
-        { id: SEED_PLAYER_ID_C, name: "Jamal Murray", image: "/players/Jamal_Murray.webp", position: "PG", team: "DEN", jerseyNumber: 27, value: 28.5 },
-        { id: SEED_PLAYER_ID_B, name: "Nikola Jokic", image: "/players/Nikola_Jokic.webp", position: "C", team: "DEN", jerseyNumber: 15, value: 24.5 },
+        { id: SEED_PLAYER_ID_A, name: "Jayson Tatum", image: "/players/Jayson_Tatum.webp", position: "SF", team: "BOS", jerseyNumber: "0", value: 30 },
+        { id: SEED_PLAYER_ID_C, name: "Jamal Murray", image: "/players/Jamal_Murray.webp", position: "PG", team: "DEN", jerseyNumber: "27", value: 28.5 },
+        { id: SEED_PLAYER_ID_B, name: "Nikola Jokic", image: "/players/Nikola_Jokic.webp", position: "C", team: "DEN", jerseyNumber: "15", value: 24.5 },
       ],
     });
   });
@@ -145,8 +145,8 @@ describe("PlayersController.leadersList", () => {
       `UPDATE team_season_stats SET victorys = 1, losses = 0 WHERE team_id IN (${SEED_TEAM_ID_A}, ${SEED_TEAM_ID_B}) AND season_init_year = 2026`,
     );
     const addedPlayer = await db.query(
-      `INSERT INTO players (name, height, weight, age, draft, team_id, country, jersey_number, position, image)
-       VALUES ('Jugador límite', 2.00, 100, 25, 2020, ${SEED_TEAM_ID_B}, 'USA', 99, 'SF', '/players/test.webp')
+      `INSERT INTO players (nba_id, name, height, weight, age, draft, team_id, country, jersey_number, position, image)
+       VALUES (1900000026, 'Jugador límite', 2.00, 100, 25, 2020, ${SEED_TEAM_ID_B}, 'USA', '99', 'SF', '/players/test.webp')
        RETURNING id`,
     );
     const playerId: number = addedPlayer.rows[0].id;
@@ -263,7 +263,7 @@ describe("PlayersController.profileStats", () => {
         height: "2.03",
         weight: "95.00",
         position: "SF",
-        jerseyNumber: 0,
+        jerseyNumber: "0",
         country: "USA",
         age: 28,
         draft: 2017,
@@ -582,7 +582,7 @@ describe("PlayersController.searchPlayers", () => {
         name: "Jayson Tatum",
         image: "/players/Jayson_Tatum.webp",
         team: "Boston Celtics",
-        jerseyNumber: 0,
+        jerseyNumber: "0",
         position: "SF",
         age: 28,
         points: 30,
@@ -606,7 +606,7 @@ describe("PlayersController.searchPlayers", () => {
         name: "Jayson Tatum",
         image: "/players/Jayson_Tatum.webp",
         team: "Boston Celtics",
-        jerseyNumber: 0,
+        jerseyNumber: "0",
         position: "SF",
         age: 28,
         points: 30,
