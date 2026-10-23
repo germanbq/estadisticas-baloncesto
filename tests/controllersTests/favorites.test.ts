@@ -419,3 +419,127 @@ describe("FavoritesController.favoritePlayers", () => {
     ] });
   });
 });
+
+describe("FavoritesController.favoriteTeams", () => {
+  test("devuelve 401 cuando no hay un usuario autenticado", async ({ db, expect }) => {
+    authMock.mockResolvedValue({ userId: null });
+    const serviceSpy = vi.spyOn(FavoritesService.prototype, "favoriteTeams");
+
+    try {
+      const controller = createController(db);
+      const response = await controller.favoriteTeams();
+
+      expect(response.status).toBe(401);
+      expect(await response.json()).toStrictEqual({ error: expect.any(String) });
+      expect(serviceSpy).not.toHaveBeenCalled();
+    } finally {
+      serviceSpy.mockRestore();
+    }
+  });
+
+  test("devuelve 500 cuando falla el servicio", async ({ db, expect }) => {
+    const serviceSpy = vi
+      .spyOn(FavoritesService.prototype, "favoriteTeams")
+      .mockRejectedValue(new Error("Fallo simulado"));
+    const consoleSpy = vi.spyOn(console, "error").mockImplementation(() => {});
+
+    try {
+      const controller = createController(db);
+      const response = await controller.favoriteTeams();
+
+      expect(response.status).toBe(500);
+      expect(await response.json()).toMatchObject({ error: expect.any(String) });
+    } finally {
+      serviceSpy.mockRestore();
+      consoleSpy.mockRestore();
+    }
+  });
+
+  test("devuelve 500 cuando falla auth", async ({ db, expect }) => {
+    authMock.mockRejectedValue(new Error("Fallo simulado de autenticación"));
+    const serviceSpy = vi.spyOn(FavoritesService.prototype, "favoriteTeams");
+    const consoleSpy = vi.spyOn(console, "error").mockImplementation(() => {});
+
+    try {
+      const controller = createController(db);
+      const response = await controller.favoriteTeams();
+
+      expect(response.status).toBe(500);
+      expect(await response.json()).toMatchObject({ error: expect.any(String) });
+      expect(serviceSpy).not.toHaveBeenCalled();
+    } finally {
+      serviceSpy.mockRestore();
+      consoleSpy.mockRestore();
+    }
+  });
+
+
+  test("devuelve una lista vacía cuando el usuario no tiene equipos favoritos", async ({ db, expect }) => {
+    const controller = createController(db);
+    const response = await controller.favoriteTeams();
+
+    expect(response.status).toBe(200);
+    expect(await response.json()).toStrictEqual({ data: [] });
+  });
+
+  test("los equipos favoritos de otro usuario no afectan a los del usuario autenticado", async ({ db, expect }) => {
+    await db.query("INSERT INTO favorite_teams (user_id, team_id) VALUES ($1, $2)", [USER_A, SEED_TEAM_ID_A]);
+    const controller = createController(db);
+    const beforeResponse = await controller.favoriteTeams();
+
+    expect(beforeResponse.status).toBe(200);
+    const beforeResult = await beforeResponse.json();
+    expect(beforeResult).toMatchObject({ data: [{ id: SEED_TEAM_ID_A, isFavorite: true }] });
+
+    await db.query("INSERT INTO favorite_teams (user_id, team_id) VALUES ($1, $2), ($1, $3)", [USER_B, SEED_TEAM_ID_A, SEED_TEAM_ID_B]);
+    const afterResponse = await controller.favoriteTeams();
+
+    expect(afterResponse.status).toBe(200);
+    expect(await afterResponse.json()).toStrictEqual(beforeResult);
+  });
+
+  test("devuelve el equipo favorito con estadísticas a cero aunque no tenga TSS", async ({ db, expect }) => {
+    const deleted = await db.query("DELETE FROM team_season_stats WHERE team_id = $1 AND season_init_year = 2026 RETURNING team_id", [SEED_TEAM_ID_A]);
+    expect(deleted.rows).toHaveLength(1);
+    await db.query("INSERT INTO favorite_teams (user_id, team_id) VALUES ($1, $2)", [USER_A, SEED_TEAM_ID_A]);
+
+    const controller = createController(db);
+    const response = await controller.favoriteTeams();
+
+    expect(response.status).toBe(200);
+    expect(await response.json()).toMatchObject({ data: [{
+      id: SEED_TEAM_ID_A, name: "Boston Celtics", victorys: 0, losses: 0,
+      streakNumber: 0, streakVictory: true, netRating: 0,
+      pointsPerGame: 0, pointsAllowedPerGame: 0, homeVictorys: 0, homeLosses: 0,
+      isFavorite: true,
+    }] });
+  });
+
+  test("devuelve los datos correctos de los equipos favoritos ordenados por posición y por ID en caso de empate", async ({ db, expect }) => {
+    await db.query("INSERT INTO favorite_teams (user_id, team_id) VALUES ($1, 3), ($1, $2), ($1, $3)", [USER_A, SEED_TEAM_ID_B, SEED_TEAM_ID_A]);
+    const controller = createController(db);
+    const response = await controller.favoriteTeams();
+
+    expect(response.status).toBe(200);
+    expect(await response.json()).toMatchObject({ data: [
+      {
+        id: SEED_TEAM_ID_A, name: "Boston Celtics", logo: "/logos/boston-celtics.webp", division: "Atlantic",
+        victorys: 3, losses: 3, position: 1, homeVictorys: 3, homeLosses: 3,
+        pointsPerGame: expect.closeTo(106.666667, 5), pointsAllowedPerGame: 105.5,
+        netRating: 7, nextMatch: null, nextMatchDate: null, isFavorite: true,
+      },
+      {
+        id: SEED_TEAM_ID_B, name: "Denver Nuggets", logo: "/logos/denver-nuggets.webp", division: "Northwest",
+        victorys: 3, losses: 3, position: 1, homeVictorys: 0, homeLosses: 0,
+        pointsPerGame: 105.5, pointsAllowedPerGame: expect.closeTo(106.666667, 5),
+        netRating: -7, nextMatch: null, nextMatchDate: null, isFavorite: true,
+      },
+      {
+        id: 3, name: "Philadelphia 76ers", logo: "/logos/philadelphia-76ers.webp", division: "Atlantic",
+        victorys: 0, losses: 0, position: 2, homeVictorys: 0, homeLosses: 0,
+        pointsPerGame: 0, pointsAllowedPerGame: 0, netRating: 0,
+        streakNumber: 0, streakVictory: true, nextMatch: null, nextMatchDate: null, isFavorite: true,
+      },
+    ] });
+  });
+});

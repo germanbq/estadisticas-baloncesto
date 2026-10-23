@@ -68,14 +68,15 @@ export class FavoritesController {
     }
 
     async favoriteTeams(): Promise<Response> {
-        const { userId } = await auth();
-        if (!userId) {
-            return Response.json(
-            { error: "Debes iniciar sesión" },
-            { status: 401 }
-            );
-        }
         try {
+            const { userId } = await auth();
+            if (!userId) {
+                return Response.json(
+                { error: "Debes iniciar sesión" },
+                { status: 401 }
+                );
+            }
+            
             const data = await this.service.favoriteTeams(userId);
             return Response.json({data});
         } catch(error) {
