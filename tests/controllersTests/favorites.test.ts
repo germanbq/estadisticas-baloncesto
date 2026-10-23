@@ -44,6 +44,7 @@ beforeEach(() => {
         userId: USER_A,
     });
 });
+
 describe("FavoritesController.favoriteCounts", () => {
   test("devuelve 401 cuando no hay un usuario autenticado", async ({ db, expect }) => {
     authMock.mockResolvedValue({ userId: null });
@@ -144,6 +145,169 @@ describe("FavoritesController.favoriteCounts", () => {
     expect(otherResponse.status).toBe(200);
     expect(await otherResponse.json()).toStrictEqual({
       data: { numberGames: 2, numberPlayers: 2, numberTeams: 2 },
+    });
+  });
+});
+
+describe("FavoritesController.favoriteGames", () => {
+  test("devuelve 401 cuando no hay un usuario autenticado", async ({ db, expect }) => {
+    authMock.mockResolvedValue({ userId: null });
+    const serviceSpy = vi.spyOn(FavoritesService.prototype, "favoriteGames");
+
+    try {
+      const controller = createController(db);
+      const response = await controller.favoriteGames();
+
+      expect(response.status).toBe(401);
+      expect(await response.json()).toStrictEqual({ error: expect.any(String) });
+      expect(serviceSpy).not.toHaveBeenCalled();
+    } finally {
+      serviceSpy.mockRestore();
+    }
+  });
+
+  test("devuelve 500 cuando falla el servicio", async ({ db, expect }) => {
+    const serviceSpy = vi
+      .spyOn(FavoritesService.prototype, "favoriteGames")
+      .mockRejectedValue(new Error("Fallo simulado"));
+    const consoleSpy = vi.spyOn(console, "error").mockImplementation(() => {});
+
+    try {
+      const controller = createController(db);
+      const response = await controller.favoriteGames();
+
+      expect(response.status).toBe(500);
+      expect(await response.json()).toMatchObject({ error: expect.any(String) });
+    } finally {
+      serviceSpy.mockRestore();
+      consoleSpy.mockRestore();
+    }
+  });
+
+  test("devuelve 500 cuando falla auth", async ({ db, expect }) => {
+    authMock.mockRejectedValue(new Error("Fallo simulado de autenticación"));
+    const serviceSpy = vi.spyOn(FavoritesService.prototype, "favoriteGames");
+    const consoleSpy = vi.spyOn(console, "error").mockImplementation(() => {});
+
+    try {
+      const controller = createController(db);
+      const response = await controller.favoriteGames();
+
+      expect(response.status).toBe(500);
+      expect(await response.json()).toMatchObject({ error: expect.any(String) });
+      expect(serviceSpy).not.toHaveBeenCalled();
+    } finally {
+      serviceSpy.mockRestore();
+      consoleSpy.mockRestore();
+    }
+  });
+
+
+  test("devuelve una lista vacía cuando el usuario no tiene partidos favoritos", async ({ db, expect }) => {
+    const controller = createController(db);
+    const response = await controller.favoriteGames();
+
+    expect(response.status).toBe(200);
+    expect(await response.json()).toStrictEqual({ data: [] });
+  });
+
+  test("los partidos favoritos de otro usuario no afectan a los del usuario autenticado", async ({ db, expect }) => {
+    await db.query("INSERT INTO favorite_games (user_id, game_id) VALUES ($1, $2)", [USER_A, SEED_GAME_ID_A]);
+    const controller = createController(db);
+    const beforeResponse = await controller.favoriteGames();
+
+    expect(beforeResponse.status).toBe(200);
+    const beforeResult = await beforeResponse.json();
+    expect(beforeResult).toMatchObject({ data: [{ id: SEED_GAME_ID_A, isFavorite: true }] });
+
+    await db.query(
+      "INSERT INTO favorite_games (user_id, game_id) VALUES ($1, $2), ($1, $3)",
+      [USER_B, SEED_GAME_ID_A, SEED_GAME_ID_B],
+    );
+    const afterResponse = await controller.favoriteGames();
+
+    expect(afterResponse.status).toBe(200);
+    expect(await afterResponse.json()).toStrictEqual(beforeResult);
+  });
+
+  test("devuelve el partido favorito con victorias y derrotas a cero aunque sus equipos no tengan TSS", async ({ db, expect }) => {
+    const deleted = await db.query(
+      "DELETE FROM team_season_stats WHERE team_id IN ($1, $2) AND season_init_year = 2026 RETURNING team_id",
+      [SEED_TEAM_ID_A, SEED_TEAM_ID_B],
+    );
+    expect(deleted.rows).toHaveLength(2);
+    await db.query("INSERT INTO favorite_games (user_id, game_id) VALUES ($1, $2)", [USER_A, SEED_GAME_ID_A]);
+
+    const controller = createController(db);
+    const response = await controller.favoriteGames();
+
+    expect(response.status).toBe(200);
+    expect(await response.json()).toMatchObject({
+      data: [{
+        id: SEED_GAME_ID_A,
+        homeTeamName: "Boston Celtics",
+        awayTeamName: "Denver Nuggets",
+        homeTeamVictorys: 0,
+        homeTeamLosses: 0,
+        awayTeamVictorys: 0,
+        awayTeamLosses: 0,
+        isFavorite: true,
+      }],
+    });
+  });
+
+  test("devuelve los datos correctos de los partidos favoritos ordenados del más reciente al más antiguo", async ({ db, expect }) => {
+    await db.query(
+      "INSERT INTO favorite_games (user_id, game_id) VALUES ($1, $2), ($1, $3), ($1, $4)",
+      [USER_A, SEED_GAME_ID_A, SEED_GAME_ID_C, SEED_GAME_ID_B],
+    );
+
+    const controller = createController(db);
+    const response = await controller.favoriteGames();
+
+    expect(response.status).toBe(200);
+    expect(await response.json()).toMatchObject({
+      data: [
+        {
+          id: SEED_GAME_ID_B,
+          date: "2026-10-18T08:00:00.000Z",
+          homeTeamName: "Boston Celtics",
+          homeTeamLogo: "/logos/boston-celtics.webp",
+          awayTeamName: "Denver Nuggets",
+          awayTeamLogo: "/logos/denver-nuggets.webp",
+          stadium: "TD Garden",
+          homeTeamScore: 112,
+          awayTeamScore: 100,
+          finished: true,
+          isFavorite: true,
+        },
+        {
+          id: SEED_GAME_ID_A,
+          date: "2026-10-18T07:59:59.999Z",
+          homeTeamName: "Boston Celtics",
+          homeTeamLogo: "/logos/boston-celtics.webp",
+          awayTeamName: "Denver Nuggets",
+          awayTeamLogo: "/logos/denver-nuggets.webp",
+          stadium: "TD Garden",
+          homeTeamScore: 104,
+          awayTeamScore: 107,
+          finished: true,
+          isFavorite: true,
+        },
+        {
+          id: SEED_GAME_ID_C,
+          date: "2025-10-18T20:00:00.000Z",
+          homeTeamName: "Boston Celtics",
+          homeTeamLogo: "/logos/boston-celtics.webp",
+          awayTeamName: "Denver Nuggets",
+          awayTeamLogo: "/logos/denver-nuggets.webp",
+          stadium: "TD Garden",
+          homeTeamScore: 110,
+          awayTeamScore: 106,
+          finished: true,
+          isFavorite: true,
+        },
+      ],
     });
   });
 });
