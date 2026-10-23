@@ -130,7 +130,7 @@ export class FavoritesController {
                 { status: 401 }
                 );
             }
-            
+
             await this.service.addFavoritePlayer(userId, itemId);
             return new Response(null, { status: 204 });
         } catch(error) {
@@ -143,18 +143,19 @@ export class FavoritesController {
     }
 
     async addFavoriteTeam(itemId: number): Promise<Response> {
-        if (!Number.isInteger(itemId) || itemId <= 0) {
+        if (!Number.isSafeInteger(itemId) || itemId <= 0) {
             return Response.json({ error: "itemId inválido" }, { status: 400 });
         }
 
-        const { userId } = await auth();
-        if (!userId) {
-            return Response.json(
-            { error: "Debes iniciar sesión" },
-            { status: 401 }
-            );
-        }
         try {
+            const { userId } = await auth();
+            if (!userId) {
+                return Response.json(
+                { error: "Debes iniciar sesión" },
+                { status: 401 }
+                );
+            }
+
             await this.service.addFavoriteTeam(userId, itemId);
             return new Response(null, { status: 204 });
         } catch(error) {
