@@ -1313,3 +1313,137 @@ describe("FavoritesController.removeFavoritePlayer", () => {
     });
   });
 });
+
+describe("FavoritesController.removeFavoriteTeam", () => {
+  test.for([NaN, Infinity, 1.5, Number.MAX_SAFE_INTEGER + 1])(
+    "devuelve 400 cuando el ID no es un entero seguro: %s", async (id, { db, expect }) => {
+      const controller = createController(db);
+      const response = await controller.removeFavoriteTeam(id);
+
+      expect(response.status).toBe(400);
+      expect(await response.json()).toStrictEqual({ error: expect.any(String) });
+      expect(authMock).not.toHaveBeenCalled();
+    },
+  );
+
+  test.for([-2, 0])(
+    "devuelve 400 cuando el ID es menor de 1: %s", async (id, { db, expect }) => {
+      const controller = createController(db);
+      const response = await controller.removeFavoriteTeam(id);
+
+      expect(response.status).toBe(400);
+      expect(await response.json()).toStrictEqual({ error: expect.any(String) });
+      expect(authMock).not.toHaveBeenCalled();
+    },
+  );
+    test("devuelve 401 cuando no hay un usuario autenticado", async ({db, expect}) => {
+        authMock.mockResolvedValue({userId: null});
+        const serviceSpy = vi.spyOn(FavoritesService.prototype, "removeFavoriteTeam");
+
+        try {
+            const controller = createController(db);
+            const response = await controller.removeFavoriteTeam(SEED_TEAM_ID_A);
+
+            expect(response.status).toBe(401);
+            expect(await response.json()).toStrictEqual({error: expect.any(String) });
+            expect(serviceSpy).not.toHaveBeenCalled();
+        } finally {
+            serviceSpy.mockRestore();
+        }
+    });
+
+    test("devuelve 500 cuando falla el servicio", async ({db, expect}) => {
+        const serviceSpy = vi.spyOn(FavoritesService.prototype, "removeFavoriteTeam")
+                                .mockRejectedValue(new Error("Fallo simulado"));
+        const consoleSpy = vi.spyOn(console, "error").mockImplementation(() => {});
+
+        try {
+            const controller = createController(db);
+            const response = await controller.removeFavoriteTeam(SEED_TEAM_ID_A);
+
+            expect(response.status).toBe(500);
+            expect(await response.json()).toStrictEqual({error: expect.any(String)});
+        } finally {
+            serviceSpy.mockRestore();
+            consoleSpy.mockRestore();
+        }
+    });
+
+  test("devuelve 500 cuando falla auth al eliminar un equipo favorito", async ({ db, expect }) => {
+    authMock.mockRejectedValue(new Error("Fallo simulado de autenticación"));
+    const serviceSpy = vi.spyOn(FavoritesService.prototype, "removeFavoriteTeam");
+    const consoleSpy = vi.spyOn(console, "error").mockImplementation(() => {});
+
+    try {
+      const controller = createController(db);
+      const response = await controller.removeFavoriteTeam(SEED_TEAM_ID_A);
+
+      expect(response.status).toBe(500);
+      expect(await response.json()).toStrictEqual({ error: expect.any(String) });
+      expect(serviceSpy).not.toHaveBeenCalled();
+    } finally {
+      serviceSpy.mockRestore();
+      consoleSpy.mockRestore();
+    }
+  });
+
+
+  test("eliminar un favorito no elimina el mismo equipo guardado por otro usuario", async ({ db, expect }) => {
+    await db.query("INSERT INTO favorite_teams (user_id, team_id) VALUES ($1, $3), ($2, $3)", [USER_A, USER_B, SEED_TEAM_ID_A]);
+    const controller = createController(db);
+    const response = await controller.removeFavoriteTeam(SEED_TEAM_ID_A);
+
+    expect(response.status).toBe(204);
+    const stored = await db.query(
+      "SELECT user_id, team_id FROM favorite_teams WHERE team_id = $1 AND user_id IN ($2, $3) ORDER BY user_id",
+      [SEED_TEAM_ID_A, USER_A, USER_B],
+    );
+    expect(stored.rows).toStrictEqual([{ user_id: USER_B, team_id: SEED_TEAM_ID_A }]);
+  });
+
+  test("devuelve 204 sin modificar otros favoritos si el equipo no está guardado como favorito", async ({ db, expect }) => {
+    await db.query("INSERT INTO favorite_teams (user_id, team_id) VALUES ($1, $2)", [USER_A, SEED_TEAM_ID_A]);
+    const game = await db.query("SELECT id FROM teams WHERE id = $1", [SEED_TEAM_ID_B]);
+    expect(game.rows).toHaveLength(1);
+
+    const controller = createController(db);
+    const response = await controller.removeFavoriteTeam(SEED_TEAM_ID_B);
+
+    expect(response.status).toBe(204);
+    const stored = await db.query("SELECT team_id FROM favorite_teams WHERE user_id = $1", [USER_A]);
+    expect(stored.rows).toStrictEqual([{ team_id: SEED_TEAM_ID_A }]);
+  });
+
+  test("devuelve 204 sin modificar favoritos cuando el equipo no existe", async ({ db, expect }) => {
+    const missing = await db.query("SELECT id FROM teams WHERE id = $1", [9999]);
+    expect(missing.rows).toHaveLength(0);
+    await db.query("INSERT INTO favorite_teams (user_id, team_id) VALUES ($1, $2)", [USER_A, SEED_TEAM_ID_A]);
+    
+    const controller = createController(db);
+    const response = await controller.removeFavoriteTeam(9999);
+
+    expect(response.status).toBe(204);
+    const stored = await db.query("SELECT team_id FROM favorite_teams WHERE user_id = $1", [USER_A]);
+    expect(stored.rows).toStrictEqual([{ team_id: SEED_TEAM_ID_A }]);
+  });
+
+  test("disminuye en uno el contador de equipos favoritos al eliminar uno", async ({ db, expect }) => {
+    await db.query("INSERT INTO favorite_teams (user_id, team_id) VALUES ($1, $2), ($1, $3)", [USER_A, SEED_TEAM_ID_A, SEED_TEAM_ID_B]);
+    const controller = createController(db);
+    const beforeResponse = await controller.favoriteCounts();
+
+    expect(beforeResponse.status).toBe(200);
+    expect(await beforeResponse.json()).toStrictEqual({
+      data: { numberGames: 0, numberPlayers: 0, numberTeams: 2 },
+    });
+    const removedResponse = await controller.removeFavoriteTeam(SEED_TEAM_ID_A);
+    expect(removedResponse.status).toBe(204);
+    const afterResponse = await controller.favoriteCounts();
+
+    expect(afterResponse.status).toBe(200);
+    expect(await afterResponse.json()).toStrictEqual({
+      data: { numberGames: 0, numberPlayers: 0, numberTeams: 1 },
+    });
+  });
+});
+
