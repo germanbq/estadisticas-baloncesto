@@ -6,7 +6,7 @@ import Link from "next/link";
 
 type DataContainerProps = {
     label: string;
-    value: number;
+    value: number | string;
     unit?: string;
 }
 
@@ -35,7 +35,7 @@ export default function PlayerProfileCard({stats}: {stats: PlayerProfile}) {
                 <DataContainer label="Altura" value={Number(stats.height)} unit="m"/>
                 <DataContainer label="Peso" value={Number(stats.weight)} unit="kg"/>
                 <DataContainer label="Edad" value={stats.age} unit="años"/>
-                <DataContainer label="Draft" value={stats.draft} />
+                <DataContainer label="Draft" value={stats.draft === 0 ? "No drafteado": stats.draft} />
             </dl>
             <div className={styles.favorite}>
                 <FavoriteButton type="jugadores" itemId={stats.id} isFavorite={stats.isFavorite} />
