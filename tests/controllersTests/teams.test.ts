@@ -1,3 +1,4 @@
+import { ACTUAL_SEASON } from "../../src/backend/rules/rules";
 // @vitest-environment node
 
 import { beforeEach, describe, vi } from "vitest";
@@ -502,5 +503,153 @@ describe("TeamsController.playersSeasonStats", () => {
         { playerId: SEED_PLAYER_ID_B, fgPercentage: 0, threePercentage: 0, games: 2 },
       ],
     });
+  });
+});
+describe("TeamsController.upcomingTeamGames", () => {
+  test.for([NaN, Infinity, 1.5, Number.MAX_SAFE_INTEGER + 1])(
+    "devuelve 400 cuando el ID no es un entero seguro: %s", async (id, { db, expect }) => {
+      const controller = createController(db);
+      const response = await controller.upcomingTeamGames(id);
+
+      expect(response.status).toBe(400);
+      expect(await response.json()).toStrictEqual({ error: expect.any(String) });
+      expect(authMock).not.toHaveBeenCalled();
+    },
+  );
+
+  test.for([-2, 0])(
+    "devuelve 400 cuando el ID es menor de 1: %s", async (id, { db, expect }) => {
+      const controller = createController(db);
+      const response = await controller.upcomingTeamGames(id);
+
+      expect(response.status).toBe(400);
+      expect(await response.json()).toStrictEqual({ error: expect.any(String) });
+      expect(authMock).not.toHaveBeenCalled();
+    },
+  );
+  
+  test("devuelve 500 cuando falla el servicio", async ({ db, expect }) => {
+    const serviceSpy = vi
+      .spyOn(TeamsService.prototype, "upcomingTeamGames")
+      .mockRejectedValue(new Error("Fallo simulado"));
+    const consoleSpy = vi.spyOn(console, "error").mockImplementation(() => {});
+
+    try {
+      const controller = createController(db);
+      const response = await controller.upcomingTeamGames(SEED_TEAM_ID_A);
+
+      expect(response.status).toBe(500);
+      expect(await response.json()).toMatchObject({ error: expect.any(String) });
+    } finally {
+      serviceSpy.mockRestore();
+      consoleSpy.mockRestore();
+    }
+  });
+
+
+  test("solo devuelve partidos posteriores al momento actual", async ({ db, expect }) => {
+    const inserted = await db.query(
+      `INSERT INTO games (home_team_id, away_team_id, date, season_init_year, finished)
+       VALUES (3, $1, NOW() - INTERVAL '1 day', $2, FALSE),
+              (3, $1, NOW(), $2, FALSE),
+              (3, $1, NOW() + INTERVAL '1 day', $2, FALSE)
+       RETURNING id`,
+      [SEED_TEAM_ID_A, ACTUAL_SEASON],
+    );
+    const controller = createController(db);
+    const response = await controller.upcomingTeamGames(3);
+
+    expect(response.status).toBe(200);
+    expect(await response.json()).toMatchObject({
+      data: [{ id: inserted.rows[2].id }],
+    });
+  });
+
+  test("solo devuelve partidos no finalizados aunque los finalizados tengan fecha futura", async ({ db, expect }) => {
+    const inserted = await db.query(
+      `INSERT INTO games (home_team_id, away_team_id, date, season_init_year, finished, home_score, away_score, home_period_scores, away_period_scores)
+       VALUES (3, $1, NOW() + INTERVAL '1 day', $2, TRUE, 100, 90, ARRAY[25,25,25,25]::SMALLINT[], ARRAY[20,25,20,25]::SMALLINT[]),
+              (3, $1, NOW() + INTERVAL '2 days', $2, FALSE, NULL, NULL, NULL, NULL)
+       RETURNING id`,
+      [SEED_TEAM_ID_A, ACTUAL_SEASON],
+    );
+    const controller = createController(db);
+    const response = await controller.upcomingTeamGames(3);
+
+    expect(response.status).toBe(200);
+    expect(await response.json()).toMatchObject({
+      data: [{ id: inserted.rows[1].id }],
+    });
+  });
+
+  test("solo devuelve partidos de la temporada actual aunque haya partidos futuros de otras temporadas", async ({ db, expect }) => {
+    const inserted = await db.query(
+      `INSERT INTO games (home_team_id, away_team_id, date, season_init_year, finished)
+       VALUES (3, $1, NOW() + INTERVAL '1 day', $2, FALSE),
+              (3, $1, NOW() + INTERVAL '2 days', $3, FALSE),
+              (3, $1, NOW() + INTERVAL '3 days', $4, FALSE)
+       RETURNING id`,
+      [SEED_TEAM_ID_A, ACTUAL_SEASON - 1, ACTUAL_SEASON, ACTUAL_SEASON + 1],
+    );
+    const controller = createController(db);
+    const response = await controller.upcomingTeamGames(3);
+
+    expect(response.status).toBe(200);
+    expect(await response.json()).toMatchObject({
+      data: [{ id: inserted.rows[1].id }],
+    });
+  });
+
+  test("ordena los próximos partidos por fecha ascendente aunque se inserten desordenados", async ({ db, expect }) => {
+    const inserted = await db.query(
+      `INSERT INTO games (home_team_id, away_team_id, date, season_init_year, finished)
+       VALUES (3, $1, NOW() + INTERVAL '3 days', $2, FALSE),
+              (3, $1, NOW() + INTERVAL '1 day', $2, FALSE),
+              (3, $1, NOW() + INTERVAL '2 days', $2, FALSE)
+       RETURNING id`,
+      [SEED_TEAM_ID_A, ACTUAL_SEASON],
+    );
+
+    const controller = createController(db);
+    const response = await controller.upcomingTeamGames(3);
+
+    expect(response.status).toBe(200);
+    expect(await response.json()).toMatchObject({
+      data: [
+        { id: inserted.rows[1].id },
+        { id: inserted.rows[2].id },
+        { id: inserted.rows[0].id },
+      ],
+    });
+  });
+  test("devuelve solo los cinco próximos partidos cuando hay más de cinco disponibles", async ({ db, expect }) => {
+    const inserted = await db.query(
+      `INSERT INTO games (home_team_id, away_team_id, date, season_init_year, finished)
+       SELECT 3, $1, NOW() + day_offset * INTERVAL '1 day', $2, FALSE
+       FROM generate_series(1, 6) AS days(day_offset)
+       RETURNING id, date`,
+      [SEED_TEAM_ID_A, ACTUAL_SEASON],
+    );
+    expect(inserted.rows).toHaveLength(6);
+    const expected = inserted.rows
+      .sort((a, b) => a.date.getTime() - b.date.getTime())
+      .slice(0, 5)
+      .map(({ id }) => ({ id }));
+
+    const controller = createController(db);
+    const response = await controller.upcomingTeamGames(3);
+
+    expect(response.status).toBe(200);
+    const result = await response.json();
+    expect(result.data).toHaveLength(5);
+    expect(result.data).toMatchObject(expected);
+  });
+
+  test("devuelve una lista vacía cuando el equipo no tiene próximos partidos", async ({ db, expect }) => {
+    const controller = createController(db);
+    const response = await controller.upcomingTeamGames(3);
+
+    expect(response.status).toBe(200);
+    expect(await response.json()).toStrictEqual({ data: [] });
   });
 });

@@ -182,7 +182,9 @@ export class TeamsQueries implements ITeamsQueries {
                 AND g.season_init_year = $2
                 AND g.finished = FALSE
                 AND g.date > NOW()
-            ORDER BY g.date ASC, g.id ASC`,
+            ORDER BY g.date ASC, g.id ASC
+            LIMIT 5
+            `,
             values: [
                 teamId,
                 season,
