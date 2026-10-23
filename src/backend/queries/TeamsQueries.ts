@@ -162,4 +162,31 @@ export class TeamsQueries implements ITeamsQueries {
             ],
         };
     }
+
+    upcomingTeamGames(teamId: number, season: number): SqlQuery {
+        return {
+            text:`SELECT
+                g.id,
+                rival.name AS "rivalName",
+                rival.logo AS "rivalLogo",
+                (g.home_team_id = $1) AS home,
+                ht.stadium,
+                g.date
+            FROM games AS g
+            JOIN teams AS ht ON ht.id = g.home_team_id
+            JOIN teams AS rival ON rival.id = CASE
+                WHEN g.home_team_id = $1 THEN g.away_team_id
+                ELSE g.home_team_id
+            END
+            WHERE (g.home_team_id = $1 OR g.away_team_id = $1)
+                AND g.season_init_year = $2
+                AND g.finished = FALSE
+                AND g.date > NOW()
+            ORDER BY g.date ASC, g.id ASC`,
+            values: [
+                teamId,
+                season,
+            ],
+        };
+    }
 }

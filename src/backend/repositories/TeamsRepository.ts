@@ -1,4 +1,4 @@
-import { Team, TeamHeader, teamPlayersStats } from "../entities/teamsEntities";
+import { Team, TeamHeader, teamPlayersStats, UpcomingTeamGames } from "../entities/teamsEntities";
 import { ITeamsQueries, ITeamsRepository } from "../interfaces/teamsInterfaces";
 import { IQueryExecutor } from "../shared/sql.types";
 
@@ -22,6 +22,13 @@ export class TeamsRepository implements ITeamsRepository {
     async playersSeasonStats(teamId: number, season: number): Promise<teamPlayersStats[]> {
         const query = this.queries.playersSeasonStats(teamId, season);
         const result = await this.executor.query<teamPlayersStats>(query.text, query.values);
+
+        return result;
+    }
+
+    async upcomingTeamGames(teamId: number, season: number): Promise<UpcomingTeamGames[]> {
+        const query = this.queries.upcomingTeamGames(teamId, season);
+        const result = await this.executor.query<UpcomingTeamGames>(query.text, query.values);
 
         return result;
     }

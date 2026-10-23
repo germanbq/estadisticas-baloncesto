@@ -1,0 +1,188 @@
+.comparisonBlock {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    width: 80%;
+    gap: 1rem;
+}
+
+.title {
+    font-size: 1.5rem;
+    font-weight: 900;
+    line-height: 1;
+
+    display: flex;
+    flex-direction: row;
+    gap: 0.5rem;
+    align-items: center;
+}
+
+.games {
+    display: flex;
+    flex-direction: row;
+    justify-content: space-between;
+    width: 100%;
+}
+
+.finishedGames,
+.upcomingGames {
+    display: flex;
+    flex-direction: column;
+    gap: 1.5rem;
+    width: 45%;
+}
+
+.gamesSpan {
+    text-align: center;
+    font-size: 1.3rem;
+    font-weight: 600;
+}
+
+.articleGame {
+    display: flex;
+    flex-direction: row;
+    justify-content: space-between;
+
+    background-color: var(--color-components);
+    border-radius: 12px;
+    padding: 1rem;
+    font-size: 1.1rem;
+    font-weight: 600;
+}
+
+.articleGame:hover,
+.articleGame:focus-visible{
+    outline: none;
+    background-color: var(--color-background-lighter);
+}
+
+.data {
+    display: flex;
+    flex-direction: row;
+    gap: 1rem;
+    align-items: center;
+}
+
+.won {
+    padding: 0.5rem;
+    border-radius: 10px;
+    font-size: 1.2rem;
+    width: 2.5rem;
+    height: 2.5rem;
+
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.spans {
+    display: flex;
+    flex-direction: column;
+}
+
+.rivalLogoBox {
+    width: 3rem;
+    height: 3rem;
+    padding: 0;
+    flex-shrink: 0;
+}
+
+.rivalLogo {
+    width: 100%;
+    height: 100%;
+    object-fit: contain;
+}
+
+.stadium {
+    color: var(--color-text-primary)
+}
+
+.resultSpans {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+
+.result {
+    font-size: 1.4rem;
+}
+
+.final {
+    font-size: 1rem;
+    color: var(--color-text-primary)
+}
+
+@media (max-width: 1023px) {
+    .comparisonBlock {
+        width: 100%;
+        min-width: 0;
+    }
+
+    .games {
+        gap: 1rem;
+    }
+
+    .finishedGames,
+    .upcomingGames {
+        width: calc(50% - 0.5rem);
+        min-width: 0;
+    }
+
+    .articleGame {
+        gap: 0.75rem;
+        padding: 0.75rem;
+    }
+
+    .data {
+        min-width: 0;
+        gap: 0.5rem;
+    }
+
+    .spans {
+        min-width: 0;
+        overflow-wrap: anywhere;
+    }
+
+    .won,
+    .resultSpans {
+        flex-shrink: 0;
+    }
+}
+
+@media (max-width: 600px) {
+    .title {
+        font-size: 1.1rem;
+        line-height: 1.3;
+        text-align: center;
+        justify-content: center;
+    }
+
+    .title svg {
+        flex-shrink: 0;
+    }
+
+    .games {
+        flex-direction: column;
+        gap: 1.5rem;
+    }
+
+    .finishedGames,
+    .upcomingGames {
+        width: 100%;
+        gap: 0.75rem;
+    }
+
+    .articleGame {
+        font-size: 0.85rem;
+        align-items: center;
+    }
+
+    .result {
+        font-size: 1.1rem;
+    }
+
+    .final {
+        font-size: 0.75rem;
+    }
+}
+

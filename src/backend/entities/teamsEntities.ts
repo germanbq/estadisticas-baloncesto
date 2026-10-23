@@ -40,3 +40,12 @@ export type teamPlayersStats = {
     threePercentage: number;
     games: number;
 }
+
+export type UpcomingTeamGames = {
+    id: number;
+    rivalName: string;
+    rivalLogo: string;
+    home: boolean;
+    stadium: string;
+    date: Date;
+}

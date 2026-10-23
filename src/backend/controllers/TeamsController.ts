@@ -71,4 +71,23 @@ export class TeamsController {
             );
         }
     }
+
+    async upcomingTeamGames(teamId: number): Promise<Response> {
+        if(!Number.isSafeInteger(teamId) || teamId <= 0) {
+            return Response.json(
+                { error: "ID de equipo no válido" },
+                { status: 400 }
+            );
+        }
+        try {
+            const data = await this.service.upcomingTeamGames(teamId);
+            return Response.json({data});
+        } catch(error) {
+            console.error(error);
+            return Response.json(
+                {error: "Error al obtener los próximos partidos de equipo"},
+                {status: 500}
+            );
+        }
+    }
 }
