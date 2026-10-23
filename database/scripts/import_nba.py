@@ -1,9 +1,14 @@
 #!/usr/bin/env python3
-"""Importa teams y players con nba_api usando tus imágenes locales.
-
-Añade tú nba_id a ambas tablas antes de ejecutar el script.
-python database/import_nba.py --season 2026-27 --dry-run
-python database/import_nba.py --season 2026-27
+"""
+--season	Temporada que solicita
+--dry-run	Descarga y prepara datos sin conectar a PostgreSQL
+--strict	Aborta si algún jugador queda omitido
+--refresh	Vuelve a descargar ignorando la caché
+--as-of	Fecha utilizada para calcular edades
+--env-file	Archivo de variables de entorno
+--cache-dir	Carpeta de respuestas guardadas
+--report	Ruta del informe
+--delay, --timeout, --retries	Configuración de las peticiones
 """
 
 from __future__ import annotations
@@ -37,7 +42,7 @@ from nba_api.stats.endpoints import (
 )
 from nba_api.stats.static import teams as nba_teams
 
-ROOT = Path(__file__).resolve().parent.parent
+ROOT = Path(__file__).resolve().parents[2]
 LOG = logging.getLogger("import_nba")
 
 
@@ -732,7 +737,7 @@ def arguments(argv: list[str] | None = None):
     parser.add_argument("--env-file", type=Path, default=ROOT / ".env.local")
     parser.add_argument("--cache-dir", type=Path, default=ROOT / ".nba-import-cache")
     parser.add_argument(
-        "--report", type=Path, default=ROOT / "database/nba_import_report.json"
+        "--report", type=Path, default=ROOT / "database/scripts/nba_import_report.json"
     )
     parser.add_argument(
         "--as-of",

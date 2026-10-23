@@ -39,3 +39,7 @@ yarn-error.log*
 # typescript
 *.tsbuildinfo
 next-env.d.ts
+
+# NBA import artifacts
+/.nba-import-cache/
+/database/scripts/nba_import_report.json
