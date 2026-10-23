@@ -8,6 +8,9 @@ import Footer from "../components/Footer";
 export const metadata: Metadata = {
   title: "Estadísticas de baloncesto",
   description: "",
+  icons: {
+    icon: "/logo.webp",
+  },
 };
 
 export default function RootLayout({ children }: LayoutProps<"/">) {
