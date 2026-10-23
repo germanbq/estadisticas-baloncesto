@@ -1,3 +1,4 @@
+import NoDataCard from "../general/NoDataCard";
 import styles from "../players/PlayersBySearch.module.css";
 import { useEffect, useState } from "react";
 import { SearchedPlayer } from "@/src/backend/entities/playersEntities";
@@ -9,6 +10,7 @@ export default function FavoritePlayers({onFavoriteChange, disabled}:
     
     const [players, setPlayers] = useState<SearchedPlayer[]>([])
     const [loading, setLoading] = useState(true);
+    const [hasError, setHasError] = useState(false);
     
     useEffect(() => {
         const controller = new AbortController();
@@ -27,6 +29,7 @@ export default function FavoritePlayers({onFavoriteChange, disabled}:
             }
             catch(error) {
                 if (controller.signal.aborted) return;
+                setHasError(true);
                 console.error(error);
             } finally {
                 if (!controller.signal.aborted) setLoading(false);
@@ -38,6 +41,9 @@ export default function FavoritePlayers({onFavoriteChange, disabled}:
     }, []);
     
     if (loading) return <PlayersBySearchSkeleton />;
+
+    if (hasError) return <NoDataCard text="No se pudieron cargar tus jugadores favoritos" />;
+    if (players.length === 0) return <NoDataCard text="Todavía no tienes jugadores favoritos" />;
 
     return (
         <section className={styles.section}>

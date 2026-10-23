@@ -1,3 +1,4 @@
+import NoDataCard from "../general/NoDataCard";
 import styles from "./FavoriteGames.module.css"
 import GameCard from "../GameCard"
 import { useEffect, useState } from "react";
@@ -8,6 +9,7 @@ export default function FavoriteGames({onFavoriteChange, disabled}:
                                 {onFavoriteChange: (fav: boolean) => void, disabled: boolean}) {
     const [games, setGames] = useState<Game[]>([])
     const [loading, setLoading] = useState(true);
+    const [hasError, setHasError] = useState(false);
     
     useEffect(() => {
         const controller = new AbortController();
@@ -26,6 +28,7 @@ export default function FavoriteGames({onFavoriteChange, disabled}:
             }
             catch(error) {
                 if (controller.signal.aborted) return;
+                setHasError(true);
                 console.error(error);
             } finally {
                 if (!controller.signal.aborted) setLoading(false);
@@ -37,6 +40,9 @@ export default function FavoriteGames({onFavoriteChange, disabled}:
     }, []);
     
     if (loading) return <GamesSkeleton variant="favorites" />;
+
+    if (hasError) return <NoDataCard text="No se pudieron cargar tus partidos favoritos" />;
+    if (games.length === 0) return <NoDataCard text="Todavía no tienes partidos favoritos" />;
 
     return (
         <section style={{ display: "flex", flexDirection: "column", alignItems: "center", gap: "2rem" }}>

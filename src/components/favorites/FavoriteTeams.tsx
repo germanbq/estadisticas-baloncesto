@@ -1,3 +1,4 @@
+import NoDataCard from "../general/NoDataCard";
 import styles from "./FavoriteTeams.module.css";
 import Image from "next/image";
 import FavoriteButton from "../FavoriteButton";
@@ -58,6 +59,7 @@ export default function FavoriteTeams({onFavoriteChange, disabled}:
 
     const [teams, setTeams] = useState<FavoriteTeam[]>([])
     const [loading, setLoading] = useState(true);
+    const [hasError, setHasError] = useState(false);
         
     useEffect(() => {
         const controller = new AbortController();
@@ -76,6 +78,7 @@ export default function FavoriteTeams({onFavoriteChange, disabled}:
             }
             catch(error) {
                 if (controller.signal.aborted) return;
+                setHasError(true);
                 console.error(error);
             } finally {
                 if (!controller.signal.aborted) setLoading(false);
@@ -87,6 +90,9 @@ export default function FavoriteTeams({onFavoriteChange, disabled}:
     }, []);
     
     if (loading) return <FavoriteTeamsSkeleton />;
+
+    if (hasError) return <NoDataCard text="No se pudieron cargar tus equipos favoritos" />;
+    if (teams.length === 0) return <NoDataCard text="Todavía no tienes equipos favoritos" />;
 
     return (
         <section className={styles.section}>
