@@ -311,3 +311,111 @@ describe("FavoritesController.favoriteGames", () => {
     });
   });
 });
+
+describe("FavoritesController.favoritePlayers", () => {
+  test("devuelve 401 cuando no hay un usuario autenticado", async ({ db, expect }) => {
+    authMock.mockResolvedValue({ userId: null });
+    const serviceSpy = vi.spyOn(FavoritesService.prototype, "favoritePlayers");
+
+    try {
+      const controller = createController(db);
+      const response = await controller.favoritePlayers();
+
+      expect(response.status).toBe(401);
+      expect(await response.json()).toStrictEqual({ error: expect.any(String) });
+      expect(serviceSpy).not.toHaveBeenCalled();
+    } finally {
+      serviceSpy.mockRestore();
+    }
+  });
+
+  test("devuelve 500 cuando falla el servicio", async ({ db, expect }) => {
+    const serviceSpy = vi
+      .spyOn(FavoritesService.prototype, "favoritePlayers")
+      .mockRejectedValue(new Error("Fallo simulado"));
+    const consoleSpy = vi.spyOn(console, "error").mockImplementation(() => {});
+
+    try {
+      const controller = createController(db);
+      const response = await controller.favoritePlayers();
+
+      expect(response.status).toBe(500);
+      expect(await response.json()).toMatchObject({ error: expect.any(String) });
+    } finally {
+      serviceSpy.mockRestore();
+      consoleSpy.mockRestore();
+    }
+  });
+
+  test("devuelve 500 cuando falla auth", async ({ db, expect }) => {
+    authMock.mockRejectedValue(new Error("Fallo simulado de autenticación"));
+    const serviceSpy = vi.spyOn(FavoritesService.prototype, "favoritePlayers");
+    const consoleSpy = vi.spyOn(console, "error").mockImplementation(() => {});
+
+    try {
+      const controller = createController(db);
+      const response = await controller.favoritePlayers();
+
+      expect(response.status).toBe(500);
+      expect(await response.json()).toMatchObject({ error: expect.any(String) });
+      expect(serviceSpy).not.toHaveBeenCalled();
+    } finally {
+      serviceSpy.mockRestore();
+      consoleSpy.mockRestore();
+    }
+  });
+
+
+ test("devuelve una lista vacía cuando el usuario no tiene jugadores favoritos", async ({ db, expect }) => {
+    const controller = createController(db);
+    const response = await controller.favoritePlayers();
+
+    expect(response.status).toBe(200);
+    expect(await response.json()).toStrictEqual({ data: [] });
+  });
+
+  test("los jugadores favoritos de otro usuario no afectan a los del usuario autenticado", async ({ db, expect }) => {
+    await db.query("INSERT INTO favorite_players (user_id, player_id) VALUES ($1, $2)", [USER_A, SEED_PLAYER_ID_A]);
+    const controller = createController(db);
+    const beforeResponse = await controller.favoritePlayers();
+
+    expect(beforeResponse.status).toBe(200);
+    const beforeResult = await beforeResponse.json();
+    expect(beforeResult).toMatchObject({ data: [{ id: SEED_PLAYER_ID_A, isFavorite: true }] });
+
+    await db.query("INSERT INTO favorite_players (user_id, player_id) VALUES ($1, $2), ($1, $3)", [USER_B, SEED_PLAYER_ID_A, SEED_PLAYER_ID_B]);
+
+    const afterResponse = await controller.favoritePlayers();
+    expect(afterResponse.status).toBe(200);
+    expect(await afterResponse.json()).toStrictEqual(beforeResult);
+  });
+
+  test("devuelve el jugador favorito con estadísticas a cero aunque no tenga PSS", async ({ db, expect }) => {
+    const deleted = await db.query("DELETE FROM player_season_stats WHERE player_id = $1 AND season_init_year = 2026 RETURNING player_id", [SEED_PLAYER_ID_B]);
+    expect(deleted.rows).toHaveLength(1);
+
+    await db.query("INSERT INTO favorite_players (user_id, player_id) VALUES ($1, $2)", [USER_A, SEED_PLAYER_ID_B]);
+
+    const controller = createController(db);
+    const response = await controller.favoritePlayers();
+
+    expect(response.status).toBe(200);
+    expect(await response.json()).toMatchObject({ data: [{
+      id: SEED_PLAYER_ID_B, name: "Nikola Jokic", points: 0, rebounds: 0,
+      assists: 0, steals: 0, blocks: 0, isFavorite: true,
+    }] });
+  });
+
+  test("devuelve los datos y promedios correctos de los favoritos ordenados por valoración descendente", async ({ db, expect }) => {
+    await db.query("INSERT INTO favorite_players (user_id, player_id) VALUES ($1, $2), ($1, $3), ($1, $4)", [USER_A, SEED_PLAYER_ID_C, SEED_PLAYER_ID_A, SEED_PLAYER_ID_B]);
+    const controller = createController(db);
+    const response = await controller.favoritePlayers();
+    
+    expect(response.status).toBe(200);
+    expect(await response.json()).toMatchObject({ data: [
+      { id: SEED_PLAYER_ID_B, name: "Nikola Jokic", image: "/players/Nikola_Jokic.webp", team: "Denver Nuggets", jerseyNumber: 15, position: "C", age: 31, points: 24.5, rebounds: 10.5, assists: 8.5, steals: 1.5, blocks: 1.5, isFavorite: true },
+      { id: SEED_PLAYER_ID_A, name: "Jayson Tatum", image: "/players/Jayson_Tatum.webp", team: "Boston Celtics", jerseyNumber: 0, position: "SF", age: 28, points: 30, rebounds: 8, assists: 5, steals: 2, blocks: 1, isFavorite: true },
+      { id: SEED_PLAYER_ID_C, name: "Jamal Murray", image: "/players/Jamal_Murray.webp", team: "Denver Nuggets", jerseyNumber: 27, position: "PG", age: 29, points: 28.5, rebounds: 4.5, assists: 6.5, steals: 1.5, blocks: 0.5, isFavorite: true },
+    ] });
+  });
+});

@@ -34,7 +34,7 @@ export class FavoritesController {
                 { status: 401 }
                 );
             }
-            
+
             const data = await this.service.favoriteGames(userId);
             return Response.json({data});
         } catch(error) {
@@ -47,14 +47,15 @@ export class FavoritesController {
     }
 
     async favoritePlayers(): Promise<Response> {
-        const { userId } = await auth();
-        if (!userId) {
-            return Response.json(
-            { error: "Debes iniciar sesión" },
-            { status: 401 }
-            );
-        }
         try {
+            const { userId } = await auth();
+            if (!userId) {
+                return Response.json(
+                { error: "Debes iniciar sesión" },
+                { status: 401 }
+                );
+            }
+
             const data = await this.service.favoritePlayers(userId);
             return Response.json({data});
         } catch(error) {
