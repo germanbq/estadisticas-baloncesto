@@ -39,21 +39,20 @@ CREATE TABLE team_season_stats (
     PRIMARY KEY(team_id, season_init_year)
 );
 
+--se quitan los not null de algunos atributos para permitir inserts desde la api cuando se desconoce algún dato
 CREATE TABLE players (
     id INTEGER GENERATED ALWAYS AS IDENTITY PRIMARY KEY,
     nba_id INTEGER NOT NULL UNIQUE,
     name TEXT NOT NULL,
-    height NUMERIC(3,2) NOT NULL CHECK (height > 0),
-    weight NUMERIC (5,2) NOT NULL CHECK (weight > 0),
-    age INTEGER NOT NULL CHECK (age > 0),
-    draft INTEGER NOT NULL,
+    height NUMERIC(3,2) CHECK (height > 0),
+    weight NUMERIC (5,2) CHECK (weight > 0),
+    age INTEGER CHECK (age > 0),
+    draft INTEGER,
     team_id INTEGER REFERENCES teams(id),
-    country TEXT NOT NULL,
-    jersey_number VARCHAR(2) NOT NULL CHECK (jersey_number ~ '^[0-9]{1,2}$'),
-    position VARCHAR(2) NOT NULL,
-    image TEXT NOT NULL,
-
-    UNIQUE(team_id, jersey_number)
+    country TEXT,
+    jersey_number VARCHAR(2) CHECK (jersey_number ~ '^[0-9]{1,2}$'),
+    position VARCHAR(2) CHECK (position IN ('PG', 'SG', 'SF', 'PF', 'C', 'G', 'F')),
+    image TEXT NOT NULL
 );
 
 CREATE TABLE player_season_stats (
