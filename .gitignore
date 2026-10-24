@@ -42,4 +42,7 @@ next-env.d.ts
 
 # NBA import artifacts
 /.nba-import-cache/
+/.nba-games-cache/
 /database/scripts/nba_import_report.json
+/database/scripts/nba_games_import_report.json
+/database/scripts/README_IMPORT_GAMES.md

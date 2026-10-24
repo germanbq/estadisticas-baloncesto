@@ -1,5 +1,7 @@
 #!/usr/bin/env python3
 """
+Los datos incompletos y los dorsales repetidos generan avisos, no exclusiones.
+
 --season	Temporada que solicita
 --dry-run	Descarga y prepara datos sin conectar a PostgreSQL
 --strict	Aborta si algún jugador queda omitido
@@ -44,6 +46,16 @@ from nba_api.stats.static import teams as nba_teams
 
 ROOT = Path(__file__).resolve().parents[2]
 LOG = logging.getLogger("import_nba")
+OPTIONAL_PLAYER_FIELDS = (
+    "height",
+    "weight",
+    "age",
+    "draft",
+    "country",
+    "jersey_number",
+    "position",
+)
+POSITIONS = {"PG", "SG", "SF", "PF", "C", "G", "F"}
 
 
 class ImportErrorNBA(Exception):
@@ -165,7 +177,7 @@ def fetch_teams(client: NBAClient, season: str) -> list[Team]:
         if conference not in ("East", "West"):
             raise ImportErrorNBA(f"Conferencia inesperada: {conference}.")
         slug = re.sub(r"[^a-z0-9]+", "-", static["full_name"].lower()).strip("-")
-        
+
         if static["abbreviation"] == "LAC":
             slug = "los-angeles-clippers"
         result.append(
@@ -180,7 +192,7 @@ def fetch_teams(client: NBAClient, season: str) -> list[Team]:
                 text(details["HEADCOACH"], "entrenador"),
             )
         )
-    
+
     for field in ("nba_id", "short_name", "name", "stadium", "coach"):
         values = [getattr(team, field) for team in result]
         if len(values) != len(set(values)):
@@ -204,7 +216,7 @@ def save_teams(cursor, teams: list[Team]) -> dict[int, int]:
                 f"Los identificadores del equipo {team.short_name} están en conflicto."
             )
         plans.append((team, matches[0] if matches else None))
-    
+
     token = uuid4().hex
     for _, old in plans:
         if old:
@@ -249,15 +261,16 @@ def save_teams(cursor, teams: list[Team]) -> dict[int, int]:
 class Player:
     nba_id: int
     name: str
-    height: Decimal
-    weight: Decimal
-    age: int
-    draft: int
+    height: Decimal | None
+    weight: Decimal | None
+    age: int | None
+    draft: int | None
     team_nba_id: int | None
-    country: str
-    jersey_number: str
-    position: str
+    country: str | None
+    jersey_number: str | None
+    position: str | None
     image: str
+    team_known: bool = True
 
 
 def normalized(value: str) -> str:
@@ -299,7 +312,11 @@ def measurement(value: Any, kind: str) -> Decimal:
             amount = Decimal(str(value)) * Decimal("0.45359237")
         if not amount.is_finite() or amount <= 0:
             raise ValueError
-        return amount.quantize(Decimal("0.01"), rounding=ROUND_HALF_UP)
+        amount = amount.quantize(Decimal("0.01"), rounding=ROUND_HALF_UP)
+        limit = Decimal("9.99") if kind == "height" else Decimal("999.99")
+        if amount <= 0 or amount > limit:
+            raise ValueError
+        return amount
     except (AttributeError, InvalidOperation, ValueError) as exc:
         raise ImportErrorNBA(f"Falta una medida válida de {kind}: {value!r}.") from exc
 
@@ -342,9 +359,11 @@ def birth_date(value: Any) -> date:
 
 def position(value: Any) -> str:
     raw = text(value, "posición").upper()
-    if raw in ("PG", "SG", "SF", "PF", "C"):
+    if raw in POSITIONS:
         return raw
     primary = raw.split("-")[0].strip()
+    if primary in POSITIONS:
+        return primary
     result = {
         "G": "G",
         "GUARD": "G",
@@ -358,16 +377,58 @@ def position(value: Any) -> str:
     return result
 
 
-def compatible_position(incoming: str, existing: str | None) -> str:
-    
+def compatible_position(incoming: str | None, existing: str | None) -> str | None:
+    if incoming is None:
+        return existing if existing in POSITIONS else None
     family = {"PG": "G", "SG": "G", "SF": "F", "PF": "F", "C": "C"}
     return existing if family.get(existing) == incoming else incoming
+
+
+def optional_value(values: tuple, parser: Callable) -> Any:
+    """Prueba las fuentes disponibles; un dato opcional ausente o inválido es NULL."""
+    for value in values:
+        if value is None:
+            continue
+        if isinstance(value, str):
+            value = value.strip()
+            if value.upper() in ("", "-", "TBD", "N/A", "NULL", "NONE", "UNKNOWN"):
+                continue
+        try:
+            return parser(value)
+        except ImportErrorNBA:
+            continue
+    return None
+
+
+def player_age(value: Any, as_of: date) -> int:
+    born = birth_date(value)
+    age = as_of.year - born.year - ((as_of.month, as_of.day) < (born.month, born.day))
+    if age <= 0:
+        raise ImportErrorNBA(
+            "Fecha de nacimiento incompatible con la fecha de cálculo."
+        )
+    return age
+
+
+def draft_year(value: Any) -> int:
+    if isinstance(value, str) and value.strip().upper() == "UNDRAFTED":
+        return 0
+    return integer(value, "draft")
+
+
+def jersey_number(value: Any) -> str:
+    jersey = str(value).strip()
+    if not re.fullmatch(r"[0-9]{1,2}", jersey):
+        raise ImportErrorNBA("La NBA no informa de un dorsal válido.")
+    return jersey
 
 
 def parse_player(
     index: dict, roster: dict, extra: dict, as_of: date, image_dir: Path
 ) -> Player:
     nba_id = integer(index["PERSON_ID"], "PERSON_ID")
+    if nba_id == 0:
+        raise ImportErrorNBA("El identificador NBA del jugador debe ser positivo.")
     name = text(
         " ".join(
             str(index.get(key) or "").strip()
@@ -375,52 +436,45 @@ def parse_player(
         ),
         "nombre",
     )
-    born = birth_date(roster.get("BIRTH_DATE") or extra.get("BIRTHDATE"))
-    age = as_of.year - born.year - ((as_of.month, as_of.day) < (born.month, born.day))
-    if age <= 0:
-        raise ImportErrorNBA(f"Edad inválida para {name}.")
-    jersey = next(
-        (
-            str(v).strip()
-            for v in (
-                roster.get("NUM"),
-                index.get("JERSEY_NUMBER"),
-                extra.get("JERSEY"),
-            )
-            if v is not None and str(v).strip()
-        ),
-        "",
+    age = optional_value(
+        (roster.get("BIRTH_DATE"), extra.get("BIRTHDATE")),
+        partial(player_age, as_of=as_of),
     )
-    if not re.fullmatch(r"\d{1,2}", jersey):
-        raise ImportErrorNBA(
-            "La NBA aún no informa de un dorsal válido; tu esquema lo exige."
-        )
-    draft = index.get("DRAFT_YEAR")
-    
-    draft = (
-        integer(draft, "draft")
-        if draft not in (None, "", "Undrafted", "UNDRAFTED")
-        else 0
+    jersey = optional_value(
+        (roster.get("NUM"), index.get("JERSEY_NUMBER"), extra.get("JERSEY")),
+        jersey_number,
     )
-    team_id = integer(index.get("TEAM_ID") or 0, "TEAM_ID") or None
+    draft = optional_value(
+        (index.get("DRAFT_YEAR"), extra.get("DRAFT_YEAR")), draft_year
+    )
+    team_id = optional_value(
+        (index.get("TEAM_ID"), extra.get("TEAM_ID"), roster.get("TeamID")),
+        partial(integer, label="TEAM_ID"),
+    )
     return Player(
         nba_id,
         name,
-        measurement(
-            index.get("HEIGHT") or roster.get("HEIGHT") or extra.get("HEIGHT"), "height"
+        optional_value(
+            (index.get("HEIGHT"), roster.get("HEIGHT"), extra.get("HEIGHT")),
+            partial(measurement, kind="height"),
         ),
-        measurement(
-            index.get("WEIGHT") or roster.get("WEIGHT") or extra.get("WEIGHT"), "weight"
+        optional_value(
+            (index.get("WEIGHT"), roster.get("WEIGHT"), extra.get("WEIGHT")),
+            partial(measurement, kind="weight"),
         ),
         age,
         draft,
-        team_id,
-        text(index.get("COUNTRY") or extra.get("COUNTRY"), "país"),
+        team_id or None,
+        optional_value(
+            (index.get("COUNTRY"), extra.get("COUNTRY")), partial(text, label="país")
+        ),
         jersey,
-        position(
-            index.get("POSITION") or roster.get("POSITION") or extra.get("POSITION")
+        optional_value(
+            (index.get("POSITION"), roster.get("POSITION"), extra.get("POSITION")),
+            position,
         ),
         player_image(name, image_dir),
+        team_known=team_id is not None,
     )
 
 
@@ -481,27 +535,55 @@ def fetch_players(
             or not (row.get("POSITION") or roster.get("POSITION"))
             or not (row.get("WEIGHT") or roster.get("WEIGHT"))
             or not (roster.get("NUM") or row.get("JERSEY_NUMBER"))
+            or not row.get("DRAFT_YEAR")
         )
         if needs_extra:
-            payload = client.call(
-                f"player-{nba_id}",
-                partial(commonplayerinfo.CommonPlayerInfo, player_id=nba_id),
-                ttl=86400,
-            )
-            extras = dataset_rows(payload, "CommonPlayerInfo")
-            if (
-                len(extras) != 1
-                or integer(extras[0]["PERSON_ID"], "PERSON_ID") != nba_id
-            ):
-                raise ImportErrorNBA(f"Ficha individual incorrecta para {nba_id}.")
-            extra = extras[0]
+            try:
+                payload = client.call(
+                    f"player-{nba_id}",
+                    partial(commonplayerinfo.CommonPlayerInfo, player_id=nba_id),
+                    ttl=86400,
+                )
+                extras = dataset_rows(payload, "CommonPlayerInfo")
+                if (
+                    len(extras) != 1
+                    or integer(extras[0].get("PERSON_ID"), "PERSON_ID") != nba_id
+                ):
+                    raise ImportErrorNBA(f"Ficha individual incorrecta para {nba_id}.")
+                extra = extras[0]
+            except ImportErrorNBA as exc:
+                LOG.warning(
+                    "AVISO: ficha adicional no disponible para nba_id=%s: %s "
+                    "Se utilizarán los datos disponibles.",
+                    nba_id,
+                    exc,
+                )
         try:
             player = parse_player(row, roster, extra, as_of, image_dir)
             if player.team_nba_id is not None and player.team_nba_id not in {
                 team.nba_id for team in teams
             }:
-                raise ImportErrorNBA(
-                    "El equipo del jugador no pertenece a los equipos importados."
+                LOG.warning(
+                    "AVISO: equipo NBA %s desconocido para %s (nba_id=%s). "
+                    "Se conservará el equipo previo; si es nuevo, quedará NULL.",
+                    player.team_nba_id,
+                    player.name,
+                    player.nba_id,
+                )
+                player.team_nba_id = None
+                player.team_known = False
+            missing = [
+                field
+                for field in OPTIONAL_PLAYER_FIELDS
+                if getattr(player, field) is None
+            ]
+            if missing:
+                LOG.warning(
+                    "AVISO: %s (nba_id=%s), datos no disponibles: %s. "
+                    "Se conservarán los datos previos; si no existen, se guardará NULL.",
+                    player.name,
+                    player.nba_id,
+                    ", ".join(missing),
                 )
             result.append(player)
         except ImportErrorNBA as exc:
@@ -521,9 +603,11 @@ def fetch_players(
 
 def check_schema(cursor) -> bool:
     """Solo comprueba columnas; no crea ni modifica el esquema. Devuelve si el dorsal es texto."""
-    cursor.execute("""SELECT table_name,column_name,data_type FROM information_schema.columns
+    cursor.execute("""SELECT table_name,column_name,data_type,is_nullable FROM information_schema.columns
                    WHERE table_schema=current_schema() AND table_name IN ('teams','players')""")
-    columns = {(table, column): kind for table, column, kind in cursor.fetchall()}
+    rows = cursor.fetchall()
+    columns = {(table, column): kind for table, column, kind, _ in rows}
+    nullable = {(table, column): value for table, column, _, value in rows}
     for table in ("teams", "players"):
         if (table, "nba_id") not in columns:
             raise ImportErrorNBA(
@@ -540,6 +624,30 @@ def check_schema(cursor) -> bool:
         )
         if cursor.fetchone():
             raise ImportErrorNBA(f"Hay valores nba_id repetidos en {table}.")
+    required_nullable = (*OPTIONAL_PLAYER_FIELDS, "team_id")
+    incompatible = [
+        field
+        for field in required_nullable
+        if nullable.get(("players", field)) != "YES"
+    ]
+    if incompatible:
+        raise ImportErrorNBA(
+            "Los campos opcionales de players deben existir y admitir NULL: "
+            + ", ".join(incompatible)
+            + ". Aplica primero los cambios de esquema acordados."
+        )
+    cursor.execute("""SELECT c.conname FROM pg_constraint AS c
+                      WHERE c.conrelid='players'::regclass AND c.contype='u'
+                      AND (SELECT array_agg(a.attname::text ORDER BY a.attname)
+                           FROM unnest(c.conkey) AS k(attnum)
+                           JOIN pg_attribute AS a
+                             ON a.attrelid=c.conrelid AND a.attnum=k.attnum)
+                          = ARRAY['jersey_number','team_id']""")
+    if cursor.fetchone():
+        raise ImportErrorNBA(
+            "players todavía tiene UNIQUE(team_id, jersey_number). "
+            "Elimina esa restricción antes de importar dorsales repetidos."
+        )
     return columns.get(("players", "jersey_number")) in (
         "text",
         "character varying",
@@ -551,7 +659,9 @@ def match_players(
     cursor, players: list[Player]
 ) -> tuple[list[tuple[Player, int | None]], list[tuple]]:
     cursor.execute(
-        "SELECT id,nba_id,name,image,position,team_id,jersey_number FROM players ORDER BY id"
+        """SELECT p.id,p.nba_id,p.name,p.image,p.position,p.team_id,p.jersey_number,
+                  p.height,p.weight,p.age,p.draft,p.country,t.nba_id
+           FROM players AS p LEFT JOIN teams AS t ON t.id=p.team_id ORDER BY p.id"""
     )
     existing = cursor.fetchall()
     by_id = {str(row[1]): row for row in existing if row[1] is not None}
@@ -584,69 +694,61 @@ def match_players(
             claimed.add(old[0])
             player.image = old[3] or player.image
             player.position = compatible_position(player.position, old[4])
+            previous = {
+                "height": old[7],
+                "weight": old[8],
+                "age": old[9],
+                "draft": old[10],
+                "country": old[11],
+                "jersey_number": old[6],
+            }
+            for field, value in previous.items():
+                if getattr(player, field) is None:
+                    setattr(player, field, value)
+            if not player.team_known:
+                player.team_nba_id = old[12]
         matched.append((player, old[0] if old else None))
     return matched, existing
 
 
-def compatible_jerseys(
+def warn_jersey_conflicts(
     matched: list[tuple[Player, int | None]],
     existing: list[tuple],
     mapping: dict[int, int],
     textual: bool,
-    skipped: list[dict],
-) -> list[tuple[Player, int | None]]:
-    def key(player):
-        return (
-            mapping.get(player.team_nba_id),
-            player.jersey_number if textual else int(player.jersey_number),
-        )
-
+) -> list[dict]:
+    """Informa de dorsales repetidos sin excluir ni alterar ningún jugador."""
+    updated_ids = {local_id for _, local_id in matched if local_id is not None}
     groups = defaultdict(list)
-    for item in matched:
-        if item[0].team_nba_id is not None:
-            groups[key(item[0])].append(item)
-    excluded = set()
-    for group in groups.values():
-        if len(group) <= 1:
-            continue
-        old_players = [item for item in group if item[1] is not None]
-        keep = old_players[0][0].nba_id if len(old_players) == 1 else None
-        for player, _ in group:
-            if player.nba_id != keep:
-                excluded.add(player.nba_id)
-                skipped.append(
-                    {
-                        "nba_id": player.nba_id,
-                        "name": player.name,
-                        "reason": "Dorsal repetido para el mismo equipo. Tu UNIQUE(team_id, jersey_number) no lo permite; INTEGER también identifica 0 y 00 como iguales.",
-                    }
-                )
-    candidates = [item for item in matched if item[0].nba_id not in excluded]
-    
-    while True:
-        updated_ids = {local_id for _, local_id in candidates if local_id is not None}
-        occupied = {
-            (row[5], str(row[6]) if textual else int(row[6]))
-            for row in existing
-            if row[0] not in updated_ids and row[5] is not None
-        }
-        blocked = [
-            item
-            for item in candidates
-            if item[0].team_nba_id is not None and key(item[0]) in occupied
-        ]
-        if not blocked:
-            return candidates
-        blocked_ids = {player.nba_id for player, _ in blocked}
-        for player, _ in blocked:
-            skipped.append(
-                {
-                    "nba_id": player.nba_id,
-                    "name": player.name,
-                    "reason": "El dorsal de destino está ocupado por un jugador existente que no se actualiza.",
-                }
+    for row in existing:
+        if row[0] not in updated_ids and row[5] is not None and row[6] is not None:
+            jersey = str(row[6]) if textual else int(row[6])
+            groups[(row[5], jersey)].append({"nba_id": row[1], "name": row[2]})
+    for player, _ in matched:
+        team_id = mapping.get(player.team_nba_id)
+        if team_id is not None and player.jersey_number is not None:
+            jersey = player.jersey_number if textual else int(player.jersey_number)
+            groups[(team_id, jersey)].append(
+                {"nba_id": player.nba_id, "name": player.name}
             )
-        candidates = [item for item in candidates if item[0].nba_id not in blocked_ids]
+    reverse_mapping = {local_id: nba_id for nba_id, local_id in mapping.items()}
+    conflicts = []
+    for (team_id, jersey), players in groups.items():
+        if len(players) > 1:
+            conflict = {
+                "team_nba_id": reverse_mapping.get(team_id),
+                "jersey_number": str(jersey),
+                "players": players,
+            }
+            conflicts.append(conflict)
+            LOG.warning(
+                "AVISO: dorsal %s repetido en el equipo NBA %s: %s. "
+                "Se conservarán todos los jugadores.",
+                jersey,
+                conflict["team_nba_id"],
+                ", ".join(f"{p['name']} (nba_id={p['nba_id']})" for p in players),
+            )
+    return conflicts
 
 
 def save_players(
@@ -656,18 +758,18 @@ def save_players(
     textual: bool,
     skipped: list[dict],
     strict: bool = False,
+    jersey_conflicts: list[dict] | None = None,
 ) -> list[Player]:
     matched, existing = match_players(cursor, players)
-    compatible = compatible_jerseys(matched, existing, mapping, textual, skipped)
+    conflicts = warn_jersey_conflicts(matched, existing, mapping, textual)
+    if jersey_conflicts is not None:
+        jersey_conflicts.extend(conflicts)
     if strict and skipped:
         raise ImportErrorNBA(
             f"Hay {len(skipped)} jugadores incompatibles. Consulta el informe o ejecuta sin --strict para omitirlos."
         )
-    
-    local_ids = [local_id for _, local_id in compatible if local_id is not None]
-    if local_ids:
-        cursor.execute("UPDATE players SET team_id=NULL WHERE id=ANY(%s)", (local_ids,))
-    for player, local_id in compatible:
+
+    for player, local_id in matched:
         values = (
             player.nba_id,
             player.name,
@@ -677,7 +779,9 @@ def save_players(
             player.draft,
             mapping.get(player.team_nba_id),
             player.country,
-            player.jersey_number if textual else int(player.jersey_number),
+            player.jersey_number
+            if textual or player.jersey_number is None
+            else int(player.jersey_number),
             player.position,
             player.image,
         )
@@ -693,7 +797,7 @@ def save_players(
                            VALUES (%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s)""",
                 values,
             )
-    return [player for player, _ in compatible]
+    return [player for player, _ in matched]
 
 
 def import_database(
@@ -702,15 +806,20 @@ def import_database(
     players: list[Player],
     skipped: list[dict],
     strict: bool = False,
+    jersey_conflicts: list[dict] | None = None,
 ) -> list[Player]:
-    with psycopg.connect(
-        database_url, connect_timeout=10, prepare_threshold=None
-    ) as connection:
-        with connection.cursor() as cursor:
-            textual = check_schema(cursor)
-            cursor.execute("LOCK TABLE teams,players IN SHARE ROW EXCLUSIVE MODE")
-            mapping = save_teams(cursor, teams)
-            saved = save_players(cursor, players, mapping, textual, skipped, strict)
+    with (
+        psycopg.connect(
+            database_url, connect_timeout=10, prepare_threshold=None
+        ) as connection,
+        connection.cursor() as cursor,
+    ):
+        textual = check_schema(cursor)
+        cursor.execute("LOCK TABLE teams,players IN SHARE ROW EXCLUSIVE MODE")
+        mapping = save_teams(cursor, teams)
+        saved = save_players(
+            cursor, players, mapping, textual, skipped, strict, jersey_conflicts
+        )
     return saved
 
 
@@ -761,7 +870,7 @@ def arguments(argv: list[str] | None = None):
     parser.add_argument(
         "--strict",
         action="store_true",
-        help="Abortar si algún jugador no se puede guardar",
+        help="Abortar si algún jugador no se puede identificar; los datos opcionales no lo excluyen",
     )
     args = parser.parse_args(argv)
     if (
@@ -782,6 +891,7 @@ def main(argv: list[str] | None = None) -> int:
         LOG.error("Falta DATABASE_URL en %s o en el entorno.", args.env_file)
         return 1
     skipped = []
+    jersey_conflicts = []
     try:
         client = NBAClient(
             args.cache_dir, args.delay, args.timeout, args.retries, args.refresh
@@ -796,13 +906,23 @@ def main(argv: list[str] | None = None) -> int:
                     f"Hay {len(skipped)} jugadores con datos incompletos."
                 )
             saved = players
+            jersey_conflicts.extend(
+                warn_jersey_conflicts(
+                    [(player, None) for player in players],
+                    [],
+                    {team.nba_id: team.nba_id for team in teams},
+                    True,
+                )
+            )
             LOG.info(
                 "Simulación: %s equipos y %s jugadores preparados; no se ha conectado a PostgreSQL.",
                 len(teams),
                 len(saved),
             )
         else:
-            saved = import_database(database_url, teams, players, skipped, args.strict)
+            saved = import_database(
+                database_url, teams, players, skipped, args.strict, jersey_conflicts
+            )
             LOG.info("Guardados %s equipos y %s jugadores.", len(teams), len(saved))
         report = {
             "season": args.season,
@@ -811,6 +931,22 @@ def main(argv: list[str] | None = None) -> int:
             "players": len(saved),
             "missing_images": image_report(saved, ROOT / "public"),
             "skipped_players": skipped,
+            "incomplete_players": [
+                {
+                    "nba_id": player.nba_id,
+                    "name": player.name,
+                    "missing_fields": missing,
+                }
+                for player in saved
+                if (
+                    missing := [
+                        field
+                        for field in OPTIONAL_PLAYER_FIELDS
+                        if getattr(player, field) is None
+                    ]
+                )
+            ],
+            "jersey_conflicts": jersey_conflicts,
         }
         args.report.parent.mkdir(parents=True, exist_ok=True)
         args.report.write_text(
