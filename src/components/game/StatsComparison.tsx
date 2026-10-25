@@ -1,4 +1,4 @@
-import BarsComparison from './BarsComparison';
+import BarsComparison, { calculatePercentagesStatsComparison } from './BarsComparison';
 import styles from './StatsComparison.module.css';
 import { ChartBar } from "lucide-react";
 
@@ -23,7 +23,7 @@ type StatsComparisonProps = {
     awayStreakVictory: boolean;
 };
 
-type StatsComparisonRowProps = {
+export type StatsComparisonRowProps = {
     label: string;
     homeValue: number;
     awayValue: number;
@@ -33,43 +33,13 @@ type StatsComparisonRowProps = {
 };
 
 function StatsComparisonRow(props: StatsComparisonRowProps) {
-    let homePercentage, awayPercentage;
-    if (props.secondHomeValue !== undefined && props.secondAwayValue !== undefined) {
-        const totalHomeValue = props.homeValue + props.secondHomeValue;
-        const totalAwayValue = props.awayValue + props.secondAwayValue;
-
-        const homeRate = totalHomeValue > 0 ? props.homeValue / totalHomeValue : 0;
-        const awayRate = totalAwayValue > 0 ? props.awayValue / totalAwayValue : 0;
-        const totalRate = homeRate + awayRate;
-
-        homePercentage = totalRate > 0 ? (homeRate / totalRate) * 100 : 50;
-        awayPercentage = 100 - homePercentage;
-    } else if(props.label === "Net Rating") {
-        const difference = props.homeValue - props.awayValue;
-        const sensitivity = 1.3;
-
-        homePercentage = Math.max(
-            0,
-            Math.min(100, 50 + difference * sensitivity)
-        );
-
-        awayPercentage = 100 - homePercentage;
-    }else {
-        const total = props.homeValue + props.awayValue;
-        const proportion = total > 0
-            ? (props.homeValue / total) * 100
-            : 50;
-
-        const factor = props.factor ?? 1;
-        homePercentage = Math.max( 0, Math.min(100, 50 + (proportion - 50) * factor));
-        awayPercentage = 100 - homePercentage;
-    }
+    const {homePercentage, awayPercentage} = calculatePercentagesStatsComparison(props);
     return (
         <div className={styles.statsComparisonRow}>
             <div className={styles.rowSpans}>
-                <span className={styles.homeValue}>{Number(props.homeValue.toFixed(2))}{props.secondHomeValue && `-${props.secondHomeValue}`}</span>
+                <span className={styles.homeValue}>{Number(props.homeValue.toFixed(2))}{props.secondHomeValue !== undefined && `-${props.secondHomeValue}`}</span>
                 <span>{props.label}</span>
-                <span className={styles.awayValue}>{Number(props.awayValue.toFixed(2))}{props.secondAwayValue && `-${props.secondAwayValue}`}</span>
+                <span className={styles.awayValue}>{Number(props.awayValue.toFixed(2))}{props.secondAwayValue !== undefined && `-${props.secondAwayValue}`}</span>
             </div>
             <BarsComparison homePercentage={homePercentage} awayPercentage={awayPercentage} />
         </div>

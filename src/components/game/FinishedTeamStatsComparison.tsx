@@ -1,7 +1,7 @@
 import { GameTeamStats } from '@/src/backend/entities/gamesEntities';
 import styles from './FinishedTeamStatsComparison.module.css';
 import { ChartBar } from "lucide-react";
-import BarsComparison from './BarsComparison';
+import BarsComparison, { calculatePercentagesStatsComparison } from './BarsComparison';
 
 type StatComparisonRowProps = {
     label: string;
@@ -14,29 +14,12 @@ type StatComparisonRowProps = {
 };
 
 function StatComparisonRow(props: StatComparisonRowProps) {
-    let homePercentage, awayPercentage;
-    if(props.label === "Offensive Rating" || props.label === "Defensive Rating") {
-        const difference = props.label === "Defensive Rating"
-            ? props.awayValue - props.homeValue
-            : props.homeValue - props.awayValue;
-        const sensitivity = 1.3;
-
-        homePercentage = Math.max(
-            0,
-            Math.min(100, 50 + difference * sensitivity)
-        );
-
-        awayPercentage = 100 - homePercentage;
-    }else {
-        const total = props.homeValue + props.awayValue;
-        const proportion = total > 0
-            ? (props.homeValue / total) * 100
-            : 50;
-
-        const factor = props.factor ?? 1;
-        homePercentage = Math.max( 0, Math.min(100, 50 + (proportion - 50) * factor));
-        awayPercentage = 100 - homePercentage;
-    }
+    const {homePercentage, awayPercentage} = calculatePercentagesStatsComparison({
+        label: props.label,
+        homeValue: props.homeValue,
+        awayValue: props.awayValue,
+        factor: props.factor,
+    });
     return (
         <div>
             <div className={styles.rowSpans}>

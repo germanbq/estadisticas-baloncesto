@@ -1,14 +1,16 @@
 import { StatLeader } from '@/src/backend/entities/gamesEntities';
 import styles from './StatsLeadersComparison.module.css';
-import BarsComparison from './BarsComparison';
+import BarsComparison, { calculatePercentagesStatsComparison } from './BarsComparison';
 import { CircleStar } from 'lucide-react';
 
 function LeaderComparisonCard({homeLeader, awayLeader, homeName, awayName}:
                 {homeLeader: StatLeader, awayLeader: StatLeader, homeName: string, awayName: string}) 
 {
-    const total = homeLeader.value + awayLeader.value;
-    const homePercentage = total > 0 ? (homeLeader.value/total) * 100 : 50;
-    const awayPercentage = 100 - homePercentage 
+    const { homePercentage, awayPercentage } = calculatePercentagesStatsComparison({
+        label: homeLeader.metric,
+        homeValue: homeLeader.value,
+        awayValue: awayLeader.value,
+    });
     return (
         <article className={styles.card}>
             <span style={{color: `var(--color-text-primary)`}}>{homeLeader.metric} / Partido</span>
