@@ -84,8 +84,30 @@ function pendingResponse() {
 
 type GamesResponse = (date: string) => Response | Promise<Response>;
 
+function abortableResponse(result: Response | Promise<Response>, signal?: AbortSignal | null) {
+  return new Promise<Response>((resolve, reject) => {
+    const abort = () => reject(signal?.reason ?? new DOMException("Petición cancelada", "AbortError"));
+    if (signal?.aborted) {
+      abort();
+      return;
+    }
+
+    signal?.addEventListener("abort", abort, { once: true });
+    Promise.resolve(result).then(
+      (value) => {
+        signal?.removeEventListener("abort", abort);
+        resolve(value);
+      },
+      (error) => {
+        signal?.removeEventListener("abort", abort);
+        reject(error);
+      },
+    );
+  });
+}
+
 function respondToGames(response: GamesResponse) {
-  fetchMock.mockImplementation(async (input) => {
+  fetchMock.mockImplementation(async (input, options) => {
     const url = new URL(String(input), "https://app.test");
 
     if (url.pathname === "/api/partidos/numero") {
@@ -94,7 +116,7 @@ function respondToGames(response: GamesResponse) {
     if (url.pathname === "/api/partidos/listado") {
       const date = url.searchParams.get("date");
       if (!date) throw new Error("Falta la fecha del listado");
-      return response(date);
+      return abortableResponse(response(date), options?.signal);
     }
 
     throw new Error("Petición inesperada: " + url.pathname);
@@ -334,6 +356,7 @@ describe("Games: peticiones canceladas", () => {
       expect(oldSignal?.aborted).toBe(true);
       await screen.findByRole("link", { name: NEXT_LINK });
 
+      
       await act(async () => {
         if (outcome === "resuelve") {
           oldRequest.resolve(ok([firstGame]));
