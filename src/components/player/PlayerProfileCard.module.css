@@ -15,8 +15,20 @@
     font-weight: 600;
 }
 
-.image {
+.avatar {
     border-radius: 10px;
+    width: 130px;
+    height: 135px;
+}
+
+.avatar > img,
+.avatar > svg {
+    width: 100%;
+    height: 100%;
+}
+
+.avatar > img {
+    object-fit: contain;
 }
 
 .labels {

@@ -1,8 +1,12 @@
+"use client"
+
 import Image from "next/image";
 import styles from "./PlayerProfileCard.module.css";
 import { PlayerProfile } from "@/src/backend/entities/playersEntities";
 import FavoriteButton from "../FavoriteButton";
 import Link from "next/link";
+import { useState } from "react";
+import PlayerAvatar from "../PlayerAvatar";
 
 type DataContainerProps = {
     label: string;
@@ -20,9 +24,15 @@ function DataContainer({label, value, unit}: DataContainerProps) {
 }
 
 export default function PlayerProfileCard({stats}: {stats: PlayerProfile}) {
+    const [failedSrc, setFailerSrc] = useState<string | null>(null)
     return (
         <article className={styles.card}>
-            <Image src={stats.image} alt={`Imagen ${stats.name}`} width={120} height={120} className={styles.image} loading="eager"/>
+            <div className={styles.avatar}>
+                {!stats.image || failedSrc === stats.image 
+                    ? <PlayerAvatar />
+                    : <Image src={stats.image} onError={() => setFailerSrc(stats.image)} alt={`Imagen ${stats.name}`} width={130} height={135} loading="eager"/>
+                }
+            </div>
             <div className={styles.labels}>
                 <Link href={`/equipos/${stats.teamId}`} className={styles.team}>{stats.team}</Link>
                 <span className={styles.jerseyNumber}># {stats.jerseyNumber} {stats.position}</span>
