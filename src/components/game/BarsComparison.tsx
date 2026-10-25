@@ -27,7 +27,9 @@ export function calculatePercentagesStatsComparison(props: StatsComparisonRowPro
     }else {
         const total = props.homeValue + props.awayValue;
         const proportion = total > 0
-            ? (props.homeValue / total) * 100
+            ? ((props.label === "Puntos recibidos / Partido (PAPG)"
+                ? props.awayValue
+                : props.homeValue) / total) * 100
             : 50;
 
         const factor = props.factor ?? 1;
