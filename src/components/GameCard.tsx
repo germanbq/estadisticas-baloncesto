@@ -63,7 +63,7 @@ export default function GameCard(props: GameProps) {
                     <span>({props.homeRecord})</span>
                     <span className={`${styles.teamScore} ${(props.homeScore && props.awayScore) && props.homeScore > props.awayScore ? styles.green : ''}`}>{props.homeScore}</span>
                 </div>
-                {!props.finalizado ? <span className={styles.hour}>{props.date.toLocaleTimeString("es-ES", {hour: "2-digit", minute: "2-digit"})} </span>
+                {!props.finalizado ? <span className={styles.hour}>{props.date.toLocaleTimeString("es-ES", {hour: "2-digit", minute: "2-digit", timeZone: "Europe/Madrid",})} </span>
                 : <div className={styles.versus}>
                     <span>VS</span>
                     <span>FINAL</span>
