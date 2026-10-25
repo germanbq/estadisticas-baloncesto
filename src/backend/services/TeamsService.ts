@@ -1,7 +1,7 @@
 import { TreePalmIcon } from "lucide-react";
 import { Team, TeamHeader, teamPlayersStats, UpcomingTeamGames } from "../entities/teamsEntities";
 import { ITeamsRepository } from "../interfaces/teamsInterfaces";
-import { ACTUAL_SEASON } from "../rules/rules";
+import { ACTUAL_SEASON, LIMIT_TEAM_GAMES } from "../rules/rules";
 
 export class TeamsService {
     constructor(private readonly repository: ITeamsRepository) {}
@@ -19,6 +19,6 @@ export class TeamsService {
     }
 
     upcomingTeamGames(team_id: number): Promise<UpcomingTeamGames[]> {
-        return this.repository.upcomingTeamGames(team_id, ACTUAL_SEASON);
+        return this.repository.upcomingTeamGames(team_id, ACTUAL_SEASON, LIMIT_TEAM_GAMES);
     }
 }

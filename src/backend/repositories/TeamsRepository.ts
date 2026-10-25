@@ -26,8 +26,8 @@ export class TeamsRepository implements ITeamsRepository {
         return result;
     }
 
-    async upcomingTeamGames(teamId: number, season: number): Promise<UpcomingTeamGames[]> {
-        const query = this.queries.upcomingTeamGames(teamId, season);
+    async upcomingTeamGames(teamId: number, season: number, gamesLimit: number): Promise<UpcomingTeamGames[]> {
+        const query = this.queries.upcomingTeamGames(teamId, season, gamesLimit);
         const result = await this.executor.query<UpcomingTeamGames>(query.text, query.values);
 
         return result;

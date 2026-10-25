@@ -1,6 +1,6 @@
 import { Game, GameMVP, GameProfile, GamesNum, GameTeamStats, HeadToHeadGame, LastTeamGame, PlayerStats, StatLeader } from "../entities/gamesEntities";
 import { IGamesRepository } from "../interfaces/gamesInterfaces";
-import { ACTUAL_SEASON } from "../rules/rules";
+import { ACTUAL_SEASON, LIMIT_TEAM_GAMES } from "../rules/rules";
 
 export default class GamesService {
     constructor(private readonly repository: IGamesRepository) {}
@@ -18,7 +18,7 @@ export default class GamesService {
     }
 
     lastTeamGames(id: number): Promise<LastTeamGame[]> {
-        return this.repository.lastTeamGames(id, ACTUAL_SEASON);
+        return this.repository.lastTeamGames(id, ACTUAL_SEASON, LIMIT_TEAM_GAMES);
     }
 
     headToHeadGames(homeId: number, awayId: number): Promise<HeadToHeadGame[]> {

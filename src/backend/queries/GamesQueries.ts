@@ -168,7 +168,7 @@ export default class GamesQueries implements IGamesQueries {
         };
     }
 
-    lastTeamGames(id: number, season: number): SqlQuery {
+    lastTeamGames(id: number, season: number, gamesLimit: number): SqlQuery {
         return {
             text: `SELECT
                 g.id,
@@ -193,11 +193,12 @@ export default class GamesQueries implements IGamesQueries {
                 AND g.season_init_year = $2
                 AND g.finished = TRUE
             ORDER BY g.date DESC
-            LIMIT 5
+            LIMIT $3
             `,
             values: [
                 id,
-                season
+                season,
+                gamesLimit
             ],
         };
     }

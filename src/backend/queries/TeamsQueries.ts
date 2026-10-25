@@ -163,7 +163,7 @@ export class TeamsQueries implements ITeamsQueries {
         };
     }
 
-    upcomingTeamGames(teamId: number, season: number): SqlQuery {
+    upcomingTeamGames(teamId: number, season: number, gamesLimit: number): SqlQuery {
         return {
             text:`SELECT
                 g.id,
@@ -183,11 +183,12 @@ export class TeamsQueries implements ITeamsQueries {
                 AND g.finished = FALSE
                 AND g.date > NOW()
             ORDER BY g.date ASC, g.id ASC
-            LIMIT 5
+            LIMIT $3
             `,
             values: [
                 teamId,
                 season,
+                gamesLimit,
             ],
         };
     }

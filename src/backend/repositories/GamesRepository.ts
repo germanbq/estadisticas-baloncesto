@@ -26,8 +26,8 @@ export default class GamesRepository implements IGamesRepository {
         return result[0];
     }
 
-    async lastTeamGames(id: number, season: number): Promise<LastTeamGame[]> {
-        const query = this.queries.lastTeamGames(id, season);
+    async lastTeamGames(id: number, season: number, gamesLimit: number): Promise<LastTeamGame[]> {
+        const query = this.queries.lastTeamGames(id, season, gamesLimit);
         const result = await this.executor.query<LastTeamGame>(query.text, query.values);
 
         return result;
