@@ -27,18 +27,18 @@ export default function QuarterScores(props: QuarterScoresProps) {
             </thead>
             <tbody>
                 <tr>
-                    <th>{props.homeName}</th>
+                    <td scope="row">{props.homeName}</td>
                     {props.homeScores.map((score, index) => (
-                        <th key={index}>{score}</th>
+                        <td key={index}>{score}</td>
                     ))}
-                    <th className={`${props.homeTotal > props.awayTotal ? styles.green : ''}`}>{props.homeTotal}</th>
+                    <td className={`${props.homeTotal > props.awayTotal ? styles.green : ''}`}>{props.homeTotal}</td>
                 </tr>
                 <tr>
-                    <th>{props.awayName}</th>
+                    <td scope="row">{props.awayName}</td>
                     {props.awayScores.map((score, index) => (
-                        <th key={index}>{score}</th>
+                        <td key={index}>{score}</td>
                     ))}
-                    <th className={`${props.awayTotal > props.homeTotal ? styles.green : ''}`}>{props.awayTotal}</th>
+                    <td className={`${props.awayTotal > props.homeTotal ? styles.green : ''}`}>{props.awayTotal}</td>
                 </tr>
             </tbody>
         </table>
