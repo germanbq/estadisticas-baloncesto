@@ -30,14 +30,14 @@ function DateButton({date, gamesNumber, day, setDay}: DateButtonProps) {
     )
 }
 
+export function addDays(date: string, amount: number): Date {
+    const result = new Date(`${date}T00:00:00`);
+    result.setDate(result.getDate() + amount);
+    return result;
+}
+
 export default function DateButtons({date, setDate, getDateString}: 
                             {date: Date, setDate: (date: Date) => void, getDateString: (date: Date) => string }) {
-
-    function addDays(date: string, amount: number): Date {
-        const result = new Date(`${date}T00:00:00`);
-        result.setDate(result.getDate() + amount);
-        return result;
-    }
 
     const router = useRouter();
     const pathname = usePathname();
