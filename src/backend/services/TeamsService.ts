@@ -1,4 +1,3 @@
-import { TreePalmIcon } from "lucide-react";
 import { Team, TeamHeader, teamPlayersStats, UpcomingTeamGames } from "../entities/teamsEntities";
 import { ITeamsRepository } from "../interfaces/teamsInterfaces";
 import { ACTUAL_SEASON, LIMIT_TEAM_GAMES } from "../rules/rules";
