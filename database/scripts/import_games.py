@@ -26,9 +26,9 @@ from uuid import uuid4
 
 import psycopg
 from dotenv import load_dotenv
-from nba_api.live.nba.endpoints import boxscore as live_boxscore
 from nba_api.stats.endpoints import (
     boxscoreadvancedv3,
+    boxscoresummaryv3,
     boxscoretraditionalv3,
     scheduleleaguev2,
 )
@@ -225,7 +225,14 @@ class NBAClient:
             temporary.unlink(missing_ok=True)
 
     def forget_game(self, nba_id: str) -> None:
-        for kind in ("live", "traditional", "advanced"):
+        for kind in (
+            "live",
+            "traditional",
+            "advanced",
+            "stats-v3-summary",
+            "stats-v3-traditional",
+            "stats-v3-advanced",
+        ):
             (self.cache_dir / f"{kind}-{nba_id}.json").unlink(missing_ok=True)
 
 
@@ -352,12 +359,12 @@ def keyed_players(team: dict) -> dict[int, dict]:
 
 def parse_final(
     game: Game,
-    live: dict,
+    summary: dict,
     traditional: dict,
     advanced: dict,
     player_ids: dict[int, int],
 ) -> FinalGame:
-    detail = live.get("game", {})
+    detail = summary.get("boxScoreSummary", {})
     trad = traditional.get("boxScoreTraditional", {})
     adv = advanced.get("boxScoreAdvanced", {})
     for payload in (detail, trad, adv):
@@ -368,10 +375,6 @@ def parse_final(
             "El box score todavía no confirma que el partido haya terminado."
         )
     count = integer(detail.get("period"), "último período", 4)
-    if integer(detail.get("regulationPeriods"), "períodos reglamentarios") != 4:
-        raise ImportErrorNBA(
-            "El box score no corresponde a un partido NBA de cuatro cuartos."
-        )
     game = replace(game, date=utc_date(detail.get("gameTimeUTC")))
     team_lines, player_lines, omitted, scores, periods, player_teams = (
         {},
@@ -390,50 +393,41 @@ def parse_final(
             trad.get(side, {}),
             adv.get(side, {}),
         )
-        for source in (team, normal, advanced_team):
+        chart = detail.get("postgameCharts", {}).get(side, {})
+        for source in (team, normal, advanced_team, chart):
             if integer(source.get("teamId"), "teamId", 1) != expected:
                 raise ImportErrorNBA(
                     "Los equipos del calendario y del box score no coinciden."
                 )
-        live_stats, stats, a_stats = (
-            team.get("statistics", {}),
+        extra_stats, stats, a_stats = (
+            chart.get("statistics", {}),
             normal.get("statistics", {}),
             advanced_team.get("statistics", {}),
         )
         score = integer(team.get("score"), "marcador")
-        if integer(stats.get("points"), "puntos del equipo") != score:
+        traditional_score = integer(stats.get("points"), "puntos del equipo")
+        if traditional_score != score:
             raise ImportErrorNBA(
-                "El marcador y las estadísticas tradicionales todavía no coinciden."
+                f"Partido {game.nba_id}, equipo {expected}: "
+                f"SummaryV3 indica {score} puntos y TraditionalV3 {traditional_score}."
             )
         line = shooting(stats, str(expected))
         if 2 * line["fg_made"] + line["three_made"] + line["ft_made"] != score:
             raise ImportErrorNBA("Los tiros no suman los puntos del equipo.")
-        for key in (
-            "fieldGoalsMade",
-            "fieldGoalsAttempted",
-            "threePointersMade",
-            "threePointersAttempted",
-            "freeThrowsMade",
-            "freeThrowsAttempted",
-        ):
-            if integer(live_stats.get(key), key) != integer(stats.get(key), key):
-                raise ImportErrorNBA(
-                    "Los box scores todavía muestran tiros diferentes."
-                )
         line.update(
             {
                 "possessions": integer(a_stats.get("possessions"), "posesiones", 1),
                 "paint_points": integer(
-                    live_stats.get("pointsInThePaint"), "puntos en la pintura"
+                    extra_stats.get("pointsInThePaint"), "puntos en la pintura"
                 ),
                 "fastbreak_points": integer(
-                    live_stats.get("pointsFastBreak"), "puntos al contraataque"
+                    extra_stats.get("pointsFastBreak"), "puntos al contraataque"
                 ),
                 "bench_points": integer(
-                    live_stats.get("benchPoints"), "puntos del banquillo"
+                    extra_stats.get("benchPoints"), "puntos del banquillo"
                 ),
                 "second_chance_points": integer(
-                    live_stats.get("pointsSecondChance"), "segunda oportunidad"
+                    extra_stats.get("pointsSecondChance"), "segunda oportunidad"
                 ),
                 "effective_field_goal_percentage": percentage(
                     Decimal(line["fg_made"]) + Decimal("0.5") * line["three_made"],
@@ -467,53 +461,68 @@ def parse_final(
                 raise ImportErrorNBA(f"{key} supera los puntos del equipo.")
         scores[side], periods[side] = score, period_scores(team, count)
         if sum(periods[side]) != score:
-            raise ImportErrorNBA("Los parciales no suman el marcador final.")
+            raise ImportErrorNBA(
+                f"Partido {game.nba_id}, equipo {expected}: los parciales "
+                f"{periods[side]} suman {sum(periods[side])}, pero el marcador es {score}."
+            )
         team_lines[expected] = line
-        live_players, trad_players = keyed_players(team), keyed_players(normal)
-        if not live_players or not trad_players:
+        trad_players = keyed_players(normal)
+        if not trad_players:
             raise ImportErrorNBA("El box score final aún no contiene los jugadores.")
-        for nba_id in sorted(set(live_players) | set(trad_players)):
+        player_points = sum(
+            integer(
+                player.get("statistics", {}).get("points")
+                if player.get("statistics", {}).get("points") not in (None, "")
+                else 0,
+                "puntos del jugador",
+            )
+            for player in trad_players.values()
+        )
+        if player_points != score:
+            raise ImportErrorNBA(
+                f"Partido {game.nba_id}, equipo {expected}: los jugadores suman "
+                f"{player_points} puntos y el equipo {score}."
+            )
+        for nba_id in sorted(trad_players):
             if nba_id in player_teams and player_teams[nba_id] != expected:
                 raise ImportErrorNBA(
                     "Un jugador aparece en ambos equipos del mismo partido."
                 )
             player_teams[nba_id] = expected
-            person, traditional_person = (
-                live_players.get(nba_id, {}),
-                trad_players.get(nba_id, {}),
-            )
-            live_values, values = (
-                person.get("statistics", {}),
-                traditional_person.get("statistics", {}),
-            )
-            duration = live_values.get("minutes")
-            if duration in (None, ""):
-                duration = values.get("minutes")
-            played_flag = str(person.get("played", ""))
+            traditional_person = trad_players[nba_id]
+            values = traditional_person.get("statistics", {})
+            duration = values.get("minutes")
             actual_seconds = (
                 seconds(duration) if duration not in (None, "") else Decimal(0)
             )
-            if played_flag == "0" and actual_seconds > 0:
-                raise ImportErrorNBA(
-                    "Tiempo de juego incoherente con la participación del jugador."
+            has_statistics = any(
+                decimal_number(values.get(key, 0), key) > 0
+                for key in (
+                    "points",
+                    "fieldGoalsAttempted",
+                    "freeThrowsAttempted",
+                    "reboundsTotal",
+                    "assists",
+                    "steals",
+                    "blocks",
+                    "turnovers",
+                    "foulsPersonal",
                 )
-            participated = played_flag == "1" or actual_seconds > 0
-            if not participated:
+                if values.get(key) not in (None, "")
+            )
+            if actual_seconds == 0 and has_statistics:
+                raise ImportErrorNBA(
+                    f"Partido {game.nba_id}: el jugador {nba_id} tiene estadísticas "
+                    "pero no informa de un tiempo de juego positivo."
+                )
+            if actual_seconds == 0:
                 continue
-            if duration in (None, ""):
-                raise ImportErrorNBA(
-                    f"Falta el tiempo del jugador participante {nba_id}."
-                )
             if nba_id not in player_ids:
                 if actual_seconds > 0:
-                    name = (
-                        person.get("name")
-                        or " ".join(
-                            str(traditional_person.get(k) or "")
-                            for k in ("firstName", "familyName")
-                        ).strip()
-                        or str(nba_id)
-                    )
+                    name = " ".join(
+                        str(traditional_person.get(k) or "")
+                        for k in ("firstName", "familyName")
+                    ).strip() or str(nba_id)
                     omitted.append(
                         {
                             "nba_id": nba_id,
@@ -524,10 +533,6 @@ def parse_final(
                         }
                     )
                 continue
-            if not traditional_person:
-                raise ImportErrorNBA(
-                    f"Faltan las estadísticas tradicionales de {nba_id}."
-                )
             p_line = shooting(values, str(nba_id))
             p_line.update(
                 {
@@ -574,7 +579,7 @@ def parse_final(
 
 def fetch_final(client: NBAClient, game: Game, player_ids: dict[int, int]) -> FinalGame:
     sources = (
-        ("live", partial(live_boxscore.BoxScore, game_id=game.nba_id)),
+        ("summary", partial(boxscoresummaryv3.BoxScoreSummaryV3, game_id=game.nba_id)),
         (
             "traditional",
             partial(boxscoretraditionalv3.BoxScoreTraditionalV3, game_id=game.nba_id),
@@ -585,7 +590,7 @@ def fetch_final(client: NBAClient, game: Game, player_ids: dict[int, int]) -> Fi
         ),
     )
     payloads = [
-        client.call(f"{kind}-{game.nba_id}", factory, cache=True)
+        client.call(f"stats-v3-{kind}-{game.nba_id}", factory, cache=True)
         for kind, factory in sources
     ]
     try:
@@ -595,7 +600,7 @@ def fetch_final(client: NBAClient, game: Game, player_ids: dict[int, int]) -> Fi
         raise
     # Solo se guardan respuestas de partidos finales ya validadas entre sí.
     for (kind, _), payload in zip(sources, payloads, strict=True):
-        client.remember(f"{kind}-{game.nba_id}", payload)
+        client.remember(f"stats-v3-{kind}-{game.nba_id}", payload)
     return result
 
 
@@ -1045,6 +1050,7 @@ def run(args, client: NBAClient, now: datetime | None = None) -> tuple[int, dict
     report = {
         "season": args.season,
         "mode": args.mode,
+        "statistics_source": "NBA Stats V3: Summary, Traditional, Advanced",
         "dry_run": args.dry_run,
         "started_at_utc": started.isoformat(),
         "calendar": {},
@@ -1156,7 +1162,7 @@ def arguments(argv: list[str] | None = None):
     parser.add_argument("--env-file", type=Path, default=ROOT / ".env.local")
     parser.add_argument("--cache-dir", type=Path, default=ROOT / ".nba-games-cache")
     parser.add_argument(
-        "--report", type=Path, default=ROOT / "database/scripts/nba_games_import_report.json"
+        "--report", type=Path, default=Path(__file__).resolve().parent / "nba_games_import_report.json"
     )
     parser.add_argument(
         "--dry-run",
