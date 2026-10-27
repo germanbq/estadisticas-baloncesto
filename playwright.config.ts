@@ -1,4 +1,9 @@
 import { defineConfig, devices } from "@playwright/test";
+import { loadEnvConfig } from "@next/env";
+
+loadEnvConfig(process.cwd());
+process.env.CLERK_PUBLISHABLE_KEY ??=
+  process.env.NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY;
 
 export default defineConfig({
   testDir: "./tests/e2e",
@@ -12,9 +17,28 @@ export default defineConfig({
     trace: "on-first-retry",
   },
   projects: [
-    { name: "chromium", use: { ...devices["Desktop Chrome"] } },
-    { name: "firefox", use: { ...devices["Desktop Firefox"] } },
-    { name: "webkit", use: { ...devices["Desktop Safari"] } },
+    { name: "setup", testMatch: /auth\.setup\.ts/ },
+    { name: "chromium", testIgnore: /favorites\.spec\.ts/, use: { ...devices["Desktop Chrome"] } },
+    { name: "firefox", testIgnore: /favorites\.spec\.ts/, use: { ...devices["Desktop Firefox"] } },
+    { name: "webkit", testIgnore: /favorites\.spec\.ts/, use: { ...devices["Desktop Safari"] } },
+    {
+      name: "chromium-auth",
+      testMatch: /favorites\.spec\.ts/,
+      use: { ...devices["Desktop Chrome"] },
+      dependencies: ["setup"],
+    },
+    {
+      name: "firefox-auth",
+      testMatch: /favorites\.spec\.ts/,
+      use: { ...devices["Desktop Firefox"] },
+      dependencies: ["setup"],
+    },
+    {
+      name: "webkit-auth",
+      testMatch: /favorites\.spec\.ts/,
+      use: { ...devices["Desktop Safari"] },
+      dependencies: ["setup"],
+    },
   ],
   webServer: {
     command: "npm run dev -- --hostname localhost",

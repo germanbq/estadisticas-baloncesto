@@ -41,10 +41,6 @@ function button() {
   return screen.getByRole("button", { name: "Cambiar estado de favorito" });
 }
 
-function star() {
-  return button().querySelector("svg");
-}
-
 function pendingResponse() {
   let resolve!: (response: Response) => void;
   let reject!: (error: Error) => void;
@@ -71,13 +67,13 @@ afterEach(() => {
 
 describe("FavoriteButton: estado inicial y autenticación", () => {
   test.each([
-    { isFavorite: false, fill: "none" },
-    { isFavorite: true, fill: "#f59e0b" },
-  ])("representa isFavorite=$isFavorite al renderizar", ({ isFavorite, fill }) => {
+    { isFavorite: false, pressed: "false" },
+    { isFavorite: true, pressed: "true" },
+  ])("representa isFavorite=$isFavorite al renderizar", ({ isFavorite, pressed }) => {
     renderButton({ isFavorite });
 
     expect(button()).toBeEnabled();
-    expect(star()).toHaveAttribute("fill", fill);
+    expect(button()).toHaveAttribute("aria-pressed", pressed);
     expect(fetchMock).not.toHaveBeenCalled();
   });
 
@@ -112,14 +108,14 @@ describe("FavoriteButton: estado inicial y autenticación", () => {
     expect(clerk.openSignIn).toHaveBeenCalledOnce();
     expect(fetchMock).not.toHaveBeenCalled();
     expect(onFavoriteChange).not.toHaveBeenCalled();
-    expect(star()).toHaveAttribute("fill", "none");
+    expect(button()).toHaveAttribute("aria-pressed", "false");
   });
 
   test("muestra la estrella vacía sin sesión aunque isFavorite sea true", () => {
     clerk.useUser.mockReturnValue({ isLoaded: true, isSignedIn: false });
     renderButton({ isFavorite: true });
 
-    expect(star()).toHaveAttribute("fill", "none");
+    expect(button()).toHaveAttribute("aria-pressed", "false");
   });
 });
 
@@ -138,7 +134,7 @@ describe.each(["jugadores", "equipos", "partidos"])(
 
       await waitFor(() => {
         expect(button()).toBeEnabled();
-        expect(star()).toHaveAttribute("fill", "#f59e0b");
+        expect(button()).toHaveAttribute("aria-pressed", "true");
         expect(onFavoriteChange).toHaveBeenCalledExactlyOnceWith(true);
       });
     });
@@ -155,7 +151,7 @@ describe.each(["jugadores", "equipos", "partidos"])(
 
       await waitFor(() => {
         expect(button()).toBeEnabled();
-        expect(star()).toHaveAttribute("fill", "none");
+        expect(button()).toHaveAttribute("aria-pressed", "false");
         expect(onFavoriteChange).toHaveBeenCalledExactlyOnceWith(false);
       });
     });
@@ -171,7 +167,7 @@ describe("FavoriteButton: espera y errores", () => {
     fireEvent.click(button());
 
     expect(button()).toBeDisabled();
-    expect(star()).toHaveAttribute("fill", "none");
+    expect(button()).toHaveAttribute("aria-pressed", "false");
     expect(onFavoriteChange).not.toHaveBeenCalled();
 
     fireEvent.click(button());
@@ -184,18 +180,18 @@ describe("FavoriteButton: espera y errores", () => {
     });
 
     expect(button()).toBeEnabled();
-    expect(star()).toHaveAttribute("fill", "#f59e0b");
+    expect(button()).toHaveAttribute("aria-pressed", "true");
     expect(onFavoriteChange).toHaveBeenCalledExactlyOnceWith(true);
   });
 
   test.each([
-    { isFavorite: false, failure: "HTTP", fill: "none" },
-    { isFavorite: true, failure: "HTTP", fill: "#f59e0b" },
-    { isFavorite: false, failure: "red", fill: "none" },
-    { isFavorite: true, failure: "red", fill: "#f59e0b" },
+    { isFavorite: false, failure: "HTTP", pressed: "false" },
+    { isFavorite: true, failure: "HTTP", pressed: "true" },
+    { isFavorite: false, failure: "red", pressed: "false" },
+    { isFavorite: true, failure: "red", pressed: "true" },
   ])(
     "conserva isFavorite=$isFavorite si falla por $failure",
-    async ({ isFavorite, failure, fill }) => {
+    async ({ isFavorite, failure, pressed }) => {
       if (failure === "HTTP") {
         fetchMock.mockResolvedValueOnce(new Response(null, { status: 500 }));
       } else {
@@ -210,7 +206,7 @@ describe("FavoriteButton: espera y errores", () => {
         expect(console.error).toHaveBeenCalledOnce();
       });
 
-      expect(star()).toHaveAttribute("fill", fill);
+      expect(button()).toHaveAttribute("aria-pressed", pressed);
       expect(onFavoriteChange).not.toHaveBeenCalled();
       expect(clerk.openSignIn).not.toHaveBeenCalled();
     },
@@ -225,14 +221,14 @@ describe("FavoriteButton: espera y errores", () => {
     fireEvent.click(button());
     await waitFor(() => expect(button()).toBeEnabled());
 
-    expect(star()).toHaveAttribute("fill", "none");
+    expect(button()).toHaveAttribute("aria-pressed", "false");
     expect(onFavoriteChange).not.toHaveBeenCalled();
 
     fireEvent.click(button());
 
     await waitFor(() => {
       expect(button()).toBeEnabled();
-      expect(star()).toHaveAttribute("fill", "#f59e0b");
+      expect(button()).toHaveAttribute("aria-pressed", "true");
       expect(onFavoriteChange).toHaveBeenCalledExactlyOnceWith(true);
     });
 
@@ -250,7 +246,7 @@ describe("FavoriteButton: integración con el componente padre", () => {
 
     await waitFor(() => {
       expect(button()).toBeEnabled();
-      expect(star()).toHaveAttribute("fill", "#f59e0b");
+      expect(button()).toHaveAttribute("aria-pressed", "true");
     });
     expect(console.error).not.toHaveBeenCalled();
   });

@@ -61,7 +61,7 @@ export default function FavoriteButton({type, itemId, isFavorite, onFavoriteChan
     }
 
     return (
-        <button type="button" onClick={handleClick} disabled={!isLoaded || loading || disabled} className={styles.button} aria-label="Cambiar estado de favorito">
+        <button type="button" onClick={handleClick} disabled={!isLoaded || loading || disabled} className={styles.button} aria-label="Cambiar estado de favorito" aria-pressed={Boolean(showFavorite)}>
             <Star className={styles.star}
                 fill={showFavorite ? "#f59e0b" : "none"}
                 color={showFavorite ? "#f59e0b" : "currentColor"}
