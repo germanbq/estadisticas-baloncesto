@@ -1,3 +1,4 @@
+import StatsDataNotice from "../StatsDataNotice";
 import { PlayerProfile } from "@/src/backend/entities/playersEntities";
 import styles from "./StatsTable.module.css";
 import { TableProperties } from 'lucide-react';
@@ -8,6 +9,7 @@ export default function StatsTable({stats}: {stats: PlayerProfile}) {
             <span className={styles.title}>
                 <TableProperties size={25} strokeWidth={2} aria-hidden="true" />
                 Estadísticas completas por temporada
+                <StatsDataNotice context="Estadísticas completas por temporada" />
             </span>
             <div className={styles.tableScroll} role="region" aria-label="Estadísticas completas por temporada" tabIndex={0}>
             <table className={styles.table}>

@@ -1,3 +1,4 @@
+import StatsDataNotice from "../StatsDataNotice";
 import { StatLeader } from '@/src/backend/entities/gamesEntities';
 import styles from './StatsLeadersComparison.module.css';
 import BarsComparison, { calculatePercentagesStatsComparison } from './BarsComparison';
@@ -51,6 +52,7 @@ export default function StatsLeadersComparison({homeLeaders, awayLeaders, homeNa
             <span className={styles.title}>
                 <CircleStar size={25} strokeWidth={2} aria-hidden="true" />
                 Líderes estadísticos
+                <StatsDataNotice context="Líderes estadísticos" />
             </span>
 
             {homeLeaders.map((homeLeader) => {

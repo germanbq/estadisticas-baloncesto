@@ -1,3 +1,4 @@
+import StatsDataNotice from "../StatsDataNotice";
 import { GameMVP } from "@/src/backend/entities/gamesEntities";
 import styles from './MVPCard.module.css';
 import { CircleStar } from "lucide-react";
@@ -35,6 +36,7 @@ export default function MVPCard({player, home}: {player: GameMVP, home: boolean}
             <span className={styles.title}>
                 <CircleStar size={25} strokeWidth={2} aria-hidden="true" />
                 MVP del partido
+                <StatsDataNotice context="MVP del partido" />
             </span>
             <article className={`${styles.article} ${home ? styles.home : styles.away}`}>
                 <div className={styles.playerData}>

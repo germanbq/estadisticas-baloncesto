@@ -1,0 +1,109 @@
+.notice {
+    position: relative;
+    z-index: 2;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.4rem;
+    flex-shrink: 0;
+    align-self: flex-start;
+    min-height: 44px;
+    padding: 0.35rem 0.65rem;
+    border: 1px solid #80613a;
+    border-radius: 999px;
+    background: #33291e;
+    color: #ffd59a;
+    font-family: inherit;
+    font-size: 0.75rem;
+    font-weight: 600;
+    line-height: 1.2;
+    cursor: pointer;
+}
+
+.notice:hover {
+    background: #4a3824;
+}
+
+.notice:focus-visible,
+.close:focus-visible,
+.confirm:focus-visible {
+    outline: 3px solid #ffd59a;
+    outline-offset: 3px;
+}
+
+.dialog {
+    width: min(32rem, calc(100vw - 2rem));
+    max-height: calc(100dvh - 2rem);
+    margin: auto;
+    padding: 1.5rem;
+    overflow-y: auto;
+    border: 1px solid #80613a;
+    border-radius: 16px;
+    background: #1d222b;
+    color: #ededed;
+    font-family: Arial, Helvetica, sans-serif;
+    font-size: 1rem;
+    font-weight: 400;
+    line-height: 1.65;
+    text-align: left;
+    box-shadow: 0 24px 80px #0008;
+}
+
+.dialog::backdrop {
+    background: #000b;
+    backdrop-filter: blur(3px);
+}
+
+.heading {
+    display: flex;
+    align-items: flex-start;
+    justify-content: space-between;
+    gap: 1rem;
+    margin-bottom: 1rem;
+}
+
+.heading h2 {
+    margin: 0;
+    color: #ffd59a;
+    font-size: 1.25rem;
+    font-weight: 700;
+    line-height: 1.4;
+}
+
+.close {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+    width: 44px;
+    height: 44px;
+    margin-top: -0.5rem;
+    border-radius: 8px;
+    color: #ededed;
+    cursor: pointer;
+}
+
+.close:hover {
+    background: #303641;
+}
+
+.dialog p {
+    margin: 0 0 1rem;
+}
+
+.confirm {
+    display: block;
+    min-height: 44px;
+    margin-left: auto;
+    padding: 0.5rem 1rem;
+    border-radius: 8px;
+    background: #ffd59a;
+    color: #221a12;
+    font: inherit;
+    font-weight: 700;
+    cursor: pointer;
+}
+
+.confirm:hover {
+    background: #ffe4bd;
+}

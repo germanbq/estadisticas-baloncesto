@@ -1,3 +1,4 @@
+import StatsDataNotice from "./StatsDataNotice";
 import styles from "./GameCard.module.css";
 import Image from "next/image";
 import FavoriteButton from "./FavoriteButton";
@@ -55,6 +56,7 @@ export default function GameCard(props: GameProps) {
                     <FavoriteButton type="partidos" itemId={props.id} isFavorite={props.isFavorite} onFavoriteChange={props.onFavoriteChange} disabled={props.disabled}/>
                 </div>
             </div>
+            <StatsDataNotice context={`${props.homeTeam} contra ${props.awayTeam}`} />
             <div className={styles.gameTeams}>
                 <div className={styles.teamColumn}>
                     <Image src={props.homeLogo} alt="Logo del local" width={64} height={64}/>

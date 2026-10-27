@@ -244,7 +244,7 @@ Próximos pasos:
 
 Este proyecto es independiente y no está afiliado, patrocinado ni respaldado por la NBA, sus equipos o sus jugadores.
 
-Las fotografías de public/players/, así como otras imágenes de terceros, pertenecen a sus respectivos titulares. No se reivindica su autoría ni se concede permiso para reutilizarlos ya que las fotografías tienen sus licencias CC individuales y las insignias tienen declaración CC0.
+Las fotografías de public/players/, así como otras imágenes de terceros, pertenecen a sus respectivos titulares. No se reivindica su autoría. Las fotografías se pueden reutilizar conforme a sus licencias individuales, documentadas en los créditos; las insignias tienen declaración CC0. Las versiones adaptadas de fotografías CC BY-SA se distribuyen bajo la licencia indicada para cada imagen. Estas licencias de los recursos gráficos son independientes de la licencia del código.
 
 Cualquier licencia del código de este proyecto excluye estos recursos gráficos. Su conversión a WebP no cambia sus derechos de propiedad intelectual.
 
@@ -254,3 +254,9 @@ La procedencia, autoría y condiciones de uso de cada recurso deben verificarse 
 
 Los autores, fuentes y licencias de las imágenes están disponibles
 en [Créditos de las fotografías](./CREDITOS_FOTOGRAFIAS.md).
+
+## Avisos de datos ficticios
+
+La interfaz identifica los resultados y estadísticas como datos ficticios mediante un aviso general y botones en las tarjetas, tablas y comparativas. Al pulsarlos se abre una explicación de la finalidad educativa, la ausencia de monetización y la independencia del proyecto. El diálogo también se cierra con Escape y devuelve el foco al botón que lo abrió.
+
+Estos avisos describen una demo con datos de ejemplo: **no transforman ni sustituyen los datos de PostgreSQL**. Antes de publicar la demo, comprueba que la base de datos usada por ese despliegue contenga únicamente estadísticas ficticias. No utilices los scripts de importación de estadísticas reales para alimentar esa demo.

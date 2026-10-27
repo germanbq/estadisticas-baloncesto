@@ -1,3 +1,4 @@
+import StatsDataNotice from "../StatsDataNotice";
 import { HeadToHeadGame } from "@/src/backend/entities/gamesEntities";
 import { Swords, CircleCheck, CalendarX } from "lucide-react";
 import styles from './HeadToHeadGames.module.css';
@@ -37,6 +38,7 @@ export default function HeadToHeadGames({games, referenceTeamName}:{games: HeadT
             <span className={styles.title}>
                 <Swords size={25} strokeWidth={2} aria-hidden="true" />
                 Enfrentamientos esta temporada
+                <StatsDataNotice context="Enfrentamientos esta temporada" />
             </span>
             {games.length === 0 
             ?

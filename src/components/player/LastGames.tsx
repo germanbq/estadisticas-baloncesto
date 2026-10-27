@@ -1,3 +1,4 @@
+import StatsDataNotice from "../StatsDataNotice";
 import { PlayerGames } from "@/src/backend/entities/playersEntities";
 import SingleStat from "../SingleStat";
 import styles from "./LastGames.module.css";
@@ -43,6 +44,7 @@ export default function LastGames({games}: Props)  {
             <span className={styles.title}>
                 <History size={25} strokeWidth={2} aria-hidden="true" />
                 Últimos 5 partidos
+                <StatsDataNotice context="Últimos 5 partidos" />
             </span>
             {games.map((game) => (
                 <Game key={game.gameId} game={game}/>

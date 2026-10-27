@@ -1,3 +1,4 @@
+import StatsDataNotice from "../StatsDataNotice";
 import { LastTeamGame } from "@/src/backend/entities/gamesEntities";
 import styles from './LastGamesComparison.module.css';
 import { CalendarDays } from "lucide-react";
@@ -33,6 +34,7 @@ export default function LastGamesComparison({homeGames, awayGames, homeName, awa
             <span className={styles.title}>
                 <CalendarDays size={25} strokeWidth={2} aria-hidden="true" />
                 Estado de forma
+                <StatsDataNotice context="Estado de forma" />
             </span>
             <section className={styles.games}>
                 <section className={styles.homeGames}>

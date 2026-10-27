@@ -7,7 +7,7 @@ export default function Footer() {
         <footer className={styles.container}>
             <div className={styles.description}>
                 <Image src="/logo.webp" alt="Logo del footer" width={60} height={60}/>
-                <span>Resultados, estadísticas y seguimiento de tus jugadores, equipos y partidos favoritos de la NBA</span>
+                <span>Demostración educativa de estadísticas de baloncesto con datos ficticios. Proyecto de portfolio sin monetización.</span>
             </div>
             <div className={styles.links}>
                 <a href="https://github.com/germanbq/estadisticas-baloncesto" target="_blank" rel="noopener noreferrer">Github</a>

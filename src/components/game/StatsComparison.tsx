@@ -1,3 +1,4 @@
+import StatsDataNotice from "../StatsDataNotice";
 import BarsComparison, { calculatePercentagesStatsComparison } from './BarsComparison';
 import styles from './StatsComparison.module.css';
 import { ChartBar } from "lucide-react";
@@ -51,6 +52,7 @@ export default function StatsComparison(props: StatsComparisonProps) {
             <span className={styles.title}>
                 <ChartBar size={25} strokeWidth={2} aria-hidden="true" />
                 Métricas Comparativas
+                <StatsDataNotice context="Métricas Comparativas" />
             </span>
             <section className={styles.statsComparison}>
                 <div className={styles.teamNames}>

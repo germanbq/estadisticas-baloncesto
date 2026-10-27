@@ -1,3 +1,4 @@
+import StatsDataNotice from "../StatsDataNotice";
 import Image from 'next/image';
 import { Flame } from 'lucide-react';
 import styles from './HeaderCard.module.css';
@@ -23,6 +24,7 @@ export default function HeaderCard(team: TeamHeader) {
     return (
         <section className={styles.card} aria-label={`Resumen de ${team.name}`}>
             <div className={styles.badges}>
+                <StatsDataNotice context={`Resumen de ${team.name}`} />
                 <span className={styles.recordBadge}>
                     <span className={`${styles.dot} ${positionClass}`} aria-hidden="true" />
                     #{team.rank} {conference} ·{' '}

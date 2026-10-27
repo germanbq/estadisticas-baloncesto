@@ -1,3 +1,4 @@
+import StatsDataNotice from "../StatsDataNotice";
 import { PlayerStats } from '@/src/backend/entities/gamesEntities';
 import styles from './PlayersStats.module.css';
 import Link from 'next/link';
@@ -14,6 +15,7 @@ export default function PlayersStats({homePlayers, awayPlayers, homeName, awayNa
             <section key={team.side} className={`${styles.section} ${team.side === 'home' ? styles.home : styles.away}`}>
                 <div className={styles.heading}>
                     <h2 className={styles.title}>{team.name}</h2>
+                    <StatsDataNotice context={`Estadísticas de jugadores de ${team.name}`} />
                     <span className={styles.badge}>{team.side === 'home' ? 'Local' : 'Visitante'}</span>
                 </div>
                 <div className={styles.tableScroll} role="region" aria-label={`Estadísticas de jugadores de ${team.name}`} tabIndex={0}>

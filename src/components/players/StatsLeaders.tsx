@@ -1,5 +1,6 @@
 "use client"
 
+import StatsDataNotice from "../StatsDataNotice";
 import { CSSProperties, useEffect, useState } from "react";
 import { usePathname, useRouter, useSearchParams } from 'next/navigation';
 
@@ -104,7 +105,7 @@ export default function StatsLeader() {
 
     return (
         <section>
-            <span className={styles.title}>LÍDERES DE LA LIGA</span>
+            <span className={styles.title}>LÍDERES DE LA LIGA <StatsDataNotice context="Líderes de la liga" /></span>
             <section className={styles.filters}>
                 <div className={styles.filtersIcon}>
                     <SlidersHorizontal className={styles.icon}/>

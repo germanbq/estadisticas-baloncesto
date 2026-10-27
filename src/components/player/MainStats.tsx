@@ -1,3 +1,4 @@
+import StatsDataNotice from "../StatsDataNotice";
 import { PlayerProfile } from "@/src/backend/entities/playersEntities";
 import styles from "./MainStats.module.css";
 import { CircleDot, ArrowUp, Share2, Hand, Shield, Crosshair, Goal, ChartNoAxesCombined} from "lucide-react";
@@ -27,6 +28,7 @@ export default function MainStats({stats}: {stats: PlayerProfile}) {
             <span className={styles.title}>
                 <ChartNoAxesCombined size={25} strokeWidth={2} aria-hidden="true" />
                 Promedios de temporada 2025-2026
+                <StatsDataNotice context="Promedios de temporada 2025-2026" />
             </span>
             <section className={styles.statsGrid}>
                 <DataContainer icon={<CircleDot />} label="PTS" value={stats.seasons[0].points} />

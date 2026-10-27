@@ -1,3 +1,4 @@
+import StatsDataNotice from "../StatsDataNotice";
 import NoDataCard from "../general/NoDataCard";
 import styles from "./FavoriteTeams.module.css";
 import Image from "next/image";
@@ -39,6 +40,7 @@ function TeamCard(props: TeamCardProps) {
                     <ArrowRight size={18} />
                 </Link>
             </div>
+            <StatsDataNotice context={`Estadísticas de ${props.team.name}`} />
             <div className={styles.statsContainer}>
                     <SingleStat label="net rating" value={Number(props.team.netRating.toFixed(2))} color={props.team.netRating > 0 ? "var(--color-green)" : "var(--color-text-primay)"}/>
                     <SingleStat label="ppg" value={Number(props.team.pointsPerGame.toFixed(2))} />

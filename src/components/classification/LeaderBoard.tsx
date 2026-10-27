@@ -1,5 +1,6 @@
 "use client"
 
+import StatsDataNotice from "../StatsDataNotice";
 import styles from "./LeaderBoard.module.css";
 import FilterButton from "../FilterButton";
 import { useEffect, useState } from "react";
@@ -74,7 +75,7 @@ export default function LeaderBoard({season}: {season: number}) {
 
     return (
         <section className={styles.section}>
-            <span className={styles.seasonSpan}>Temporada regular {season}-{endingYear}</span>
+            <span className={styles.seasonSpan}>Temporada regular {season}-{endingYear} <StatsDataNotice context="Clasificación por conferencia" /></span>
             <div className={styles.buttonsContainer}>
                 <FilterButton icon={<Sunrise />} value="CONFERENCIA ESTE" selected={conf} setSelected={setConf} className={styles.button} activeClassName={styles.active} selectedValue="East"/>
                 <FilterButton icon={<Sunset />} value="CONFERENCIA OESTE" selected={conf} setSelected={setConf} className={styles.button} activeClassName={styles.active} selectedValue="West"/>

@@ -1,3 +1,4 @@
+import StatsDataNotice from "../StatsDataNotice";
 import { GameTeamStats } from '@/src/backend/entities/gamesEntities';
 import styles from './FinishedTeamStatsComparison.module.css';
 import { ChartBar } from "lucide-react";
@@ -59,6 +60,7 @@ export default function FinishedTeamStatsComparison({homeStats, awayStats, homeN
             <span className={styles.title}>
                 <ChartBar size={25} strokeWidth={2} aria-hidden="true" />
                 Comparativa de equipos
+                <StatsDataNotice context="Comparativa de equipos" />
             </span>
             <article className={styles.statsComparison}>
                 <div className={styles.teamNames}>

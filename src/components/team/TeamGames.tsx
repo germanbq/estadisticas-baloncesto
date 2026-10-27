@@ -1,3 +1,4 @@
+import StatsDataNotice from "../StatsDataNotice";
 import { LastTeamGame } from "@/src/backend/entities/gamesEntities";
 import styles from './TeamGames.module.css';
 import { CalendarDays } from "lucide-react";
@@ -68,6 +69,7 @@ export default function TeamGames({finishedGames, upcomingGames}:
             <span className={styles.title}>
                 <CalendarDays size={25} strokeWidth={2} aria-hidden="true" />
                 Partidos del equipo
+                <StatsDataNotice context="Partidos del equipo" />
             </span>
             <section className={styles.games}>
                 <section className={styles.finishedGames}>

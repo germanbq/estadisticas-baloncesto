@@ -1,3 +1,4 @@
+import StatsDataNotice from "./StatsDataNotice";
 import Image from "next/image"
 import styles from "./HorizontalPlayerCard.module.css";
 import Link from "next/link";
@@ -38,6 +39,7 @@ export default function HorizontalPlayerCard({player, onFavoriteChange, disabled
             <div className={styles.favorite}>
                 <FavoriteButton type="jugadores" itemId={player.id} isFavorite={player.isFavorite} onFavoriteChange={onFavoriteChange} disabled={disabled}/>
             </div>
+            <StatsDataNotice context={`Estadísticas de ${player.name}`} />
             <div className={styles.statsContainer}>
                 <SingleStat label="PTS" value={Number(player.points.toFixed(2))} />
                 <SingleStat label="REB" value={Number(player.rebounds.toFixed(2))} />
