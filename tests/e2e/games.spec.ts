@@ -2,7 +2,7 @@ import { test, expect } from "@playwright/test";
 
 test("consultar partidos y abrir uno", async ({page}) => {
     const expectedGames = [
-        { id: 1, home: 'Detroit Pistons', away: 'Boston Celtics', homeScore: 121, awayScore: 113, homeId: 29, awayId: 2, mvpId: 160, mvpName: 'Paul George' },
+        { id: 1, home: 'Detroit Pistons', away: 'Boston Celtics', homeScore: 121, awayScore: 113, mvp: 'Paul George'},
         { id: 2, home: 'New York Knicks', away: 'Philadelphia 76ers'},
         { id: 3, home: 'San Antonio Spurs', away: 'Oklahoma City Thunder'},
     ];
@@ -32,41 +32,60 @@ test("consultar partidos y abrir uno", async ({page}) => {
         new RegExp(`/partidos/${selectedGame.id}$`)
     );
 
-    await expect(page.getByTestId("home-score")).toHaveText(String(selectedGame.homeScore));
-    await expect(page.getByTestId("away-score")).toHaveText(String(selectedGame.awayScore));
-    
     const homeLink = page.getByTestId("home-name");
-    const awayLink = page.getByTestId("away-name");
     await expect(homeLink).toHaveText(String(selectedGame.home));
-    await expect(awayLink).toHaveText(String(selectedGame.away));
+    const homeScore = page.getByTestId("home-score");
+    await expect(homeScore).toHaveText(String(selectedGame.homeScore))
 
-    await homeLink.click();
-    await expect(page).toHaveURL(
-        new RegExp(`/equipos/${selectedGame.homeId}$`)
-    );
-    await expect(page.getByTestId("team-name")).toHaveText(String(selectedGame.home));
-
-    await page.goBack();
-
-    await awayLink.click();
-    await expect(page).toHaveURL(
-        new RegExp(`/equipos/${selectedGame.awayId}$`)
-    );
-    await expect(page.getByTestId("team-name")).toHaveText(String(selectedGame.away));
-
-    await page.goBack();
+    const awayLink = page.getByTestId("away-name");
+    await expect(awayLink).toHaveText(selectedGame.away);
+    const awayScore = page.getByTestId("away-score");
+    await expect(awayScore).toHaveText(String(selectedGame.awayScore))
 
     const mvpLink = page.getByTestId("mvp-name");
-    await mvpLink.click();
-    await expect(page).toHaveURL(
-        new RegExp(`/jugadores/${selectedGame.mvpId}$`)
-    );
-    await expect(page.getByTestId("player-name")).toHaveText(String(selectedGame.mvpName));
+    await expect(mvpLink).toHaveText(String(selectedGame.mvp));
+});
 
-    await page.goBack();
+test("navegar al equipo local desde el perfil de partido", async ({page}) => {
+    await page.goto('/partidos/1');
+
+    const homeLink = page.getByTestId("home-name");
+    await expect(homeLink).toHaveText("Detroit Pistons");
+
+    await homeLink.click();
+    await expect(page).toHaveURL(/\/equipos\/29$/);
+
+    await expect(page.getByTestId("team-name")).toHaveText("Detroit Pistons");
+});
+
+test("navegar al equipo visitante desde el perfil de partido", async ({page}) => {
+    await page.goto('/partidos/1');
+
+    const awayLink = page.getByTestId("away-name");
+    await expect(awayLink).toHaveText("Boston Celtics");
+
+    await awayLink.click();
+    await expect(page).toHaveURL(/\/equipos\/2$/);
+
+    await expect(page.getByTestId("team-name")).toHaveText("Boston Celtics");
+});
+
+test("navegar al perfil del mvp del partido desde el perfil de partido", async ({page}) => {
+    await page.goto('/partidos/1');
+
+    const mvpLink = page.getByTestId("mvp-name");
+    await expect(mvpLink).toHaveText("Paul George");
+    await mvpLink.click();
+    await expect(page).toHaveURL(/\/jugadores\/160$/);
+
+    await expect(page.getByTestId("player-name")).toHaveText("Paul George");
+});
+
+test("navegar al perfil de un jugador desde la tabla de estadísticas", async ({page}) => {
+    await page.goto('/partidos/1');
 
     const awayTable = page.getByRole("region", {
-        name: `Estadísticas de jugadores de ${expectedGames[0].away}`,
+        name: `Estadísticas de jugadores de ${"Boston Celtics"}`,
         exact: true,
     });
 
@@ -76,8 +95,8 @@ test("consultar partidos y abrir uno", async ({page}) => {
     });
 
     await playerLink.click();
-    await expect(page).toHaveURL(
-        new RegExp(`/jugadores/${selectedGame.mvpId}$`)
-    );
-    await expect(page.getByTestId("player-name")).toHaveText(String(selectedGame.mvpName));
+    await expect(page).toHaveURL(/\/jugadores\/160$/);
+    
+    await expect(page.getByTestId("player-name")).toHaveText("Paul George");
 });
+
