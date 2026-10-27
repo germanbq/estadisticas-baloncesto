@@ -9,7 +9,7 @@ function FinishedGame(props: LastTeamGame) {
     const result = props.home ? `${props.score}-${props.rivalScore}` : `${props.rivalScore}-${props.score}`;
     const victory = props.score > props.rivalScore;
     return (
-        <Link href={`/partidos/${props.id}`} className={styles.articleGame}>
+        <Link data-testid="last-games" href={`/partidos/${props.id}`} className={styles.articleGame}>
             <div className={styles.data}>
                 <div className={styles.won} style={{
                     color: victory ? 'var(--color-green)' : 'var(--color-text-primary)',
@@ -43,7 +43,7 @@ function UpcomingGame(props: UpcomingTeamGames) {
     });
 
     return (
-        <Link href={`/partidos/${props.id}`} className={styles.articleGame}>
+        <Link data-testid="upcoming-games" href={`/partidos/${props.id}`} className={styles.articleGame}>
             <div className={styles.data}>
                 <div className={`${styles.won} ${styles.rivalLogoBox}`}>
                     <Image src={props.rivalLogo} alt={`Escudo de ${props.rivalName}`} width={48} height={48} className={styles.rivalLogo} />
