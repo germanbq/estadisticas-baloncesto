@@ -58,10 +58,10 @@ export default function GameCard(props: GameProps) {
             <div className={styles.gameTeams}>
                 <div className={styles.teamColumn}>
                     <Image src={props.homeLogo} alt="Logo del local" width={64} height={64}/>
-                    {props.teamLinks ? <Link href={`/equipos/${props.homeId}`} className={styles.teamName}>{props.homeTeam}</Link>
+                    {props.teamLinks ? <Link data-testid="home-name" href={`/equipos/${props.homeId}`} className={styles.teamName}>{props.homeTeam}</Link>
                                 : <span className={styles.teamName}>{props.homeTeam}</span>}
                     <span>({props.homeRecord})</span>
-                    <span className={`${styles.teamScore} ${(props.homeScore && props.awayScore) && props.homeScore > props.awayScore ? styles.green : ''}`}>{props.homeScore}</span>
+                    <span data-testid="home-score" className={`${styles.teamScore} ${(props.homeScore && props.awayScore) && props.homeScore > props.awayScore ? styles.green : ''}`}>{props.homeScore}</span>
                 </div>
                 {!props.finalizado ? <span className={styles.hour}>{props.date.toLocaleTimeString("es-ES", {hour: "2-digit", minute: "2-digit", timeZone: "Europe/Madrid",})} </span>
                 : <div className={styles.versus}>
@@ -70,10 +70,10 @@ export default function GameCard(props: GameProps) {
                 </div>}
                 <div className={styles.teamColumn}>
                     <Image src={props.awayLogo} alt="Logo del visitante" width={64} height={64}/>
-                    {props.teamLinks ? <Link href={`/equipos/${props.awayId}`} className={styles.teamName}>{props.awayTeam}</Link>
+                    {props.teamLinks ? <Link data-testid="away-name" href={`/equipos/${props.awayId}`} className={styles.teamName}>{props.awayTeam}</Link>
                                 : <span className={styles.teamName}>{props.awayTeam}</span>}
                     <span>({props.awayRecord})</span>
-                    <span className={`${styles.teamScore} ${(props.homeScore && props.awayScore) && props.homeScore < props.awayScore ? styles.green : ''}`}>{props.awayScore}</span>
+                    <span data-testid="away-score" className={`${styles.teamScore} ${(props.homeScore && props.awayScore) && props.homeScore < props.awayScore ? styles.green : ''}`}>{props.awayScore}</span>
                 </div>
             </div>
             {props.children && <div className={styles.details}>{props.children}</div>}

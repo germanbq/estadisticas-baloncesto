@@ -38,7 +38,7 @@ export default function PlayerProfileCard({stats}: {stats: PlayerProfile}) {
                 <span className={styles.jerseyNumber}># {stats.jerseyNumber} {stats.position}</span>
             </div>
             <div className={styles.nameAndCountry}>
-                <h1 className={styles.name}>{stats.name}</h1>
+                <h1 data-testid="player-name" className={styles.name}>{stats.name}</h1>
                 <span className={styles.country}>{stats.country}</span>
             </div>
             <dl className={styles.dataContainer}>

@@ -42,7 +42,7 @@ export default function HeaderCard(team: TeamHeader) {
                     <Image src={team.logo} alt={`Escudo de ${team.name}`} width={68} height={68} />
                 </div>
                 <div className={styles.teamInfo}>
-                    <h1 className={styles.name}>{team.name}</h1>
+                    <h1 data-testid="team-name" className={styles.name}>{team.name}</h1>
                     <p className={styles.description}>
                         División {team.division}
                         {` · ${team.stadium}`}

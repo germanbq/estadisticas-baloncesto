@@ -44,7 +44,7 @@ export default function MVPCard({player, home}: {player: GameMVP, home: boolean}
                     </div>
                     <div className={styles.playerInfo}>
                         <div className={styles.playerHeading}>
-                            <Link href={`/jugadores/${player.playerId}`} className={styles.playerName}>{player.playerName}</Link>
+                            <Link href={`/jugadores/${player.playerId}`} data-testid="mvp-name" className={styles.playerName}>{player.playerName}</Link>
                             <span className={styles.position} style={{color}}>{player.position}</span>
                         </div>
                         <div className={styles.playerDetails}>
