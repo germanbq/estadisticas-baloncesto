@@ -20,7 +20,7 @@ function Game({game}: {game: PlayerGames}) {
     })
     .replaceAll("/", "-");
     return (
-        <Link href={`/partidos/${game.gameId}`} className={styles.article}>
+        <Link data-testid="recent-game-link" href={`/partidos/${game.gameId}`} className={styles.article}>
             <div className={styles.articleHeader}>
                 <span className={styles.dot} style={{ backgroundColor: game.victory ? "#22c55e" : "#ef4444" }}/>
                 {game.home ? <span>{`VS ${game.rival}`}</span> : <span>{`@ ${game.rival}`}</span>}

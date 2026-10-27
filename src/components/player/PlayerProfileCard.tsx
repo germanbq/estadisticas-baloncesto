@@ -34,7 +34,7 @@ export default function PlayerProfileCard({stats}: {stats: PlayerProfile}) {
                 }
             </div>
             <div className={styles.labels}>
-                <Link href={`/equipos/${stats.teamId}`} className={styles.team}>{stats.team}</Link>
+                <Link data-testid="team-name" href={`/equipos/${stats.teamId}`} className={styles.team}>{stats.team}</Link>
                 <span className={styles.jerseyNumber}># {stats.jerseyNumber} {stats.position}</span>
             </div>
             <div className={styles.nameAndCountry}>
