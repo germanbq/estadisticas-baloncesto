@@ -46,6 +46,27 @@ test("consultar partidos y abrir uno", async ({page}) => {
     await expect(mvpLink).toHaveText(String(selectedGame.mvp));
 });
 
+test("cambiar la fecha usando los botones y comprobar que cambia el listado de partidos", async ({page}) => {
+    await page.goto('/?date=2026-10-20&reference=2026-10-20');
+
+    const links = page.getByRole("link", { name: /^Ver partido:/ });
+
+    await expect(links).toHaveCount(3);
+    const before = await links.evaluateAll(elements =>
+        elements.map(element => element.getAttribute("href"))
+    );
+
+    const button = page.getByRole("button", {name: "21"})
+    await button.click();
+
+    await expect(links).toHaveCount(11);
+    const after = await links.evaluateAll(elements =>
+        elements.map(element => element.getAttribute("href"))
+    );
+
+    expect(before).not.toEqual(after);
+});
+
 test("navegar al equipo local desde el perfil de partido", async ({page}) => {
     await page.goto('/partidos/1');
 
