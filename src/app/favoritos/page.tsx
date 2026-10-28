@@ -1,6 +1,6 @@
 "use client"
 
-import { usePathname, useRouter, useSearchParams } from "next/navigation";
+import { useSearchParams } from "next/navigation";
 import { useEffect, useState } from "react"
 import FavoritesFilters from "@/src/components/favorites/FavoritesFilters"
 import FavoriteGames from "@/src/components/favorites/FavoriteGames";

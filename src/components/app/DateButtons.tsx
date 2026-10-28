@@ -4,7 +4,7 @@ import { useEffect, useState } from "react";
 import styles from "./DateButtons.module.css";
 import { ChevronRight, ChevronLeft } from "lucide-react";
 import { GamesNum } from "@/src/backend/entities/gamesEntities";
-import { usePathname, useRouter, useSearchParams } from "next/navigation";
+import { useSearchParams } from "next/navigation";
 import DateButtonsSkeleton from '../skeletons/DateButtonsSkeleton';
 import { useSyncQueryParams } from "@/src/hooks/useSyncQueryParam";
 
@@ -47,7 +47,7 @@ export default function DateButtons({date, setDate, getDateString}:
     const [loading, setLoading] = useState(true);
 
     useSyncQueryParams({reference: referenceDate})
-    
+
     useEffect(() => {
         const controller = new AbortController();
 

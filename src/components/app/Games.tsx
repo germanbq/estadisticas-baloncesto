@@ -1,7 +1,7 @@
 "use client"
 import { useEffect, useState } from "react";
 import styles from "./Games.module.css";
-import { usePathname, useRouter, useSearchParams } from "next/navigation";
+import { useSearchParams } from "next/navigation";
 import { Game } from "@/src/backend/entities/gamesEntities";
 import DateButtons from "./DateButtons";
 import GameCard from "../GameCard";

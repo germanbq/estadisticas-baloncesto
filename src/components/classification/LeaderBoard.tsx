@@ -5,7 +5,7 @@ import FilterButton from "../FilterButton";
 import { useEffect, useState } from "react";
 import Image from "next/image";
 import { Sunrise, Sunset } from "lucide-react";
-import { usePathname, useRouter, useSearchParams } from "next/navigation";
+import { useSearchParams } from "next/navigation";
 import { Team } from "@/src/backend/entities/teamsEntities";
 import FavoriteButton from "../FavoriteButton";
 import Link from "next/link";

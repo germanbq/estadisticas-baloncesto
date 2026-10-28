@@ -1,10 +1,10 @@
 "use client";
 
 import styles from "./PlayerSearcher.module.css";
-import { useEffect, useState } from "react";
+import {  useState } from "react";
 import { UserSearch, X} from "lucide-react";
 import FilterButton from "../FilterButton";
-import { usePathname, useRouter, useSearchParams } from "next/navigation";
+import { useSearchParams } from "next/navigation";
 import { useSyncQueryParams } from "@/src/hooks/useSyncQueryParam";
 
 type Props = {
