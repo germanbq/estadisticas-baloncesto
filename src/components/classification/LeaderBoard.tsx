@@ -10,6 +10,7 @@ import { Team } from "@/src/backend/entities/teamsEntities";
 import FavoriteButton from "../FavoriteButton";
 import Link from "next/link";
 import LeaderBoardSkeleton from "../skeletons/LeaderBoardSkeleton";
+import { useSyncQueryParams } from "@/src/hooks/useSyncQueryParam";
 
 type StandingLabelProps = {
     text: string;
@@ -27,8 +28,6 @@ function StandingLabel({text, className}: StandingLabelProps) {
 export default function LeaderBoard({season}: {season: number}) {
     const endingYear = season+1;
 
-    const router = useRouter();
-    const pathname = usePathname();
     const searchParams = useSearchParams();
 
     const [conf, setConf] = useState(() => searchParams.get("conf") === "West" ? "West" : "East");
@@ -36,13 +35,7 @@ export default function LeaderBoard({season}: {season: number}) {
     const [loadedConf, setLoadedConf] = useState<string | null>(null);
     const loading = loadedConf !== conf;
 
-    useEffect(() => {
-        if(searchParams.get("conf") === conf) return;
-
-        const params = new URLSearchParams(searchParams.toString());
-        params.set("conf", conf);
-        router.replace(`${pathname}?${params.toString()}`, {scroll: false,});
-    }, [conf, pathname, router, searchParams])
+    useSyncQueryParams({conf: conf});
 
     useEffect(() => {
         const controller = new AbortController();

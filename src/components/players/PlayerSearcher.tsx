@@ -5,6 +5,7 @@ import { useEffect, useState } from "react";
 import { UserSearch, X} from "lucide-react";
 import FilterButton from "../FilterButton";
 import { usePathname, useRouter, useSearchParams } from "next/navigation";
+import { useSyncQueryParams } from "@/src/hooks/useSyncQueryParam";
 
 type Props = {
     search: string;
@@ -12,22 +13,13 @@ type Props = {
 }
 
 export default function PlayerSearcher({search, setSearch}: Props) {
-    const router = useRouter();
-    const pathname = usePathname();
     const searchParams = useSearchParams();
 
     const [conf, setConf] = useState(() => searchParams.get("conf") ?? "BOTH");
     const [pos, setPos] = useState(() => searchParams.get("pos") ?? "ALL");
 
-    useEffect(() => {
-        if(searchParams.get("pos") === pos && searchParams.get("conf") === conf) return;
+    useSyncQueryParams({ pos: pos, conf: conf});
     
-        const params = new URLSearchParams(searchParams.toString());
-        params.set("pos", pos);
-        params.set("conf", conf);
-        router.replace(`${pathname}?${params.toString()}`, {scroll: false,});
-    }, [pos, conf, pathname, router, searchParams])
-
     return (
         <>
             <div className={styles.inputContainer}>

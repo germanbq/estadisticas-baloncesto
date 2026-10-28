@@ -7,6 +7,7 @@ import DateButtons from "./DateButtons";
 import GameCard from "../GameCard";
 import GamesSkeleton from '../skeletons/GamesSkeleton';
 import NoDataCard from "../general/NoDataCard";
+import { useSyncQueryParams } from "@/src/hooks/useSyncQueryParam";
 
 export default function Games() {
     function getDateString(date: Date): string {
@@ -16,8 +17,6 @@ export default function Games() {
         return`${year}-${month}-${day}`
     }
 
-    const router = useRouter();
-    const pathname = usePathname();
     const searchParams = useSearchParams();
 
     const [date, setDate] = useState(() => { const dateParam = searchParams.get("date");
@@ -27,13 +26,7 @@ export default function Games() {
     const dateKey = getDateString(date);
     const [error, setError] = useState(false);
 
-    useEffect(() => {
-        if(searchParams.get("date") === getDateString(date)) return;
-
-        const params = new URLSearchParams(searchParams.toString());
-        params.set("date", getDateString(date));
-        router.replace(`${pathname}?${params.toString()}`, {scroll: false,})
-    }, [date, pathname, router, searchParams])
+    useSyncQueryParams({date: dateKey});
 
     useEffect(() => {
         const controller = new AbortController();

@@ -12,6 +12,7 @@ import Link from "next/link";
 import StatsLeadersSkeleton from "../skeletons/StatsLeadersSkeleton";
 import NoDataCard from "../general/NoDataCard";
 import PlayerAvatar from "../PlayerAvatar";
+import { useSyncQueryParams } from "@/src/hooks/useSyncQueryParam";
 
 type PlayerCardProps = {
     id: number;
@@ -54,8 +55,6 @@ function PlayerCard(props: PlayerCardProps) {
 }
 
 export default function StatsLeader() {
-    const router = useRouter();
-    const pathname = usePathname();
     const searchParams = useSearchParams();
 
     const [metric, setMetric] = useState(() => searchParams.get("metric") || "points");
@@ -63,14 +62,8 @@ export default function StatsLeader() {
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState(false);
 
-    useEffect(() => {
-        if(searchParams.get("metric") === metric) return;
-
-        const params = new URLSearchParams(searchParams.toString());
-        params.set("metric", metric);
-        router.replace(`${pathname}?${params.toString()}`, {scroll: false,});
-    }, [metric, pathname, router, searchParams])
-
+    useSyncQueryParams({ metric: metric});
+    
     useEffect(() => {
         const controller = new AbortController();
 

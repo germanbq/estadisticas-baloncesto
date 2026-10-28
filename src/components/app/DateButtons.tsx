@@ -6,6 +6,7 @@ import { ChevronRight, ChevronLeft } from "lucide-react";
 import { GamesNum } from "@/src/backend/entities/gamesEntities";
 import { usePathname, useRouter, useSearchParams } from "next/navigation";
 import DateButtonsSkeleton from '../skeletons/DateButtonsSkeleton';
+import { useSyncQueryParams } from "@/src/hooks/useSyncQueryParam";
 
 type DateButtonProps = {
     date: Date;
@@ -39,22 +40,14 @@ export function addDays(date: string, amount: number): Date {
 export default function DateButtons({date, setDate, getDateString}: 
                             {date: Date, setDate: (date: Date) => void, getDateString: (date: Date) => string }) {
 
-    const router = useRouter();
-    const pathname = usePathname();
     const searchParams = useSearchParams();
 
     const [numberGames, setNumberGames] = useState<GamesNum[]>([]);
     const [referenceDate, setReferenceDate] = useState<string>(searchParams.get("reference") ?? getDateString(new Date()))
     const [loading, setLoading] = useState(true);
 
-    useEffect(() => {
-        if(searchParams.get("reference") === referenceDate) return;
-
-        const params = new URLSearchParams(searchParams.toString());
-        params.set("reference", referenceDate);
-        router.replace(`${pathname}?${params.toString()}`)
-    }, [referenceDate, router, pathname, searchParams]) 
-
+    useSyncQueryParams({reference: referenceDate})
+    
     useEffect(() => {
         const controller = new AbortController();
 

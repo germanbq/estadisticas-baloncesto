@@ -7,10 +7,9 @@ import FavoriteGames from "@/src/components/favorites/FavoriteGames";
 import FavoritePlayers from "@/src/components/favorites/FavoritePlayers";
 import FavoriteTeams from "@/src/components/favorites/FavoriteTeams";
 import { FavCounts } from "@/src/backend/entities/favoritesEntities";
+import { useSyncQueryParams } from "@/src/hooks/useSyncQueryParam";
 
 export default function FavoritesPage() {
-    const router = useRouter();
-    const pathname = usePathname();
     const searchParams = useSearchParams();
 
     const [loading, setLoading] = useState(true);
@@ -42,13 +41,7 @@ export default function FavoritesPage() {
         }
     }
 
-    useEffect(() => {
-        if(searchParams.get("selected") === selected) return;
-
-        const params = new URLSearchParams(searchParams.toString());
-        params.set("selected", selected);
-        router.replace(`${pathname}?${params.toString()}`);
-    }, [selected, router, pathname, searchParams])
+    useSyncQueryParams({selected: selected});
 
     useEffect(() => {
         const controller = new AbortController();
