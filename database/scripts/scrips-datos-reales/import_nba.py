@@ -1,4 +1,4 @@
-#!/usr/bin/env python3
+
 """
 Los datos incompletos y los dorsales repetidos generan avisos, no exclusiones.
 
@@ -44,7 +44,7 @@ from nba_api.stats.endpoints import (
 )
 from nba_api.stats.static import teams as nba_teams
 
-ROOT = Path(__file__).resolve().parents[2]
+ROOT = Path(__file__).resolve().parents[3]
 LOG = logging.getLogger("import_nba")
 OPTIONAL_PLAYER_FIELDS = (
     "height",
@@ -59,7 +59,7 @@ POSITIONS = {"PG", "SG", "SF", "PF", "C", "G", "F"}
 
 
 class ImportErrorNBA(Exception):
-    """Datos incompletos o incompatibles: no se deben guardar."""
+    pass
 
 
 def integer(value: Any, label: str) -> int:
@@ -108,7 +108,7 @@ class NBAClient:
         self.last_request = 0.0
 
     def call(self, key: str, factory: Callable, ttl: float = 0) -> dict:
-        """Reintenta peticiones y guarda respuestas para poder reanudar una descarga."""
+        
         path = self.cache_dir / f"{key}.json"
         if (
             ttl
@@ -274,7 +274,7 @@ class Player:
 
 
 def normalized(value: str) -> str:
-    """Hace coincidir Nikola Jokić, Nikola Jokic y Nikola_Jokic.webp."""
+    
     ascii_value = (
         unicodedata.normalize("NFKD", value).encode("ascii", "ignore").decode()
     )
@@ -385,7 +385,7 @@ def compatible_position(incoming: str | None, existing: str | None) -> str | Non
 
 
 def optional_value(values: tuple, parser: Callable) -> Any:
-    """Prueba las fuentes disponibles; un dato opcional ausente o inválido es NULL."""
+    
     for value in values:
         if value is None:
             continue
@@ -602,7 +602,7 @@ def fetch_players(
 
 
 def check_schema(cursor) -> bool:
-    """Solo comprueba columnas; no crea ni modifica el esquema. Devuelve si el dorsal es texto."""
+    
     cursor.execute("""SELECT table_name,column_name,data_type,is_nullable FROM information_schema.columns
                    WHERE table_schema=current_schema() AND table_name IN ('teams','players')""")
     rows = cursor.fetchall()
@@ -717,7 +717,7 @@ def warn_jersey_conflicts(
     mapping: dict[int, int],
     textual: bool,
 ) -> list[dict]:
-    """Informa de dorsales repetidos sin excluir ni alterar ningún jugador."""
+    
     updated_ids = {local_id for _, local_id in matched if local_id is not None}
     groups = defaultdict(list)
     for row in existing:
@@ -846,7 +846,7 @@ def arguments(argv: list[str] | None = None):
     parser.add_argument("--env-file", type=Path, default=ROOT / ".env.local")
     parser.add_argument("--cache-dir", type=Path, default=ROOT / ".nba-import-cache")
     parser.add_argument(
-        "--report", type=Path, default=ROOT / "database/scripts/nba_import_report.json"
+        "--report", type=Path, default=Path(__file__).resolve().parent / "nba_import_report.json"
     )
     parser.add_argument(
         "--as-of",

@@ -1,8 +1,8 @@
-#!/usr/bin/env python3
+
 """Importa el calendario NBA y completa games, team_game_stats y player_game_stats.
 
-py database/scripts/import_games.py --season 2026-27 --mode full
-py database/scripts/import_games.py --season 2026-27 --mode update
+py database/scripts/scrips-datos-reales/import_games.py --season 2026-27 --mode full
+py database/scripts/scrips-datos-reales/import_games.py --season 2026-27 --mode update
 """
 
 from __future__ import annotations
@@ -34,7 +34,7 @@ from nba_api.stats.endpoints import (
 )
 from psycopg import sql
 
-ROOT = Path(__file__).resolve().parents[2]
+ROOT = Path(__file__).resolve().parents[3]
 LOG = logging.getLogger("import_games")
 FINAL = 3
 CALENDAR_BATCH_SIZE = 250
@@ -94,7 +94,7 @@ BASIC_FIELDS = {
 
 
 class ImportErrorNBA(Exception):
-    """Un dato o una condición de la importación no es válido."""
+    pass
 
 
 def decimal_number(
@@ -144,7 +144,7 @@ def utc_date(value: Any) -> datetime:
 
 
 def seconds(value: Any) -> Decimal:
-    """Acepta PT33M15.20S y 33:15.20; conserva fracciones para los avisos."""
+    
     raw = str(value).strip()
     match = re.fullmatch(r"PT(?:(\d+)H)?(?:(\d+)M)?(?:(\d+(?:\.\d+)?)S)?", raw)
     if match and any(part is not None for part in match.groups()):
@@ -273,7 +273,7 @@ def parse_schedule(payload: dict, season: str) -> tuple[list[Game], list[dict]]:
         for raw in day.get("games", []):
             nba_id = game_id(raw.get("gameId"))
             if not nba_id.startswith("002"):
-                continue  # Regular season; excluye pretemporada, final de Cup y playoffs.
+                continue  
             if nba_id[3:5] != season[2:4]:
                 raise ImportErrorNBA(f"El partido {nba_id} pertenece a otra temporada.")
             if nba_id in seen:
@@ -598,7 +598,7 @@ def fetch_final(client: NBAClient, game: Game, player_ids: dict[int, int]) -> Fi
     except ImportErrorNBA:
         client.forget_game(game.nba_id)
         raise
-    # Solo se guardan respuestas de partidos finales ya validadas entre sí.
+    
     for (kind, _), payload in zip(sources, payloads, strict=True):
         client.remember(f"stats-v3-{kind}-{game.nba_id}", payload)
     return result
@@ -705,7 +705,7 @@ def check_database(cursor, season: int) -> DatabaseState:
         if nba_id in games:
             raise ImportErrorNBA("Hay nba_id de partido repetidos al normalizarlos.")
         games[nba_id] = row
-    # Necesitamos los triggers que ya mantiene el repositorio, sin modificarlos.
+    
     cursor.execute("""SELECT t.tgname FROM pg_trigger t JOIN pg_class c ON c.oid=t.tgrelid
                       JOIN pg_namespace n ON n.oid=c.relnamespace
                       WHERE n.nspname=current_schema() AND NOT t.tgisinternal AND t.tgenabled <> 'D'""")
@@ -777,13 +777,13 @@ def sync_calendar(connection, game: Game, state: DatabaseState) -> str:
 def sync_calendar_batch(
     connection, games: list[Game], state: DatabaseState
 ) -> dict[str, str]:
-    """Sincroniza un lote pequeño con un SELECT y escrituras agrupadas."""
+    
     if not games:
         return {}
     actions = {}
     with connection.transaction(), connection.cursor() as cursor:
-        # Protege la lectura y escritura del lote frente a otras importaciones.
-        # No se realizan peticiones HTTP mientras se mantiene este bloqueo.
+        
+        
         cursor.execute("LOCK TABLE games IN SHARE ROW EXCLUSIVE MODE")
         cursor.execute(
             """SELECT nba_id,id,home_team_id,away_team_id,season_init_year,finished,date
@@ -879,7 +879,7 @@ def synchronize_calendar(
         except (ImportErrorNBA, psycopg.Error):
             if connection.closed:
                 raise
-            # El lote ya se ha revertido. Se aíslan sus errores sin perder los demás partidos.
+            
             for game in batch:
                 try:
                     counts[sync_calendar(connection, game, state)] += 1
@@ -899,7 +899,7 @@ def insert_stat(
     columns: tuple[str, ...],
     values: tuple,
 ) -> int:
-    """Una fila ya existente se conserva; únicamente las filas nuevas disparan los triggers."""
+    
     all_columns = key_columns + columns
     cursor.execute(
         sql.SQL("INSERT INTO {} ({}) VALUES ({}) ON CONFLICT ({}) DO NOTHING").format(
@@ -914,7 +914,7 @@ def insert_stat(
 
 
 def refresh_streaks(cursor, team_ids: tuple[int, int], season: int) -> None:
-    """La racha depende del orden de los partidos, no del orden de las importaciones."""
+    
     for team_id in sorted(team_ids):
         cursor.execute(
             """SELECT CASE WHEN home_team_id=%s THEN home_score>away_score
@@ -948,7 +948,7 @@ def persist_final(connection, final: FinalGame, state: DatabaseState) -> dict:
         "newly_finished": False,
     }
     with connection.transaction(), connection.cursor() as cursor:
-        # Serializa las escrituras de partidos/estadísticas, incluidos sus triggers.
+        
         cursor.execute(
             "LOCK TABLE games,team_game_stats,player_game_stats IN SHARE ROW EXCLUSIVE MODE"
         )
@@ -1014,7 +1014,7 @@ def persist_final(connection, final: FinalGame, state: DatabaseState) -> dict:
                 PLAYER_COLUMNS,
                 tuple(line[k] for k in PLAYER_COLUMNS),
             )
-        # El trigger de resultado se dispara una sola vez, al pasar de FALSE a TRUE.
+        
         if not old["finished"]:
             cursor.execute(
                 """UPDATE games SET date=%s,home_score=%s,away_score=%s,

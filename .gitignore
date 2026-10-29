@@ -27,6 +27,7 @@
 # misc
 .DS_Store
 *.pem
+/database/provenance/
 
 # debug
 npm-debug.log*
@@ -50,3 +51,5 @@ next-env.d.ts
 /database/scripts/nba_import_report.json
 /database/scripts/nba_games_import_report.json
 /database/scripts/README_IMPORT_GAMES.md
+/database/scripts/scrips-datos-reales/nba_import_report.json
+/database/scripts/scrips-datos-reales/nba_games_import_report.json

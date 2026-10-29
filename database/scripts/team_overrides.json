@@ -1,0 +1,41 @@
+{
+  "_meta": {
+    "checked_on": "2026-10-29",
+    "description": "Correcciones manuales de entrenadores y estadio.",
+    "sources": [
+      {
+        "field": "coach",
+        "url": "https://nbacoaches.com/nba-head-coaches/"
+      },
+      {
+        "team_code": "LAC",
+        "field": "stadium",
+        "url": "https://www.intuitdome.com/about/about-us"
+      }
+    ]
+  },
+  "LAC": {
+    "stadium": "Intuit Dome"
+  },
+  "CHI": {
+    "coach": "Tiago Splitter"
+  },
+  "DAL": {
+    "coach": "Dusty May"
+  },
+  "MEM": {
+    "coach": "Tuomas Iisalo"
+  },
+  "MIL": {
+    "coach": "Taylor Jenkins"
+  },
+  "NOP": {
+    "coach": "Jamahl Mosley"
+  },
+  "ORL": {
+    "coach": "Sean Sweeney"
+  },
+  "POR": {
+    "coach": "Micah Nori"
+  }
+}
