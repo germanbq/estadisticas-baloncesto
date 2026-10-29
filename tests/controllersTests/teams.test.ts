@@ -20,13 +20,10 @@ vi.mock("@clerk/nextjs/server", () => ({
 
 const authMock = vi.mocked(auth, { partial: true });
 
-const SEED_PLAYER_ID_A = 1; // Jayson Tatum
 const SEED_PLAYER_ID_B = 2; // Nikola Jokic
 const SEED_PLAYER_ID_C = 3; // Jamal Murray
 const SEED_TEAM_ID_A = 1; // Boston Celtics
 const SEED_TEAM_ID_B = 2; // Denver Nuggets
-const SEED_GAME_ID_A = 1;
-const SEED_GAME_ID_B = 2;
 const SEED_GAME_ID_C = 9;
 const USER_A = "usuario_prueba_A";
 const USER_B = "usuario_prueba_B";

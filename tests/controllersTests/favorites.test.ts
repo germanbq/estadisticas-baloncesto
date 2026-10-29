@@ -11,7 +11,6 @@ import { FavoritesService } from "../../src/backend/services/FavoritesService";
 import { FavoritesRepository } from "../../src/backend/repositories/FavoritesRepository";
 import { FavoritesQueries } from "../../src/backend/queries/FavoritesQueries";
 import { PostgresQueryExecutor } from "../../src/backend/shared/PostgresQueryExecutor";
-import { error } from "console";
 
 vi.mock("@clerk/nextjs/server", () => ({
     auth: vi.fn(),
