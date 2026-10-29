@@ -33,10 +33,14 @@
     align-items: center;
     gap: 1rem;
 }
+
 .warning {
     grid-column: 1 / -1;
     align-self: center;
     justify-self: center;
+    
     margin-top: 1rem;
     font-size: 14px;;
+    padding: 0 10%;
+    text-align: justify;
 }
