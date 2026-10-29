@@ -35,17 +35,16 @@ export default function PlayerProfileCard({stats}: {stats: PlayerProfile}) {
             </div>
             <div className={styles.labels}>
                 <Link data-testid="team-name" href={`/equipos/${stats.teamId}`} className={styles.team}>{stats.team}</Link>
-                <span className={styles.jerseyNumber}># {stats.jerseyNumber} {stats.position}</span>
+                <span className={styles.jerseyNumber}># {stats.jerseyNumber !== null ? stats.jerseyNumber : "-"} {stats.position !== null ? stats.position : "-"}</span>
             </div>
             <div className={styles.nameAndCountry}>
                 <h1 data-testid="player-name" className={styles.name}>{stats.name}</h1>
-                <span className={styles.country}>{stats.country}</span>
+                <span className={styles.country}>{stats.country !== null ? stats.country : "-"}</span>
             </div>
             <dl className={styles.dataContainer}>
-                <DataContainer label="Altura" value={Number(stats.height)} unit="m"/>
-                <DataContainer label="Peso" value={Number(stats.weight)} unit="kg"/>
-                <DataContainer label="Edad" value={stats.age} unit="años"/>
-                <DataContainer label="Draft" value={stats.draft === 0 ? "No drafteado": stats.draft} />
+                <DataContainer label="Altura" value={stats.height !== null ? Number(stats.height) : "-"} unit="m"/>
+                <DataContainer label="Peso" value={stats.weight !== null ?Number(stats.weight) : "-"} unit="kg"/>
+                <DataContainer label="Draft" value={stats.draft === null ? "-" : stats.draft === 0 ? "No drafteado": stats.draft} />
             </dl>
             <div className={styles.favorite}>
                 <FavoriteButton type="jugadores" itemId={stats.id} isFavorite={stats.isFavorite} />

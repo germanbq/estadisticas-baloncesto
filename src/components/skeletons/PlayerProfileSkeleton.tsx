@@ -17,7 +17,7 @@ export default function PlayerProfileSkeleton() {
             <div className={`${styles.skeleton} ${styles.country}`} />
 
             <div className={styles.playerDetails}>
-                {Array.from({ length: 4 }).map((_, index) => (
+                {Array.from({ length: 3 }).map((_, index) => (
                     <div className={styles.detail} key={index}>
                         <div className={`${styles.skeleton} ${styles.detailLabel}`}/>
                         <div className={`${styles.skeleton} ${styles.detailValue}`}/>
