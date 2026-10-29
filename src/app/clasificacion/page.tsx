@@ -1,5 +1,7 @@
 import LeaderBoard from "@/src/components/classification/LeaderBoard"
 import { ACTUAL_SEASON } from "@/src/backend/rules/rules";
+import { Suspense } from "react";
+import NoDataCard from "@/src/components/general/NoDataCard";
 
 export default function ClassificationPage() {
     return (
@@ -13,7 +15,9 @@ export default function ClassificationPage() {
                         margin-top: 1rem;
                     }
                 `}</style>
-            <LeaderBoard season={ACTUAL_SEASON}/>
+            <Suspense fallback={<NoDataCard text="Cargando clasificación…" />}>
+                <LeaderBoard season={ACTUAL_SEASON}/>
+            </Suspense>
         </div>
     )
 }

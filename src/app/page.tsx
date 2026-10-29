@@ -1,4 +1,6 @@
 import Games from "../components/app/Games"
+import { Suspense } from "react";
+import GamesSkeleton from "../components/skeletons/GamesSkeleton";
 
 export default function PlayersPage() {
     return (
@@ -12,7 +14,9 @@ export default function PlayersPage() {
                         margin-top: 1rem;
                     }
                 `}</style>
-                <Games />
+                <Suspense fallback={<GamesSkeleton />}>
+                    <Games />
+                </Suspense>
           </div>
     )
 }

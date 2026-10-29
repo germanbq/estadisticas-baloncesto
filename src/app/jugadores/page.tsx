@@ -6,9 +6,18 @@ import PlayerSearcher from "@/src/components/players/PlayerSearcher"
 import StatsLeader from "@/src/components/players/StatsLeaders"
 import { useFetch } from "@/src/hooks/useFetch";
 import { usePathname, useRouter, useSearchParams } from "next/navigation";
-import { useEffect, useState } from "react";
+import { Suspense, useEffect, useState } from "react";
+import NoDataCard from "@/src/components/general/NoDataCard";
 
 export default function PlayersPage() {
+    return (
+        <Suspense fallback={<NoDataCard text="Cargando jugadores…" />}>
+            <PlayersContent />
+        </Suspense>
+    );
+}
+
+function PlayersContent() {
     const router = useRouter();
     const pathname = usePathname();
     const searchParams = useSearchParams();
