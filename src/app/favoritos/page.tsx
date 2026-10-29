@@ -1,24 +1,24 @@
 "use client"
 
 import { useSearchParams } from "next/navigation";
-import { useEffect, useState } from "react"
+import { useState } from "react"
 import FavoritesFilters from "@/src/components/favorites/FavoritesFilters"
 import FavoriteGames from "@/src/components/favorites/FavoriteGames";
 import FavoritePlayers from "@/src/components/favorites/FavoritePlayers";
 import FavoriteTeams from "@/src/components/favorites/FavoriteTeams";
 import { FavCounts } from "@/src/backend/entities/favoritesEntities";
 import { useSyncQueryParams } from "@/src/hooks/useSyncQueryParam";
+import { useFetch } from "@/src/hooks/useFetch";
 
 export default function FavoritesPage() {
-    const searchParams = useSearchParams();
+    const defaultNumber = {numberGames: 0, numberPlayers: 0, numberTeams: 0};
 
-    const [loading, setLoading] = useState(true);
+    const searchParams = useSearchParams();
     const [selected, setSelected] = useState(searchParams.get("selected") ?? "Players");
-    const [counts, setCounts] = useState<FavCounts>({numberGames: 0, numberPlayers: 0, numberTeams: 0});
 
     function handleGameFavoriteChange(isFavorite: boolean) {
         if(!loading) {
-            setCounts(previous => ({
+            setCounts(previous => previous === null ? null : ({
             ...previous,
             numberGames: previous.numberGames + (isFavorite ? 1 : -1),
         }));
@@ -26,7 +26,7 @@ export default function FavoritesPage() {
     }
     function handlePlayerFavoriteChange(isFavorite: boolean) {
         if(!loading) {
-            setCounts(previous => ({
+            setCounts(previous => previous === null ? null : ({
             ...previous,
             numberPlayers: previous.numberPlayers + (isFavorite ? 1 : -1),
         }));
@@ -34,7 +34,7 @@ export default function FavoritesPage() {
     }
     function handleTeamFavoriteChange(isFavorite: boolean) {
         if(!loading) {
-            setCounts(previous => ({
+            setCounts(previous => previous === null ? null : ({
             ...previous,
             numberTeams: previous.numberTeams + (isFavorite ? 1 : -1),
         }));
@@ -43,32 +43,8 @@ export default function FavoritesPage() {
 
     useSyncQueryParams({selected: selected});
 
-    useEffect(() => {
-        const controller = new AbortController();
-        
-        async function loadFavoriteCounts() {
-            try {
-                const response = await fetch(`/api/favoritos/numero`,
-                    { signal: controller.signal });
-                const result = await response.json();
-                
-                if(!response.ok) {
-                    throw new Error(result.error ??`Error ${response.status}`);
-                }
-
-                setCounts(result.data);
-            }
-            catch(error) {
-                if (controller.signal.aborted) return;
-                console.error(error);
-            } finally {
-                if (!controller.signal.aborted) setLoading(false);
-            }
-        }
-
-        void loadFavoriteCounts();
-        return () => controller.abort();
-    }, []);
+    const {data, setData: setCounts, loading, hasError} = useFetch<FavCounts>(`/api/favoritos/numero`);
+    const counts = data ?? defaultNumber;
 
     return (
         <div className="playerPage">
@@ -82,9 +58,9 @@ export default function FavoritesPage() {
                 }
             `}</style>
             <FavoritesFilters selected={selected} setSelected={setSelected} counts={counts}/>
-            {selected === "Players" && <FavoritePlayers onFavoriteChange={handlePlayerFavoriteChange} disabled={loading}/>}
-            {selected === "Teams" && <FavoriteTeams onFavoriteChange={handleTeamFavoriteChange} disabled={loading}/>}
-            {selected === "Games" && <FavoriteGames onFavoriteChange={handleGameFavoriteChange} disabled={loading}/>}      
+            {selected === "Players" && <FavoritePlayers onFavoriteChange={handlePlayerFavoriteChange} disabled={loading || hasError}/>}
+            {selected === "Teams" && <FavoriteTeams onFavoriteChange={handleTeamFavoriteChange} disabled={loading || hasError}/>}
+            {selected === "Games" && <FavoriteGames onFavoriteChange={handleGameFavoriteChange} disabled={loading || hasError}/>}      
         </div>
     )
 }

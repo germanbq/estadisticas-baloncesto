@@ -1,5 +1,5 @@
 "use client"
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import styles from "./Games.module.css";
 import { useSearchParams } from "next/navigation";
 import { Game } from "@/src/backend/entities/gamesEntities";
@@ -8,6 +8,7 @@ import GameCard from "../GameCard";
 import GamesSkeleton from '../skeletons/GamesSkeleton';
 import NoDataCard from "../general/NoDataCard";
 import { useSyncQueryParams } from "@/src/hooks/useSyncQueryParam";
+import { useFetch } from "@/src/hooks/useFetch";
 
 export default function Games() {
     function getDateString(date: Date): string {
@@ -21,45 +22,17 @@ export default function Games() {
 
     const [date, setDate] = useState(() => { const dateParam = searchParams.get("date");
         return dateParam ? new Date(`${dateParam}T00:00:00`) : new Date();});
-    const [games, setGames] = useState<Game[]>([])
-    const [loadedDate, setLoadedDate] = useState<string | null>(null);
     const dateKey = getDateString(date);
-    const [error, setError] = useState(false);
 
     useSyncQueryParams({date: dateKey});
 
-    useEffect(() => {
-        const controller = new AbortController();
-
-        async function loadDayGames() {
-            try{
-                const response = await fetch(`/api/partidos/listado?date=${getDateString(date)}`, 
-                { signal: controller.signal })
-                const result = await response.json();
-
-                if (!response.ok) {
-                    throw new Error(result.error ?? `Error ${response.status}`);
-                }
-
-                setError(false);
-                setGames(result.data);
-            } catch (error) {
-                if (controller.signal.aborted) return;
-                setError(true);
-                console.error(error);
-            } finally {
-                if (!controller.signal.aborted) setLoadedDate(getDateString(date));
-            }
-        }
-
-        void loadDayGames();
-        return () => controller.abort();
-    }, [date])
+    const {data, loading, hasError} = useFetch<Game[]>(`/api/partidos/listado?date=${dateKey}`);
+    const games = data ?? [];
 
     return (
         <div>
             <DateButtons date={date} setDate={setDate} getDateString={getDateString}/>
-            {loadedDate !== dateKey ? <GamesSkeleton /> : error ?
+            {loading ? <GamesSkeleton /> : hasError ?
                 <div className={styles.noDataContainer}>
                     <NoDataCard text="No se pudieron cargar los partidos. Inténtalo de nuevo." />
                 </div>

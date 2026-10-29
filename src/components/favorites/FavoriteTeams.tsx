@@ -3,11 +3,11 @@ import styles from "./FavoriteTeams.module.css";
 import Image from "next/image";
 import FavoriteButton from "../FavoriteButton";
 import SingleStat from "../SingleStat";
-import { useEffect, useState } from "react";
 import { FavoriteTeam } from "@/src/backend/entities/favoritesEntities";
 import Link from "next/link";
 import { ArrowRight } from "lucide-react";
 import FavoriteTeamsSkeleton from "../skeletons/FavoriteTeamsSkeleton";
+import { useFetch } from "@/src/hooks/useFetch";
 
 type TeamCardProps = {
     team: FavoriteTeam;
@@ -57,38 +57,10 @@ function TeamCard(props: TeamCardProps) {
 export default function FavoriteTeams({onFavoriteChange, disabled}: 
                                 {onFavoriteChange: (fav: boolean) => void, disabled: boolean}) {
 
-    const [teams, setTeams] = useState<FavoriteTeam[]>([])
-    const [loading, setLoading] = useState(true);
-    const [hasError, setHasError] = useState(false);
-        
-    useEffect(() => {
-        const controller = new AbortController();
-                
-        async function loadFavoriteTeams() {
-            try {
-                const response = await fetch(`/api/favoritos/equipos`,
-                    { signal: controller.signal });
-                const result = await response.json();
-                        
-                if(!response.ok) {
-                    throw new Error(result.error ??`Error ${response.status}`);
-                }
-        
-                setTeams(result.data);
-            }
-            catch(error) {
-                if (controller.signal.aborted) return;
-                setHasError(true);
-                console.error(error);
-            } finally {
-                if (!controller.signal.aborted) setLoading(false);
-            }
-        }
-        
-        void loadFavoriteTeams();
-        return () => controller.abort();
-    }, []);
-    
+
+    const { data, loading, hasError } = useFetch<FavoriteTeam[]>(`/api/favoritos/equipos`);
+    const teams = data ?? [];
+
     if (loading) return <FavoriteTeamsSkeleton />;
 
     if (hasError) return <NoDataCard text="No se pudieron cargar tus equipos favoritos" />;

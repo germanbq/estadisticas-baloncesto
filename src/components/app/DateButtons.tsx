@@ -1,12 +1,13 @@
 "use client"
 
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import styles from "./DateButtons.module.css";
 import { ChevronRight, ChevronLeft } from "lucide-react";
 import { GamesNum } from "@/src/backend/entities/gamesEntities";
 import { useSearchParams } from "next/navigation";
 import DateButtonsSkeleton from '../skeletons/DateButtonsSkeleton';
 import { useSyncQueryParams } from "@/src/hooks/useSyncQueryParam";
+import { useFetch } from "@/src/hooks/useFetch";
 
 type DateButtonProps = {
     date: Date;
@@ -41,39 +42,12 @@ export default function DateButtons({date, setDate, getDateString}:
                             {date: Date, setDate: (date: Date) => void, getDateString: (date: Date) => string }) {
 
     const searchParams = useSearchParams();
-
-    const [numberGames, setNumberGames] = useState<GamesNum[]>([]);
     const [referenceDate, setReferenceDate] = useState<string>(searchParams.get("reference") ?? getDateString(new Date()))
-    const [loading, setLoading] = useState(true);
 
     useSyncQueryParams({reference: referenceDate})
 
-    useEffect(() => {
-        const controller = new AbortController();
-
-        async function loadNumberGames() {
-            try{
-                setLoading(true);
-                const response = await fetch(`/api/partidos/numero?date=${referenceDate}`, 
-                { signal: controller.signal })
-                const result = await response.json();
-
-                if(!response.ok) {
-                    throw new Error(result.error ??`Error ${response.status}`);
-                } 
-
-                setNumberGames(result.data);
-            } catch (error) {
-                if (controller.signal.aborted) return;
-                console.error(error);
-            } finally {
-                if (!controller.signal.aborted) setLoading(false);
-            }
-        }
-
-        void loadNumberGames();
-        return () => controller.abort();
-    }, [referenceDate])
+    const {data, loading} = useFetch<GamesNum[]>(`/api/partidos/numero?date=${referenceDate}`);
+    const numberGames = data ?? [];
 
     if (loading) return <DateButtonsSkeleton />;
 

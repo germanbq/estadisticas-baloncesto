@@ -4,6 +4,7 @@ import { SearchedPlayer } from "@/src/backend/entities/playersEntities";
 import PlayersBySearch from "@/src/components/players/PlayersBySearch";
 import PlayerSearcher from "@/src/components/players/PlayerSearcher"
 import StatsLeader from "@/src/components/players/StatsLeaders"
+import { useFetch } from "@/src/hooks/useFetch";
 import { usePathname, useRouter, useSearchParams } from "next/navigation";
 import { useEffect, useState } from "react";
 
@@ -14,9 +15,6 @@ export default function PlayersPage() {
 
     const [search, setSearch] = useState(() => searchParams.get("search") || "");
     const isSearching = search.trim().length > 0;
-    const [players, setPlayers] = useState<SearchedPlayer[]>([])
-    const [loadedSearch, setLoadedSearch] = useState<string | null>(null);
-    const searchKey = searchParams.toString();
 
     useEffect(() => {
         if((searchParams.get("search") ?? "") === search) return;
@@ -33,35 +31,13 @@ export default function PlayersPage() {
         return () => clearTimeout(timeout);
     }, [search, searchParams, pathname, router]);
 
-    useEffect(() => {
-        if (!(searchParams.get("search") ?? "").trim()) return;
+    
 
-        const controller = new AbortController();
-
-        async function loadPlayers() {
-            const params = new URLSearchParams(searchParams.toString())
-
-            try {
-                const response = await fetch(`/api/jugadores/buscador?${params.toString()}`,
-                { signal: controller.signal });
-                const result = await response.json();
-
-                if(!response.ok) {
-                    throw new Error(result.error ??`Error ${response.status}`);
-                }   
-            
-                setPlayers(result.data);
-            } catch(error){
-                if (controller.signal.aborted) return;
-                console.error(error);
-            } finally {
-                if (!controller.signal.aborted) setLoadedSearch(searchParams.toString());
-            }
-        }
-        
-        void loadPlayers();
-        return () => controller.abort();
-    }, [searchParams])
+    const hasSearch = !!searchParams.get("search")?.trim();
+    const {data, loading} = useFetch<SearchedPlayer[]>(
+        hasSearch ? `/api/jugadores/buscador?${searchParams.toString()}` : null
+    );
+    const players = data ?? [];
 
     return (
         <div className="playerPage">
@@ -75,7 +51,7 @@ export default function PlayersPage() {
                 }
             `}</style>
             <PlayerSearcher search={search} setSearch={setSearch}/>
-            {!isSearching ? <StatsLeader /> : <PlayersBySearch players={players} loading={search !== (searchParams.get("search") ?? "") || loadedSearch !== searchKey} /> }
+            {!isSearching ? <StatsLeader /> : <PlayersBySearch players={players} loading={search !== (searchParams.get("search") ?? "") || loading} /> }
         </div>
     )
 }

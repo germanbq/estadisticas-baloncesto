@@ -1,6 +1,6 @@
 "use client"
 
-import { CSSProperties, useEffect, useState } from "react";
+import { CSSProperties, useState } from "react";
 import { useSearchParams } from 'next/navigation';
 
 import styles from "./StatsLeaders.module.css";
@@ -13,6 +13,7 @@ import StatsLeadersSkeleton from "../skeletons/StatsLeadersSkeleton";
 import NoDataCard from "../general/NoDataCard";
 import PlayerAvatar from "../PlayerAvatar";
 import { useSyncQueryParams } from "@/src/hooks/useSyncQueryParam";
+import { useFetch } from "@/src/hooks/useFetch";
 
 type PlayerCardProps = {
     id: number;
@@ -56,45 +57,13 @@ function PlayerCard(props: PlayerCardProps) {
 
 export default function StatsLeader() {
     const searchParams = useSearchParams();
-
     const [metric, setMetric] = useState(() => searchParams.get("metric") || "points");
-    const [leaders, setLeaders] = useState<LeaderPlayer[]>([]);
-    const [loading, setLoading] = useState(true);
-    const [error, setError] = useState(false);
 
     useSyncQueryParams({ metric: metric});
+
+    const {data, loading, hasError} = useFetch<LeaderPlayer[]>(`/api/jugadores/lideres?metric=${encodeURIComponent(metric)}`);
+    const leaders = data ?? [];
     
-    useEffect(() => {
-        const controller = new AbortController();
-
-        async function loadLeaders() {
-            try {
-                setLoading(true);
-                const response = await fetch(`/api/jugadores/lideres?metric=${encodeURIComponent(metric)}`,
-                { signal: controller.signal });
-                const result = await response.json();
-
-                if(!response.ok) {
-                    throw new Error(result.error ??`Error ${response.status}`);
-                }   
-                
-                setError(false);
-                setLeaders(result.data);
-            } catch(error){
-                if (controller.signal.aborted) return;
-                setError(true);
-                console.error(error);
-            } finally {
-                if (!controller.signal.aborted) {
-                    setLoading(false);
-                }
-            }
-        }
-        
-        void loadLeaders();
-        return () => controller.abort();
-    }, [metric])
-
     return (
         <section>
             <span className={styles.title}>LÍDERES DE LA LIGA</span>
@@ -113,7 +82,7 @@ export default function StatsLeader() {
                     <FilterButton value="3P%" selected={metric} setSelected={setMetric} className={styles.button} activeClassName={styles.active} selectedValue="three_percentage"/>
                 </div>
             </section>
-            {loading ? <StatsLeadersSkeleton /> : error ? (
+            {loading ? <StatsLeadersSkeleton /> : hasError ? (
                 <div className={styles.noDataContainer}>
                     <NoDataCard text="No se pudieron cargar los líderes de la liga. Inténtalo de nuevo." />
                 </div>

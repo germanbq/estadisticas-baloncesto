@@ -1,43 +1,15 @@
 import NoDataCard from "../general/NoDataCard";
 import styles from "./FavoriteGames.module.css"
 import GameCard from "../GameCard"
-import { useEffect, useState } from "react";
 import { Game } from "@/src/backend/entities/gamesEntities";
 import GamesSkeleton from "../skeletons/GamesSkeleton";
+import { useFetch } from "@/src/hooks/useFetch";
 
 export default function FavoriteGames({onFavoriteChange, disabled}: 
                                 {onFavoriteChange: (fav: boolean) => void, disabled: boolean}) {
-    const [games, setGames] = useState<Game[]>([])
-    const [loading, setLoading] = useState(true);
-    const [hasError, setHasError] = useState(false);
-    
-    useEffect(() => {
-        const controller = new AbortController();
-            
-        async function loadFavoriteCounts() {
-            try {
-                const response = await fetch(`/api/favoritos/partidos`,
-                    { signal: controller.signal });
-                const result = await response.json();
-                    
-                if(!response.ok) {
-                    throw new Error(result.error ??`Error ${response.status}`);
-                }
-    
-                setGames(result.data);
-            }
-            catch(error) {
-                if (controller.signal.aborted) return;
-                setHasError(true);
-                console.error(error);
-            } finally {
-                if (!controller.signal.aborted) setLoading(false);
-            }
-        }
-    
-        void loadFavoriteCounts();
-        return () => controller.abort();
-    }, []);
+
+    const {data, loading, hasError} = useFetch<Game[]>(`/api/favoritos/partidos`);
+    const games = data ?? [];
     
     if (loading) return <GamesSkeleton variant="favorites" />;
 

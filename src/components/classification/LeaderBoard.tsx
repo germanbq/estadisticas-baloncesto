@@ -2,7 +2,7 @@
 
 import styles from "./LeaderBoard.module.css";
 import FilterButton from "../FilterButton";
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import Image from "next/image";
 import { Sunrise, Sunset } from "lucide-react";
 import { useSearchParams } from "next/navigation";
@@ -11,6 +11,7 @@ import FavoriteButton from "../FavoriteButton";
 import Link from "next/link";
 import LeaderBoardSkeleton from "../skeletons/LeaderBoardSkeleton";
 import { useSyncQueryParams } from "@/src/hooks/useSyncQueryParam";
+import { useFetch } from "@/src/hooks/useFetch";
 
 type StandingLabelProps = {
     text: string;
@@ -29,41 +30,12 @@ export default function LeaderBoard({season}: {season: number}) {
     const endingYear = season+1;
 
     const searchParams = useSearchParams();
-
     const [conf, setConf] = useState(() => searchParams.get("conf") === "West" ? "West" : "East");
-    const [leaderBoard, setLeaderBoard] = useState<Team[]>([]);
-    const [loadedConf, setLoadedConf] = useState<string | null>(null);
-    const loading = loadedConf !== conf;
-
+    
     useSyncQueryParams({conf: conf});
-
-    useEffect(() => {
-        const controller = new AbortController();
-        
-        async function loadLeaderBoard() {
-            try {
-                const response = await fetch(`/api/clasificacion?conf=${conf}`,
-                    { signal: controller.signal });
-                const result = await response.json();
-                
-                if(!response.ok) {
-                    throw new Error(result.error ??`Error ${response.status}`);
-                }
-
-                setLeaderBoard(result.data);
-            }
-            catch(error) {
-                if (controller.signal.aborted) return;
-                console.error(error);
-                setLeaderBoard([]);
-            } finally {
-                if (!controller.signal.aborted) setLoadedConf(conf);
-            }
-        }
-
-        void loadLeaderBoard();
-        return () => controller.abort();
-    }, [conf])
+    
+    const {data, loading } = useFetch<Team[]>(`/api/clasificacion?conf=${conf}`);
+    const leaderBoard = data ?? [];
 
     return (
         <section className={styles.section}>
