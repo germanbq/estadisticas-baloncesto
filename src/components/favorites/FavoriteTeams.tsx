@@ -1,4 +1,4 @@
-import NoDataCard from "../general/NoDataCard";
+import NoDataCard from "../NoDataCard";
 import styles from "./FavoriteTeams.module.css";
 import Image from "next/image";
 import FavoriteButton from "../FavoriteButton";

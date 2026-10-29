@@ -4,7 +4,7 @@ import PlayerProfileCard from "@/src/components/player/PlayerProfileCard"
 import StatsTable from "@/src/components/player/StatsTable"
 import LastGames from "@/src/components/player/LastGames"
 import { playersController } from "@/src/backend/containers/playersContainer";
-import NoDataCard from "@/src/components/general/NoDataCard";
+import NoDataCard from "@/src/components/NoDataCard";
 import { ChartNoAxesCombined, History, TableProperties } from "lucide-react";
 
 export default async function PlayerStatsPage({params}: {params: Promise<{id : string}>;}) {

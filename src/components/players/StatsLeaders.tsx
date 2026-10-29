@@ -10,7 +10,7 @@ import Image from "next/image";
 import { LeaderPlayer } from "@/src/backend/entities/playersEntities";
 import Link from "next/link";
 import StatsLeadersSkeleton from "../skeletons/StatsLeadersSkeleton";
-import NoDataCard from "../general/NoDataCard";
+import NoDataCard from "../NoDataCard";
 import PlayerAvatar from "../PlayerAvatar";
 import { useSyncQueryParams } from "@/src/hooks/useSyncQueryParam";
 import { useFetch } from "@/src/hooks/useFetch";

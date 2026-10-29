@@ -7,7 +7,7 @@ import StatsLeader from "@/src/components/players/StatsLeaders"
 import { useFetch } from "@/src/hooks/useFetch";
 import { usePathname, useRouter, useSearchParams } from "next/navigation";
 import { Suspense, useEffect, useState } from "react";
-import NoDataCard from "@/src/components/general/NoDataCard";
+import NoDataCard from "@/src/components/NoDataCard";
 
 export default function PlayersPage() {
     return (

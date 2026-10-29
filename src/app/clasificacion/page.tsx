@@ -1,7 +1,7 @@
 import LeaderBoard from "@/src/components/classification/LeaderBoard"
 import { ACTUAL_SEASON } from "@/src/backend/rules/rules";
 import { Suspense } from "react";
-import NoDataCard from "@/src/components/general/NoDataCard";
+import NoDataCard from "@/src/components/NoDataCard";
 
 export default function ClassificationPage() {
     return (

@@ -6,7 +6,7 @@ import { Game } from "@/src/backend/entities/gamesEntities";
 import DateButtons from "./DateButtons";
 import GameCard from "../GameCard";
 import GamesSkeleton from '../skeletons/GamesSkeleton';
-import NoDataCard from "../general/NoDataCard";
+import NoDataCard from "../NoDataCard";
 import { useSyncQueryParams } from "@/src/hooks/useSyncQueryParam";
 import { useFetch } from "@/src/hooks/useFetch";
 

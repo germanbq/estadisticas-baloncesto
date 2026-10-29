@@ -1,4 +1,4 @@
-import NoDataCard from "../general/NoDataCard";
+import NoDataCard from "../NoDataCard";
 import styles from "../players/PlayersBySearch.module.css";
 import { SearchedPlayer } from "@/src/backend/entities/playersEntities";
 import HorizontalPlayerCard from "../HorizontalPlayerCard";

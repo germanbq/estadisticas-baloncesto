@@ -4,7 +4,7 @@ import { LastTeamGame } from '@/src/backend/entities/gamesEntities';
 import TeamGames from '@/src/components/team/TeamGames';
 import HeaderCard from '@/src/components/team/HeaderCard';
 import PlayerStatsTable from '@/src/components/team/PlayerStatsTable';
-import NoDataCard from '@/src/components/general/NoDataCard';
+import NoDataCard from '@/src/components/NoDataCard';
 import { CalendarDays, TableProperties } from 'lucide-react';
 import { notFound } from "next/navigation";
 import { gamesController } from '@/src/backend/containers/gamesContainer';

@@ -1,4 +1,4 @@
-import NoDataCard from "../general/NoDataCard";
+import NoDataCard from "../NoDataCard";
 import styles from "./FavoriteGames.module.css"
 import GameCard from "../GameCard"
 import { Game } from "@/src/backend/entities/gamesEntities";
