@@ -2,6 +2,9 @@ import { test, expect } from "@playwright/test";
 
 test("filtrar jugadores con el campo de búsqueda y entrar al perfil de un jugador", async({page}) => {
     await page.goto('/jugadores');
+    await expect(page).toHaveURL(url =>
+        url.searchParams.get("metric") === "points"
+    );
     
     const searcher = page.getByPlaceholder("Buscar jugador...", {
         exact: true,
@@ -9,6 +12,9 @@ test("filtrar jugadores con el campo de búsqueda y entrar al perfil de un jugad
 
     await searcher.fill("LeBron");
     await expect(searcher).toHaveValue("LeBron");
+    await expect(page).toHaveURL(url =>
+        url.searchParams.get("search") === "LeBron"
+    );
 
     const card = page.getByRole("article").filter({
         has: page.getByText("LeBron James", { exact: true }),
@@ -27,6 +33,9 @@ test("filtrar jugadores con el campo de búsqueda y entrar al perfil de un jugad
 
 test("borrar la búsqueda de jugador con el botón de limpiar", async ({page}) => {
     await page.goto('/jugadores');
+    await expect(page).toHaveURL(url =>
+        url.searchParams.get("metric") === "points"
+    );
     
     const searcher = page.getByPlaceholder("Buscar jugador...", {
         exact: true,
@@ -34,6 +43,9 @@ test("borrar la búsqueda de jugador con el botón de limpiar", async ({page}) =
 
     await searcher.fill("LeBron");
     await expect(searcher).toHaveValue("LeBron");
+    await expect(page).toHaveURL(url =>
+        url.searchParams.get("search") === "LeBron"
+    );
 
     const card = page.getByRole("article").filter({
         has: page.getByText("LeBron James", { exact: true }),
@@ -52,6 +64,9 @@ test("borrar la búsqueda de jugador con el botón de limpiar", async ({page}) =
 
 test("usar los filtros de posición de la búsqueda y comprobar su guardado en la url", async ({page}) => {
     await page.goto('/jugadores');
+    await expect(page).toHaveURL(url =>
+        url.searchParams.get("metric") === "points"
+    );
 
     const searcher = page.getByPlaceholder("Buscar jugador...", {
         exact: true,
@@ -59,6 +74,9 @@ test("usar los filtros de posición de la búsqueda y comprobar su guardado en l
 
     await searcher.fill("LeBron");
     await expect(searcher).toHaveValue("LeBron");
+    await expect(page).toHaveURL(url =>
+        url.searchParams.get("search") === "LeBron"
+    );
 
     const card = page.getByRole("article").filter({
         has: page.getByText("LeBron James", { exact: true }),
@@ -90,6 +108,9 @@ test("usar los filtros de posición de la búsqueda y comprobar su guardado en l
 
 test("usar los filtros de conferencia de la búsqueda y comprobar su guardado en la url", async ({page}) => {
     await page.goto('/jugadores');
+    await expect(page).toHaveURL(url =>
+        url.searchParams.get("metric") === "points"
+    );
 
     const searcher = page.getByPlaceholder("Buscar jugador...", {
         exact: true,
@@ -97,6 +118,9 @@ test("usar los filtros de conferencia de la búsqueda y comprobar su guardado en
 
     await searcher.fill("LeBron");
     await expect(searcher).toHaveValue("LeBron");
+    await expect(page).toHaveURL(url =>
+        url.searchParams.get("search") === "LeBron"
+    );
 
     const card = page.getByRole("article").filter({
         has: page.getByText("LeBron James", { exact: true }),
