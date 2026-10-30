@@ -4,7 +4,7 @@
     py database/scripts/generate_game_stats.py --season 2026-27
     py database/scripts/generate_game_stats.py --season 2026-27 --dry-run --limit 5
 
-Lee games: temporada solicitada, fecha anterior a hoy, finished=false.
+Lee games: temporada solicitada, jornadas cerradas a las 10:00, finished=false.
 No descarga estadísticas reales, no crea partidos ni cambia el esquema.
 Requiere rosters.py junto al script y una importación de referencias confirmada.
 """
@@ -13,7 +13,7 @@ from __future__ import annotations
 import argparse
 from collections import Counter, defaultdict
 from dataclasses import asdict, dataclass, field
-from datetime import datetime, time, timezone
+from datetime import datetime, time, timedelta, timezone
 from decimal import Decimal, ROUND_HALF_UP
 from hashlib import sha256
 import json
@@ -93,7 +93,11 @@ def cutoff_utc(now, zone_name):
         raise SimulationError("Zona horaria no disponible. Instala tzdata con requirements-simulation.txt.") from None
     if now.tzinfo is None or now.utcoffset() is None:
         raise SimulationError("El reloj debe incluir zona horaria.")
-    return datetime.combine(now.astimezone(zone).date(), time.min, tzinfo=zone).astimezone(timezone.utc)
+    local_now = now.astimezone(zone)
+    cutoff = datetime.combine(local_now.date(), time(10), tzinfo=zone)
+    if local_now < cutoff:
+        cutoff -= timedelta(days=1)
+    return cutoff.astimezone(timezone.utc)
 
 
 def stable_seed(*parts):
@@ -756,7 +760,7 @@ def arguments(argv=None):
     parser = argparse.ArgumentParser(description=__doc__, formatter_class=argparse.RawDescriptionHelpFormatter)
     parser.add_argument("--season", required=True)
     parser.add_argument("--seed", type=int, default=1, help="Semilla reproducible; predeterminada: 1")
-    parser.add_argument("--timezone", default="Europe/Madrid", help="Zona que define el inicio de hoy")
+    parser.add_argument("--timezone", default="Europe/Madrid", help="Zona del cierre de jornada a las 10:00")
     parser.add_argument("--dry-run", action="store_true", help="Leer la BD y preparar estadísticas sin escribir en ella")
     parser.add_argument("--limit", type=int, help="Máximo de partidos que preparar o completar")
     parser.add_argument("--provenance-dir", type=Path, default=ROOT / "database/provenance")
