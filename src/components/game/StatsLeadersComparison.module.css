@@ -6,6 +6,15 @@
     gap: 1rem;
 }
 
+.cards {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr);
+    width: max-content;
+    max-width: 100%;
+    min-width: 0;
+    gap: 1rem;
+}
+
 .title {
     font-size: 1.5rem;
     font-weight: 900;
@@ -18,6 +27,7 @@
 }
 
 .card {
+    min-width: 0;
     background-color: var(--color-components);
     border-radius: 12px;
     padding: 1rem;
@@ -42,6 +52,7 @@
 }
 
 .teamData {
+    min-width: 0;
     display: flex;
     flex-direction: row;
     gap: 1rem;
@@ -61,6 +72,8 @@
 }
 
 .player {
+    min-width: 0;
+    overflow-wrap: anywhere;
     display: flex;
     flex-direction: column;
 }
@@ -78,6 +91,10 @@
 }
 
 @media (max-width: 1023px) {
+    .cards {
+        width: 100%;
+    }
+
     .cardContainer {
         width: 100%;
         min-width: 0;

@@ -4,6 +4,7 @@ import { CalendarDays } from "lucide-react";
 import Link from "next/link";
 import Image from "next/image";
 import { UpcomingTeamGames } from "@/src/backend/entities/teamsEntities";
+import SimulatedStats from "../SimulatedStats";
 
 function FinishedGame(props: LastTeamGame) {
     const result = props.home ? `${props.score}-${props.rivalScore}` : `${props.rivalScore}-${props.score}`;
@@ -68,6 +69,7 @@ export default function TeamGames({finishedGames, upcomingGames}:
             <span className={styles.title}>
                 <CalendarDays size={25} strokeWidth={2} aria-hidden="true" />
                 Partidos del equipo
+                <SimulatedStats />
             </span>
             <section className={styles.games}>
                 <section className={styles.finishedGames}>

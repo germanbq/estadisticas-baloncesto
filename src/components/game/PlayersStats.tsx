@@ -1,6 +1,7 @@
 import { PlayerStats } from '@/src/backend/entities/gamesEntities';
 import styles from './PlayersStats.module.css';
 import Link from 'next/link';
+import SimulatedStats from '../SimulatedStats';
 
 export default function PlayersStats({homePlayers, awayPlayers, homeName, awayName}:
                 {homePlayers: PlayerStats[], awayPlayers: PlayerStats[], homeName: string, awayName: string}) 
@@ -15,6 +16,7 @@ export default function PlayersStats({homePlayers, awayPlayers, homeName, awayNa
                 <div className={styles.heading}>
                     <h2 className={styles.title}>{team.name}</h2>
                     <span className={styles.badge}>{team.side === 'home' ? 'Local' : 'Visitante'}</span>
+                    <SimulatedStats />
                 </div>
                 <div className={styles.tableScroll} role="region" aria-label={`Estadísticas de jugadores de ${team.name}`} tabIndex={0}>
                 <table className={styles.table}>

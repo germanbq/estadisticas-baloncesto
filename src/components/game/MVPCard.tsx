@@ -2,6 +2,7 @@ import { GameMVP } from "@/src/backend/entities/gamesEntities";
 import styles from './MVPCard.module.css';
 import { CircleStar } from "lucide-react";
 import Link from "next/link";
+import SimulatedStats from "../SimulatedStats";
 
 function StatContainer({label, value, color}: {label: string, value: number, color: string}) {
     return (
@@ -35,6 +36,7 @@ export default function MVPCard({player, home}: {player: GameMVP, home: boolean}
             <span className={styles.title}>
                 <CircleStar size={25} strokeWidth={2} aria-hidden="true" />
                 MVP del partido
+                <SimulatedStats />
             </span>
             <article className={`${styles.article} ${home ? styles.home : styles.away}`}>
                 <div className={styles.playerData}>

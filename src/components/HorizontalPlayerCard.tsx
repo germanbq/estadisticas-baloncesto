@@ -7,6 +7,7 @@ import { ArrowRight } from "lucide-react";
 import FavoriteButton from "./FavoriteButton";
 import { useState } from "react";
 import PlayerAvatar from "./PlayerAvatar";
+import SimulatedStats from "./SimulatedStats";
 
 
 export default function HorizontalPlayerCard({player, onFavoriteChange, disabled}: 
@@ -44,6 +45,9 @@ export default function HorizontalPlayerCard({player, onFavoriteChange, disabled
                 <SingleStat label="AST" value={Number(player.assists.toFixed(2))} />
                 <SingleStat label="STL" value={Number(player.steals.toFixed(2))} />
                 <SingleStat label="BLK" value={Number(player.blocks.toFixed(2))} />
+            </div>
+            <div className={styles.simulatedNotice}>
+                <SimulatedStats />
             </div>
         </article>
     )

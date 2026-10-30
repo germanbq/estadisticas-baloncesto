@@ -2,6 +2,7 @@ import { GameTeamStats } from '@/src/backend/entities/gamesEntities';
 import styles from './FinishedTeamStatsComparison.module.css';
 import { ChartBar } from "lucide-react";
 import BarsComparison, { calculatePercentagesStatsComparison } from './BarsComparison';
+import SimulatedStats from '../SimulatedStats';
 
 type StatComparisonRowProps = {
     label: string;
@@ -59,6 +60,7 @@ export default function FinishedTeamStatsComparison({homeStats, awayStats, homeN
             <span className={styles.title}>
                 <ChartBar size={25} strokeWidth={2} aria-hidden="true" />
                 Comparativa de equipos
+                <SimulatedStats />
             </span>
             <article className={styles.statsComparison}>
                 <div className={styles.teamNames}>

@@ -12,6 +12,7 @@ import Link from "next/link";
 import LeaderBoardSkeleton from "../skeletons/LeaderBoardSkeleton";
 import { useSyncQueryParams } from "@/src/hooks/useSyncQueryParam";
 import { useFetch } from "@/src/hooks/useFetch";
+import SimulatedStats from "../SimulatedStats";
 
 type StandingLabelProps = {
     text: string;
@@ -39,7 +40,7 @@ export default function LeaderBoard({season}: {season: number}) {
 
     return (
         <section className={styles.section}>
-            <span className={styles.seasonSpan}>Temporada regular {season}-{endingYear}</span>
+            <span className={styles.seasonSpan}>Temporada regular {season}-{endingYear} <SimulatedStats /></span>
             <div className={styles.buttonsContainer}>
                 <FilterButton icon={<Sunrise />} value="CONFERENCIA ESTE" selected={conf} setSelected={setConf} className={styles.button} activeClassName={styles.active} selectedValue="East"/>
                 <FilterButton icon={<Sunset />} value="CONFERENCIA OESTE" selected={conf} setSelected={setConf} className={styles.button} activeClassName={styles.active} selectedValue="West"/>

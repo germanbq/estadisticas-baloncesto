@@ -14,6 +14,7 @@ import NoDataCard from "../NoDataCard";
 import PlayerAvatar from "../PlayerAvatar";
 import { useSyncQueryParams } from "@/src/hooks/useSyncQueryParam";
 import { useFetch } from "@/src/hooks/useFetch";
+import SimulatedStats from "../SimulatedStats";
 
 type PlayerCardProps = {
     id: number;
@@ -66,7 +67,7 @@ export default function StatsLeader() {
     
     return (
         <section>
-            <span className={styles.title}>LÍDERES DE LA LIGA</span>
+            <span className={styles.title}>LÍDERES DE LA LIGA <SimulatedStats /></span>
             <section className={styles.filters}>
                 <div className={styles.filtersIcon}>
                     <SlidersHorizontal className={styles.icon}/>

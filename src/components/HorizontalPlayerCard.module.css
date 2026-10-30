@@ -13,6 +13,15 @@
     margin-inline: auto;
 }
 
+.simulatedNotice {
+    display: flex;
+    justify-content: center;
+}
+
+.simulatedNotice > button {
+    margin-left: 0;
+}
+
 .articleHeader {
     display: flex;
     align-items: center;

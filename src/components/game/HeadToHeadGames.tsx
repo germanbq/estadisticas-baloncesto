@@ -2,6 +2,7 @@ import { HeadToHeadGame } from "@/src/backend/entities/gamesEntities";
 import { Swords, CircleCheck, CalendarX } from "lucide-react";
 import styles from './HeadToHeadGames.module.css';
 import Link from "next/link";
+import SimulatedStats from "../SimulatedStats";
 
 function HTHGameCard({game, referenceTeamName}: {game: HeadToHeadGame, referenceTeamName: string}) {
     const winner = game.homeScore > game.awayScore ? game.homeName : game.awayName;
@@ -37,6 +38,7 @@ export default function HeadToHeadGames({games, referenceTeamName}:{games: HeadT
             <span className={styles.title}>
                 <Swords size={25} strokeWidth={2} aria-hidden="true" />
                 Enfrentamientos esta temporada
+                <SimulatedStats />
             </span>
             {games.length === 0 
             ?

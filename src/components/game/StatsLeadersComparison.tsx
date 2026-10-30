@@ -2,6 +2,7 @@ import { StatLeader } from '@/src/backend/entities/gamesEntities';
 import styles from './StatsLeadersComparison.module.css';
 import BarsComparison, { calculatePercentagesStatsComparison } from './BarsComparison';
 import { CircleStar } from 'lucide-react';
+import SimulatedStats from '../SimulatedStats';
 
 function LeaderComparisonCard({homeLeader, awayLeader, homeName, awayName}:
                 {homeLeader: StatLeader, awayLeader: StatLeader, homeName: string, awayName: string}) 
@@ -51,8 +52,10 @@ export default function StatsLeadersComparison({homeLeaders, awayLeaders, homeNa
             <span className={styles.title}>
                 <CircleStar size={25} strokeWidth={2} aria-hidden="true" />
                 Líderes estadísticos
+                <SimulatedStats />
             </span>
 
+            <div className={styles.cards}>
             {homeLeaders.map((homeLeader) => {
                 const awayLeader = awayLeaders.find(
                     (leader) => leader.metric === homeLeader.metric
@@ -62,6 +65,7 @@ export default function StatsLeadersComparison({homeLeaders, awayLeaders, homeNa
                     <LeaderComparisonCard key={homeLeader.metric} homeLeader={homeLeader} awayLeader={awayLeader} homeName={homeName} awayName={awayName} />
                 )
             })}
+            </div>
         </section>
     )
 }

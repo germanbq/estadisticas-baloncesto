@@ -120,6 +120,17 @@
     color: var(--color-green);
 }
 
+.simulatedNotice {
+    position: relative;
+    z-index: 2;
+    display: flex;
+    justify-content: center;
+}
+
+.simulatedNotice > button {
+    margin-left: 0;
+}
+
 .details {
     width: 100%;
     min-width: 0;

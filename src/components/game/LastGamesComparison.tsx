@@ -2,6 +2,7 @@ import { LastTeamGame } from "@/src/backend/entities/gamesEntities";
 import styles from './LastGamesComparison.module.css';
 import { CalendarDays } from "lucide-react";
 import Link from "next/link";
+import SimulatedStats from "../SimulatedStats";
 
 function Game(props: LastTeamGame) {
     const result = props.home ? `${props.score}-${props.rivalScore}` : `${props.rivalScore}-${props.score}`;
@@ -33,6 +34,7 @@ export default function LastGamesComparison({homeGames, awayGames, homeName, awa
             <span className={styles.title}>
                 <CalendarDays size={25} strokeWidth={2} aria-hidden="true" />
                 Estado de forma
+                <SimulatedStats />
             </span>
             <section className={styles.games}>
                 <section className={styles.homeGames}>

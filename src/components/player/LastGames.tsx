@@ -3,6 +3,7 @@ import SingleStat from "../SingleStat";
 import styles from "./LastGames.module.css";
 import { History } from 'lucide-react';
 import Link from "next/link";
+import SimulatedStats from "../SimulatedStats";
 
 type Props = {
     games: PlayerGames[];
@@ -43,6 +44,7 @@ export default function LastGames({games}: Props)  {
             <span className={styles.title}>
                 <History size={25} strokeWidth={2} aria-hidden="true" />
                 Últimos 5 partidos
+                <SimulatedStats />
             </span>
             {games.map((game) => (
                 <Game key={game.gameId} game={game}/>

@@ -3,6 +3,7 @@ import { Flame } from 'lucide-react';
 import styles from './HeaderCard.module.css';
 import { TeamHeader } from '@/src/backend/entities/teamsEntities';
 import FavoriteButton from '../FavoriteButton';
+import SimulatedStats from '../SimulatedStats';
 
 function RecordStat({label, wins, losses}: {label: string; wins: number; losses: number}) {
     const total = wins + losses;
@@ -21,7 +22,7 @@ export default function HeaderCard(team: TeamHeader) {
     const positionClass = team.rank <= 6 ? styles.playoffs : team.rank <= 10 ? styles.playin : styles.out;
     const conference = team.conference === 'East' ? 'Este' : team.conference === 'West' ? 'Oeste' : team.conference;
     return (
-        <section className={styles.card} aria-label={`Resumen de ${team.name}`}>
+        <section className={styles.card}>
             <div className={styles.badges}>
                 <span className={styles.recordBadge}>
                     <span className={`${styles.dot} ${positionClass}`} aria-hidden="true" />
@@ -59,6 +60,9 @@ export default function HeaderCard(team: TeamHeader) {
                     <strong className={styles.value}>{team.difference > 0 ? '+' : ''}{team.difference.toFixed(1)}</strong>
                     <span className={styles.detail}>POR PARTIDO</span>
                 </div>
+            </div>
+            <div className={styles.simulatedNotice}>
+                <SimulatedStats />
             </div>
         </section>
     );

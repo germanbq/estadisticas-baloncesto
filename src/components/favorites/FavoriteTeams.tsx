@@ -8,6 +8,7 @@ import Link from "next/link";
 import { ArrowRight } from "lucide-react";
 import FavoriteTeamsSkeleton from "../skeletons/FavoriteTeamsSkeleton";
 import { useFetch } from "@/src/hooks/useFetch";
+import SimulatedStats from "../SimulatedStats";
 
 type TeamCardProps = {
     team: FavoriteTeam;
@@ -49,6 +50,9 @@ function TeamCard(props: TeamCardProps) {
                 </div>
             <div className={styles.favorite}>
                 <FavoriteButton type="equipos" itemId={props.team.id} isFavorite={props.team.isFavorite} onFavoriteChange={props.onFavoriteChange} disabled={props.disabled}/>
+            </div>
+            <div className={styles.simulatedNotice}>
+                <SimulatedStats />
             </div>
         </article>
     )

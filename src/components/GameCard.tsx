@@ -3,6 +3,7 @@ import Image from "next/image";
 import FavoriteButton from "./FavoriteButton";
 import { ReactNode } from "react";
 import Link from "next/link";
+import SimulatedStats from "./SimulatedStats";
 
 type LinkProps =
     | {
@@ -77,6 +78,9 @@ export default function GameCard(props: GameProps) {
                 </div>
             </div>
             {props.children && <div className={styles.details}>{props.children}</div>}
+            <div className={styles.simulatedNotice}>
+                <SimulatedStats />
+            </div>
         </article>
     )
 }

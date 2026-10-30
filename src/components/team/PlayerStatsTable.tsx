@@ -3,6 +3,7 @@ import styles from "./PlayerStatsTable.module.css";
 import { TableProperties } from 'lucide-react';
 import { teamPlayersStats } from "@/src/backend/entities/teamsEntities";
 import Link from "next/link";
+import SimulatedStats from "../SimulatedStats";
 
 export default function PlayerStatsTable({players}: {players: teamPlayersStats[]}) {
     return (
@@ -10,6 +11,7 @@ export default function PlayerStatsTable({players}: {players: teamPlayersStats[]
             <span className={stylesTable.title}>
                 <TableProperties size={25} strokeWidth={2} aria-hidden="true" />
                 Estadísticas de los jugadores
+                <SimulatedStats />
             </span>
             <div className={stylesTable.tableScroll} role="region" aria-label="Estadísticas completas por temporada" tabIndex={0}>
             <table className={stylesTable.table}>
